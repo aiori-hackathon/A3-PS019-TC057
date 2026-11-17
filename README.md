@@ -35,7 +35,23 @@ Modern enterprise data repositories accumulate personally identifiable informati
 
 ---
 
-## 2. Five Supported Personal Data Classes
+## 2. Key Competitive Differentiators & Regulatory Advancements
+
+PrivacyLens stands out with enterprise-grade capabilities built specifically to address real-world governance requirements:
+
+| Differentiator | Architectural Implementation | Regulatory / Technical Impact |
+| :--- | :--- | :--- |
+| **DPDP Act 2023 Governance Matrix** | Automated engine scoring inventory against Sections 5, 6, 8(7), and 9 | Produces statutory readiness scores (0–100%) and risk tiers (Low/Moderate/High) for Data Protection Board audits. |
+| **Cryptographic SHA-256 Audit Seal** | Deterministic SHA-256 digest computed across records and timestamps | Guarantees non-repudiation and tamper-evident audit trails. Any record tampering breaks the cryptographic hash. |
+| **Official Verhoeff Dihedral ($D_5$) Algorithm** | Full non-commutative dihedral permutation group ($D_5$) check tables | Implements official UIDAI checksum calculation for 12-digit Aadhaar numbers, catching single-digit errors & adjacent transpositions. |
+| **Entity-Aware PAN Tax ID Classification** | 4th-character PAN taxonomy inspection (`P`, `C`, `F`, `G`, `T`) | Identifies individual personal PANs while suppressing corporate/firm tax IDs (`C`, `F`, `G`) from false-positive PII alarms. |
+| **Children's Data Protection (Sec 9)** | Age calculation (< 18) on detected dates of birth | Flags minor data requiring verifiable parental consent and tracking heightened processing safeguards under DPDP Act 2023. |
+| **What-If Sensitivity Simulation Studio** | Live in-browser weight and threshold optimization engine | Interactive sliders to tune precision vs recall against labelled ground truth benchmarks in real time. |
+| **Native ReportLab PDF Dossier** | Formal vector PDF export (`/api/reports/dpdp.pdf`) | Generates executive audit summaries with embedded DPDP matrix scores and cryptographic seal. |
+
+---
+
+## 3. Five Supported Personal Data Classes
 
 PrivacyLens includes configurable detection rules for the 5 mandated classes:
 
@@ -66,7 +82,7 @@ PrivacyLens includes configurable detection rules for the 5 mandated classes:
 ## 4. Project Directory Structure
 
 ```text
-d:\AIORI/
+AIORI_CODE_FOR_WEBSITE/
 ├── frontend/                     # React + TypeScript + Tailwind UI
 │   ├── src/
 │   │   ├── components/           # Sidebar, Header, StatusBadge, Modals
@@ -79,15 +95,16 @@ d:\AIORI/
 │   └── vite.config.ts
 ├── backend/                      # FastAPI Backend
 │   ├── app/
-│   │   ├── api/                  # REST API Endpoints
+│   │   ├── api/                  # REST API Endpoints (inc. /dpdp/matrix, /scanner/simulate)
 │   │   ├── connectors/           # CSV & SQLite connectors
 │   │   ├── core/                 # Config, Database engine, Seeders
 │   │   ├── evaluation/           # Accuracy evaluator
 │   │   ├── metadata/             # Purpose & Retention manager
 │   │   ├── models/               # SQLAlchemy ORM models
-│   │   ├── reports/              # CSV & ReportLab PDF generators
-│   │   ├── scanner/              # Detection engine & validators
+│   │   ├── reports/              # CSV & ReportLab PDF generators (with SHA-256 seal)
+│   │   ├── scanner/              # Detection engine & Verhoeff dihedral validators
 │   │   ├── schemas/              # Pydantic v2 schemas
+│   │   ├── static/               # Interactive UI shell, CSS, and JS
 │   │   └── main.py               # Application entrypoint
 │   ├── config/
 │   │   └── rules.yaml            # Configurable detection rules
@@ -126,8 +143,8 @@ Before running PrivacyLens, ensure you have:
 
 ### Step 1: Clone or Navigate to the Repository
 ```bash
-git clone <your-private-repo-url>
-cd AIORI
+git clone https://github.com/aiori-hackathon/A3-PS019-TC057.git
+cd AIORI_CODE_FOR_WEBSITE
 ```
 
 ### Step 2: Install Backend Dependencies
@@ -153,13 +170,13 @@ python -m backend.app.core.init_db
 
 ## 7. Running the Application
 
-### Option A: Run Backend Server (Terminal 1)
+### Option A: Run Unified Full-Stack Server
 ```bash
-python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
+python run.py
 ```
-- Interactive API Docs (Swagger): `http://127.0.0.1:8000/docs`
-- Redoc API Docs: `http://127.0.0.1:8000/redoc`
-- Health check: `http://127.0.0.1:8000/api/health`
+- Web Application UI: `http://localhost:8000/` or live at `https://as-ps019-tc057.onrender.com/`
+- Interactive API Docs (Swagger): `http://localhost:8000/docs`
+- Redoc API Docs: `http://localhost:8000/redoc`
 
 ### Option B: Run Frontend Development Server (Terminal 2)
 ```bash
@@ -172,31 +189,39 @@ npm run dev
 
 ## 8. Guided Mentor Demonstration Workflow
 
-1. **Dashboard (`http://localhost:5173`):**
+1. **Dashboard (`/` or `http://localhost:8000`):**
    - Review live metrics: total datasets, candidate fields detected, distribution across classes, and confidence spectrum.
-2. **Data Sources:**
+   - Notice the DPDP Act 2023 Statutory Governance callout and cryptographic SHA-256 seal status.
+2. **DPDP Act 2023 Statutory Matrix (Tab: "DPDP 2023 Matrix"):**
+   - Inspect overall statutory readiness score (0-100%) and risk tier (Low / Moderate / High).
+   - Review the Data Protection Board of India (DPBI) tamper-evident SHA-256 seal.
+   - Review section-by-section breakdown: Section 5 (Notice), Section 8(7) (Retention Erasure), Section 9 (Children's Data Protection), and Section 16 (Evidentiary Non-Repudiation).
+   - Download the official ReportLab **DPDP Dossier (PDF)**.
+3. **What-If Sensitivity Studio (Tab: "Sensitivity Studio"):**
+   - Adjust interactive sliders: Column Pattern Weight, Sample Value Weight, Format Bonus, and Candidate Threshold.
+   - Click **"Execute Live Benchmark Simulation"** to observe real-time recalculations of Macro F1, Precision, Recall, and False Positives Suppressed.
+4. **Data Sources:**
    - Inspect pre-loaded `synthetic_customers.csv`, `synthetic_employees.csv`, and `sample_enterprise.db`.
    - Click **"Inspect Schema"** to see table columns and non-null samples.
-   - Upload any custom CSV or SQLite database file.
-3. **Scan Data:**
+5. **Scan Data:**
    - Select `sample_enterprise.db` or `synthetic_customers.csv`.
-   - Click **"Execute Scan"**. Multi-signal detection engine processes the dataset in < 1 second.
-4. **Evidence Inventory:**
+   - Click **"Execute Scan"**. Multi-signal detection engine processes the dataset with Verhoeff dihedral validation and PAN entity filtering.
+6. **Evidence Inventory:**
    - Filter by data class (e.g. `government_id` or `email_address`).
    - Click **"Evidence"** to inspect the multi-signal score breakdown and memory-redacted values (e.g. `XXXX-XXXX-9102`).
-5. **Evidence Gaps:**
+7. **Evidence Gaps:**
    - Filter by `Missing Purpose` or `Missing Retention`.
    - Observe how PrivacyLens highlights governance gaps without assuming universal compliance.
-6. **Review Center:**
+8. **Review Center:**
    - View pending candidate detections.
    - Click **"Confirm PII"** or **"Reject"** and enter audit justification notes.
-7. **Evaluation & Accuracy:**
+9. **Evaluation & Accuracy:**
    - Click **"Execute Live Evaluation"** to run the scanner against `sample_data/labelled_test_set.csv`.
    - Inspect Macro Precision, Recall, F1 scores, and sample-by-sample confusion comparison.
-8. **Configurable Rules:**
+10. **Configurable Rules:**
    - Open the live YAML editor. Adjust detection thresholds or add new regex patterns. Click **"Save & Compile Rules"**.
-9. **Export Reports:**
-   - Download `Inventory CSV`, `Gaps CSV`, or `Export PDF` from the header bar.
+11. **Export Reports:**
+   - Download `Inventory CSV`, `Gaps CSV`, `Inventory PDF`, or `DPDP Dossier (PDF)` from the header bar.
 
 ---
 
