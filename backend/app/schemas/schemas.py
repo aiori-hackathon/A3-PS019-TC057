@@ -173,3 +173,42 @@ class EvaluationRunResponse(BaseModel):
     executed_at: datetime.datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# DPDP Act 2023 Governance Matrix Schemas
+class DPDPPrincipleStatus(BaseModel):
+    principle: str
+    statutory_section: str
+    status: str
+    score: float
+    description: str
+    action_items: list[str]
+
+class DPDPMatrixResponse(BaseModel):
+    generated_at: datetime.datetime
+    overall_readiness_score: float
+    risk_level: str
+    tamper_evident_seal_sha256: str
+    total_candidate_fields: int
+    notice_readiness_pct: float
+    retention_limitation_pct: float
+    minors_data_detected_count: int
+    aadhaar_verhoeff_validated_count: int
+    corporate_pan_suppressed_count: int
+    principles: list[DPDPPrincipleStatus]
+    recommendations: list[str]
+
+class SensitivitySimulationRequest(BaseModel):
+    column_weight: float = Field(default=0.40, ge=0.0, le=1.0)
+    value_weight: float = Field(default=0.45, ge=0.0, le=1.0)
+    validator_bonus: float = Field(default=0.15, ge=0.0, le=1.0)
+    threshold: float = Field(default=0.50, ge=0.1, le=1.0)
+
+class SensitivitySimulationResponse(BaseModel):
+    total_candidates_found: int
+    class_distribution: dict[str, int]
+    macro_precision: float
+    macro_recall: float
+    macro_f1: float
+    confidence_spread: dict[str, int]
+    false_positives_suppressed: int

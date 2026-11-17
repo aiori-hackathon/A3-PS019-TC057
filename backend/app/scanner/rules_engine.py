@@ -91,6 +91,24 @@ class RulesEngine:
     def get_candidate_threshold(self) -> float:
         return float(self.config.get("sampling", {}).get("candidate_confidence_threshold", 0.50))
 
+    def matches_column_patterns(self, class_name: str, column_name: str) -> bool:
+        patterns = self.compiled_column_patterns.get(class_name, [])
+        return any(p.search(column_name) for p in patterns)
+
+    def matches_negative_column_patterns(self, class_name: str, column_name: str) -> bool:
+        patterns = self.compiled_negative_column_patterns.get(class_name, [])
+        return any(p.search(column_name) for p in patterns)
+
+    def matches_value_patterns(self, class_name: str, value: str) -> bool:
+        patterns = self.compiled_value_patterns.get(class_name, [])
+        return any(p.match(str(value).strip()) for p in patterns)
+
+    def get_validator_func(self, validator_name: Optional[str]):
+        if not validator_name:
+            return None
+        from backend.app.scanner.validators import VALIDATOR_MAP
+        return VALIDATOR_MAP.get(validator_name)
+
     def update_rules_content(self, new_yaml_content: str) -> None:
         """Validates and updates rules file atomically."""
         parsed = self.validate_and_parse_yaml(new_yaml_content)

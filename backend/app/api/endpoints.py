@@ -9,7 +9,7 @@ from fastapi.responses import PlainTextResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
-from backend.app.core.config import settings, UPLOADS_DIR
+from backend.app.core.config import settings, UPLOADS_DIR, BASE_DIR
 from backend.app.core.database import get_db
 from backend.app.models.models import Dataset, ScanJob, ScanResult, PurposeRetentionMetadata, EvaluationRun
 from backend.app.schemas.schemas import (
@@ -17,7 +17,8 @@ from backend.app.schemas.schemas import (
     ScanCreateRequest, ScanJobResponse, ScanResultResponse, ReviewUpdateRequest,
     MetadataRecordCreate, MetadataRecordResponse,
     InventoryRecordResponse, EvidenceGapReportResponse, GapStatistics,
-    DashboardMetricsResponse, EvaluationRunResponse
+    DashboardMetricsResponse, EvaluationRunResponse,
+    DPDPMatrixResponse, SensitivitySimulationRequest, SensitivitySimulationResponse
 )
 from backend.app.connectors.csv_connector import CSVConnector
 from backend.app.connectors.sqlite_connector import SQLiteConnector
@@ -45,7 +46,7 @@ def resolve_dataset_file_path(dataset: Dataset, db: Session) -> Path:
         db.commit()
         return cand1
 
-    sample_dir = settings.BASE_DIR.parent / "sample_data"
+    sample_dir = BASE_DIR.parent / "sample_data"
     cand2 = sample_dir / file_p.name
     if cand2.exists():
         dataset.file_path = str(cand2)
@@ -766,4 +767,122 @@ def download_inventory_pdf(db: Session = Depends(get_db)):
         content=pdf_bytes,
         media_type="application/pdf",
         headers={"Content-Disposition": "attachment; filename=privacylens_evidence_inventory.pdf"}
+    )
+
+
+# --- DPDP Act 2023 Statutory Governance Matrix ---
+@router.get("/dpdp/matrix", response_model=DPDPMatrixResponse)
+def get_dpdp_matrix(db: Session = Depends(get_db)):
+    """Computes statutory DPDP Act 2023 compliance readiness posture and tamper-evident seal."""
+    matrix = ReportGenerator.get_dpdp_matrix(db)
+    return DPDPMatrixResponse(**matrix)
+
+
+# --- Live Multi-Signal Sensitivity Simulator ---
+@router.post("/scanner/simulate", response_model=SensitivitySimulationResponse)
+def simulate_sensitivity(req: SensitivitySimulationRequest, db: Session = Depends(get_db)):
+    """
+    Live What-If sensitivity simulator: computes candidate detections, false positive
+    suppression, and precision/recall across dynamic scoring weights and threshold.
+    """
+    from backend.app.evaluation.evaluator import REQUIRED_CLASSES
+    import pandas as pd
+
+    test_path = BASE_DIR.parent / "sample_data" / "labelled_test_set.csv"
+    if not test_path.exists():
+        raise HTTPException(status_code=404, detail="Labelled test set not found")
+
+    df = pd.read_csv(test_path)
+    total_candidates = 0
+    class_dist = {c: 0 for c in REQUIRED_CLASSES}
+    metrics = {c: {"tp": 0, "fp": 0, "fn": 0} for c in REQUIRED_CLASSES}
+    confidence_spread = {"0.50-0.69": 0, "0.70-0.84": 0, "0.85-1.00": 0}
+    suppressed_count = 0
+
+    classes_config = rules_engine.get_classes()
+
+    for _, row in df.iterrows():
+        col_name = str(row["column_name"])
+        val = str(row["sample_value"]) if pd.notna(row["sample_value"]) else ""
+        true_cls = str(row["true_class"]).strip().lower()
+
+        # Custom simulation scoring
+        best_cls = None
+        best_conf = 0.0
+
+        for c_name, c_def in classes_config.items():
+            # 1. Col match
+            col_match = rules_engine.matches_column_patterns(c_name, col_name)
+            neg_match = rules_engine.matches_negative_column_patterns(c_name, col_name)
+            col_score = 0.0 if neg_match else (1.0 if col_match else 0.0)
+
+            # 2. Value match
+            val_match = rules_engine.matches_value_patterns(c_name, val) if val else False
+            val_ratio = 1.0 if val_match else 0.0
+
+            # 3. Format validator
+            fmt_ratio = val_ratio
+            val_func = rules_engine.get_validator_func(c_def.get("validator"))
+            if val_func and val:
+                passed, _ = val_func(val)
+                fmt_ratio = 1.0 if passed else 0.0
+
+            score = (col_score * req.column_weight) + (val_ratio * req.value_weight) + (fmt_ratio * req.validator_bonus)
+            if score >= req.threshold and score > best_conf:
+                best_conf = score
+                best_cls = c_name
+
+        pred_cls = best_cls if best_cls else "non_personal"
+        if best_cls:
+            total_candidates += 1
+            class_dist[best_cls] = class_dist.get(best_cls, 0) + 1
+            if best_conf >= 0.85:
+                confidence_spread["0.85-1.00"] += 1
+            elif best_conf >= 0.70:
+                confidence_spread["0.70-0.84"] += 1
+            else:
+                confidence_spread["0.50-0.69"] += 1
+        else:
+            if true_cls == "non_personal":
+                suppressed_count += 1
+
+        for c in REQUIRED_CLASSES:
+            if true_cls == c and pred_cls == c:
+                metrics[c]["tp"] += 1
+            elif true_cls != c and pred_cls == c:
+                metrics[c]["fp"] += 1
+            elif true_cls == c and pred_cls != c:
+                metrics[c]["fn"] += 1
+
+    sum_p, sum_r, sum_f = 0.0, 0.0, 0.0
+    for c in REQUIRED_CLASSES:
+        tp, fp, fn = metrics[c]["tp"], metrics[c]["fp"], metrics[c]["fn"]
+        p = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+        r = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+        f = (2 * p * r / (p + r)) if (p + r) > 0 else 0.0
+        sum_p += p
+        sum_r += r
+        sum_f += f
+
+    n = len(REQUIRED_CLASSES)
+    return SensitivitySimulationResponse(
+        total_candidates_found=total_candidates,
+        class_distribution=class_dist,
+        macro_precision=round(sum_p / n, 4),
+        macro_recall=round(sum_r / n, 4),
+        macro_f1=round(sum_f / n, 4),
+        confidence_spread=confidence_spread,
+        false_positives_suppressed=suppressed_count
+    )
+
+
+@router.get("/reports/dpdp.pdf")
+@router.get("/reports/dpdp/pdf")
+def download_dpdp_pdf(db: Session = Depends(get_db)):
+    """Downloads formal DPDP Act 2023 Executive Statutory Dossier PDF."""
+    pdf_bytes = ReportGenerator.generate_inventory_pdf(db)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=privacylens_dpdp_dossier.pdf"}
     )

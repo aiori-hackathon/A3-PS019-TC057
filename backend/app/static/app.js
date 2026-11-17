@@ -2,6 +2,9 @@
 const state = {
   currentTab: 'dashboard',
   dashboardData: null,
+  dpdpData: null,
+  simParams: { column_weight: 0.40, value_weight: 0.45, validator_bonus: 0.15, threshold: 0.50 },
+  simData: null,
   datasets: [],
   inventory: [],
   metadata: [],
@@ -23,7 +26,9 @@ const icons = {
   evidencegaps: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
   evaluation: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
   reviewcenter: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
-  settings: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>`
+  settings: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>`,
+  dpdp: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>`,
+  simulator: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>`
 };
 
 // Badges
@@ -99,7 +104,9 @@ async function renderActiveView() {
     evidencegaps: ['Technical Evidence Gaps', 'Missing metadata, unreviewed detections, and technical limitations'],
     evaluation: ['Evaluation & Benchmark Metrics', 'Transparent precision, recall, and F1 calculations from labelled synthetic test set'],
     reviewcenter: ['Human Review & Triage Center', 'Human-in-the-loop decision center to confirm or reject candidate detections'],
-    settings: ['Configurable Rules & Settings', 'Inspect and customize YAML regex patterns and scoring weights']
+    settings: ['Configurable Rules & Settings', 'Inspect and customize YAML regex patterns and scoring weights'],
+    dpdp: ['DPDP Act 2023 Statutory Compliance Matrix', 'Regulatory readiness, Dihedral Verhoeff Aadhaar verification, and cryptographic DPBI audit seal'],
+    simulator: ['What-If Sensitivity Simulation Studio', 'Live parameter optimization against labelled benchmark dataset']
   };
 
   headerTitle.textContent = titles[state.currentTab][0];
@@ -116,6 +123,8 @@ async function renderActiveView() {
     else if (state.currentTab === 'evaluation') await renderEvaluation(container);
     else if (state.currentTab === 'reviewcenter') await renderReviewCenter(container);
     else if (state.currentTab === 'settings') await renderSettings(container);
+    else if (state.currentTab === 'dpdp') await renderDPDP(container);
+    else if (state.currentTab === 'simulator') await renderSimulator(container);
   } catch (err) {
     container.innerHTML = `<div class="card" style="border-color:#fecaca; background:#fef2f2; color:#991b1b; padding:20px;">
       <strong>Error loading view:</strong> ${err.message}
@@ -191,6 +200,22 @@ async function renderDashboard(container) {
         <div class="kpi-label" style="color:#b91c1c;">Missing Both</div>
         <div class="kpi-val" style="color:#b91c1c;">${data.missing_both}</div>
         <div style="font-size:11px; color:#b91c1c; margin-top:4px;">Critical gap</div>
+      </div>
+    </div>
+
+    <!-- DPDP Statutory Readiness & Differentiator Callout -->
+    <div style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius:14px; padding:20px; color:white; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 8px 20px -4px rgba(49,46,129,0.25);">
+      <div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:10px; font-weight:800; background:#4338ca; color:#e0e7ff; padding:2px 8px; border-radius:10px; text-transform:uppercase;">DPDP Act 2023 Statutory Matrix</span>
+          <span style="font-size:11px; color:#c7d2fe;">• Cryptographic SHA-256 Audit Seal Enabled</span>
+        </div>
+        <h3 style="font-size:16px; font-weight:700; margin-top:6px;">Personal Data Governance & Regulatory Audit Matrix</h3>
+        <p style="font-size:12px; color:#c7d2fe; max-width:640px; margin-top:2px;">Audits discovery evidence against DPDP Section 5 (Notice), Section 8(7) (Retention Erasure), and Section 9 (Children & Minors Protection with Dihedral Verhoeff validation and Corporate PAN suppression).</p>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <button onclick="navigateTo('dpdp')" class="btn btn-primary" style="background:#4f46e5; border-color:#6366f1; white-space:nowrap;">Inspect DPDP Matrix &rarr;</button>
+        <button onclick="navigateTo('simulator')" class="btn btn-secondary" style="background:rgba(255,255,255,0.1); color:white; border-color:rgba(255,255,255,0.2); white-space:nowrap;">Sensitivity Studio</button>
       </div>
     </div>
 
@@ -1166,6 +1191,299 @@ async function saveNewMetadata() {
 
 function closeModal() {
   document.getElementById('modal-container').innerHTML = '';
+}
+
+// 10. DPDP Act 2023 Statutory Compliance Matrix View
+async function renderDPDP(container) {
+  const res = await fetch('/api/dpdp/matrix');
+  const data = await res.json();
+  state.dpdpData = data;
+
+  const scoreColor = data.overall_readiness_score >= 80 ? '#10b981' : (data.overall_readiness_score >= 60 ? '#f59e0b' : '#ef4444');
+  const riskBadgeClass = data.risk_level.includes('LOW') ? 'badge-confirmed' : (data.risk_level.includes('MODERATE') ? 'badge-pending' : 'badge-rejected');
+
+  container.innerHTML = `
+    <!-- Top Summary Card -->
+    <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px; margin-bottom:24px;">
+      <!-- Readiness Gauge Card -->
+      <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:30px;">
+        <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">DPDP Statutory Readiness</span>
+        <div style="font-size:48px; font-weight:900; color:${scoreColor}; margin:12px 0;">${data.overall_readiness_score}%</div>
+        <div><span class="badge ${riskBadgeClass}" style="font-size:12px; padding:4px 12px;">${data.risk_level}</span></div>
+        <p style="font-size:11px; color:#64748b; margin-top:12px;">Scored across statutory principles of the Digital Personal Data Protection Act, 2023.</p>
+      </div>
+
+      <!-- Audit Integrity & Differentiators Card -->
+      <div class="card" style="margin-bottom:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h3 style="font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Cryptographic Tamper-Evident Audit Seal
+          </h3>
+          <span style="font-size:10px; font-family:monospace; background:#e0e7ff; color:#3730a3; padding:2px 8px; border-radius:6px; font-weight:700;">DPBI Section 16 Non-Repudiation</span>
+        </div>
+        <div style="background:#0f172a; border-radius:8px; padding:12px; font-family:monospace; font-size:11px; color:#38bdf8; word-break:break-all; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+          <span>${data.tamper_evident_seal_sha256}</span>
+          <button onclick="navigator.clipboard.writeText('${data.tamper_evident_seal_sha256}'); alert('Cryptographic Seal copied to clipboard!');" class="btn btn-secondary" style="font-size:10px; padding:4px 8px; background:#1e293b; color:white; border-color:#334155; white-space:nowrap;">Copy Seal</button>
+        </div>
+        <p style="font-size:11px; color:#64748b; margin-top:8px;">Deterministic SHA-256 fingerprint generated over discovery inventory records, retention schedules, and timestamp metadata. Guarantees immutable evidentiary integrity for Data Protection Board of India (DPBI) audits.</p>
+
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:16px; padding-top:16px; border-top:1px solid #e2e8f0;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+            <div style="font-size:10px; color:#64748b; font-weight:600;">Verhoeff ($D_5$) Checksum</div>
+            <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:2px;">Dihedral Algorithmic</div>
+            <div style="font-size:10px; color:#10b981; font-weight:600; margin-top:2px;">Official UIDAI Checksum</div>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+            <div style="font-size:10px; color:#64748b; font-weight:600;">Entity-Aware PAN Tax ID</div>
+            <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:2px;">4th Char Inspection</div>
+            <div style="font-size:10px; color:#0284c7; font-weight:600; margin-top:2px;">Corporate False+ Suppressed</div>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+            <div style="font-size:10px; color:#64748b; font-weight:600;">DPDP Sec 9 Minor Protection</div>
+            <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:2px;">Age &lt; 18 Consent Flag</div>
+            <div style="font-size:10px; color:#f59e0b; font-weight:600; margin-top:2px;">Children's Data Protected</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statutory Principles Table -->
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div>
+          <h3 style="font-size:15px; font-weight:700;">DPDP Act 2023 Statutory Principles Breakdown</h3>
+          <p style="font-size:11px; color:#64748b;">Evaluation of personal data discovery inventory against the statutory mandate</p>
+        </div>
+        <a href="/api/reports/dpdp.pdf" target="_blank" class="btn btn-primary" style="background:#4338ca; border-color:#3730a3; font-size:12px;">
+          ${icons.dashboard} Download Official DPDP Dossier (PDF)
+        </a>
+      </div>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:110px;">Section</th>
+              <th>Statutory Principle</th>
+              <th>Status</th>
+              <th style="width:140px;">Readiness Score</th>
+              <th>Description & Statutory Requirement</th>
+              <th>Required Action Items</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.principles.map(p => {
+              const statusClass = p.status === 'COMPLIANT' ? 'badge-confirmed' : (p.status === 'PARTIALLY COMPLIANT' ? 'badge-pending' : 'badge-rejected');
+              const barColor = p.score >= 80 ? '#10b981' : (p.score >= 50 ? '#f59e0b' : '#ef4444');
+              return `
+                <tr>
+                  <td><span style="font-family:monospace; font-weight:700; background:#f1f5f9; padding:2px 8px; border-radius:6px; font-size:11px;">${p.statutory_section}</span></td>
+                  <td style="font-weight:700; color:#0f172a;">${p.principle}</td>
+                  <td><span class="badge ${statusClass}">${p.status}</span></td>
+                  <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <div style="flex:1; background:#e2e8f0; height:6px; border-radius:3px; overflow:hidden;">
+                        <div style="width:${p.score}%; height:100%; background:${barColor};"></div>
+                      </div>
+                      <span style="font-size:11px; font-family:monospace; font-weight:700;">${p.score}%</span>
+                    </div>
+                  </td>
+                  <td style="font-size:11px; color:#475569; max-width:280px;">${p.description}</td>
+                  <td style="font-size:11px; color:#0284c7;">
+                    ${p.action_items.map(a => `<div>• ${a}</div>`).join('')}
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="card" style="background:#f8fafc; border-color:#cbd5e1;">
+      <h3 style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px;">Data Protection Board Statutory Recommendations</h3>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        ${data.recommendations.map(r => `
+          <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#334155;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span>${r}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// 11. What-If Sensitivity Simulation Studio View
+async function renderSimulator(container) {
+  const p = state.simParams;
+
+  container.innerHTML = `
+    <!-- Simulation Top Banner -->
+    <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-radius:14px; padding:20px; color:white; margin-bottom:24px;">
+      <span style="font-size:10px; font-weight:800; background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:10px; text-transform:uppercase;">What-If Sensitivity Simulation Studio</span>
+      <h2 style="font-size:18px; font-weight:800; margin-top:6px;">Multi-Signal Parameter & Threshold Optimization</h2>
+      <p style="font-size:12px; color:#e0f2fe; margin-top:4px;">Evaluate candidate detection sensitivity against the labelled ground-truth benchmark test set in real time. Adjust weights dynamically to optimize Macro F1 and suppress false positives.</p>
+    </div>
+
+    <!-- Controls & Results Grid -->
+    <div style="display:grid; grid-template-columns: 1fr 1.6fr; gap:20px; margin-bottom:24px;">
+      <!-- Parameter Tuning Sliders -->
+      <div class="card" style="margin-bottom:0;">
+        <h3 style="font-size:15px; font-weight:700; margin-bottom:16px;">Tuning Parameters</h3>
+
+        <!-- Presets -->
+        <div style="display:flex; gap:6px; margin-bottom:20px; flex-wrap:wrap;">
+          <button onclick="setSimPreset(0.40, 0.45, 0.15, 0.50)" class="btn btn-secondary" style="font-size:10px; padding:4px 8px;">Balanced (Default)</button>
+          <button onclick="setSimPreset(0.50, 0.40, 0.20, 0.70)" class="btn btn-secondary" style="font-size:10px; padding:4px 8px;">Strict High-Precision</button>
+          <button onclick="setSimPreset(0.35, 0.45, 0.20, 0.35)" class="btn btn-secondary" style="font-size:10px; padding:4px 8px;">High-Recall Discovery</button>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+              <label style="font-weight:600; color:#334155;">Column Name Pattern Weight</label>
+              <span id="lbl-col-w" style="font-family:monospace; font-weight:700; color:#0284c7;">${p.column_weight.toFixed(2)}</span>
+            </div>
+            <input type="range" id="rng-col-w" min="0" max="1" step="0.05" value="${p.column_weight}" oninput="updateSimParam('column_weight', this.value, 'lbl-col-w')" style="width:100%; accent-color:#0284c7;"/>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+              <label style="font-weight:600; color:#334155;">Sample Value Pattern Weight</label>
+              <span id="lbl-val-w" style="font-family:monospace; font-weight:700; color:#0284c7;">${p.value_weight.toFixed(2)}</span>
+            </div>
+            <input type="range" id="rng-val-w" min="0" max="1" step="0.05" value="${p.value_weight}" oninput="updateSimParam('value_weight', this.value, 'lbl-val-w')" style="width:100%; accent-color:#0284c7;"/>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+              <label style="font-weight:600; color:#334155;">Format / Checksum Bonus</label>
+              <span id="lbl-bon-w" style="font-family:monospace; font-weight:700; color:#0284c7;">${p.validator_bonus.toFixed(2)}</span>
+            </div>
+            <input type="range" id="rng-bon-w" min="0" max="0.30" step="0.05" value="${p.validator_bonus}" oninput="updateSimParam('validator_bonus', this.value, 'lbl-bon-w')" style="width:100%; accent-color:#0284c7;"/>
+          </div>
+
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+              <label style="font-weight:600; color:#334155;">Candidate Confidence Threshold</label>
+              <span id="lbl-thresh" style="font-family:monospace; font-weight:700; color:#0284c7;">${p.threshold.toFixed(2)}</span>
+            </div>
+            <input type="range" id="rng-thresh" min="0.1" max="1.0" step="0.05" value="${p.threshold}" oninput="updateSimParam('threshold', this.value, 'lbl-thresh')" style="width:100%; accent-color:#0284c7;"/>
+          </div>
+        </div>
+
+        <button onclick="executeSimulation()" id="btn-run-sim" class="btn btn-primary" style="width:100%; margin-top:20px; padding:10px;">
+          Execute Live Benchmark Simulation
+        </button>
+      </div>
+
+      <!-- Live Simulation Results Container -->
+      <div id="sim-results-pane">
+        <div class="card" style="margin-bottom:0; height:100%; display:flex; align-items:center; justify-content:center; text-align:center; padding:40px; color:#94a3b8;">
+          <div>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" style="margin-bottom:12px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <p>Click "Execute Live Benchmark Simulation" to evaluate weights against the ground-truth test set.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Auto-run initially
+  executeSimulation();
+}
+
+function updateSimParam(key, val, lblId) {
+  state.simParams[key] = parseFloat(val);
+  const el = document.getElementById(lblId);
+  if (el) el.textContent = parseFloat(val).toFixed(2);
+}
+
+function setSimPreset(col, val, bon, thr) {
+  state.simParams = { column_weight: col, value_weight: val, validator_bonus: bon, threshold: thr };
+  const cEl = document.getElementById('rng-col-w'); if (cEl) cEl.value = col;
+  const clEl = document.getElementById('lbl-col-w'); if (clEl) clEl.textContent = col.toFixed(2);
+  const vEl = document.getElementById('rng-val-w'); if (vEl) vEl.value = val;
+  const vlEl = document.getElementById('lbl-val-w'); if (vlEl) vlEl.textContent = val.toFixed(2);
+  const bEl = document.getElementById('rng-bon-w'); if (bEl) bEl.value = bon;
+  const blEl = document.getElementById('lbl-bon-w'); if (blEl) blEl.textContent = bon.toFixed(2);
+  const tEl = document.getElementById('rng-thresh'); if (tEl) tEl.value = thr;
+  const tlEl = document.getElementById('lbl-thresh'); if (tlEl) tlEl.textContent = thr.toFixed(2);
+  executeSimulation();
+}
+
+async function executeSimulation() {
+  const pane = document.getElementById('sim-results-pane');
+  if (!pane) return;
+  const btn = document.getElementById('btn-run-sim');
+  if (btn) btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/scanner/simulate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state.simParams)
+    });
+    const s = await res.json();
+    state.simData = s;
+
+    const f1Pct = Math.round(s.macro_f1 * 100);
+    const precPct = Math.round(s.macro_precision * 100);
+    const recPct = Math.round(s.macro_recall * 100);
+
+    pane.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <!-- KPI Row -->
+        <div class="kpi-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:0;">
+          <div class="kpi-card" style="background:#f0fdf4; border-color:#bbf7d0;">
+            <div class="kpi-label" style="color:#15803d;">Macro F1-Score</div>
+            <div class="kpi-val" style="color:#15803d;">${f1Pct}%</div>
+            <div style="font-size:11px; color:#15803d; margin-top:2px;">Harmonic mean</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Precision / Recall</div>
+            <div class="kpi-val">${precPct}% / ${recPct}%</div>
+            <div style="font-size:11px; color:#64748b; margin-top:2px;">Accuracy on test set</div>
+          </div>
+          <div class="kpi-card" style="background:#f0f9ff; border-color:#bae6fd;">
+            <div class="kpi-label" style="color:#0369a1;">False Positives Suppressed</div>
+            <div class="kpi-val" style="color:#0369a1;">${s.false_positives_suppressed}</div>
+            <div style="font-size:11px; color:#0369a1; margin-top:2px;">Non-personal filtered</div>
+          </div>
+        </div>
+
+        <!-- Candidate Distribution -->
+        <div class="card" style="margin-bottom:0;">
+          <h4 style="font-size:13px; font-weight:700; margin-bottom:12px;">Class Distribution & Candidates Discovered (${s.total_candidates_found})</h4>
+          <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px;">
+            ${Object.entries(s.class_distribution).map(([cls, cnt]) => `
+              <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; text-align:center;">
+                <div style="font-size:10px; font-weight:600; color:#64748b; text-transform:uppercase;">${cls.replace('_', ' ')}</div>
+                <div style="font-size:18px; font-weight:800; color:#0f172a; margin-top:2px;">${cnt}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <h4 style="font-size:13px; font-weight:700; margin-top:16px; margin-bottom:8px;">Confidence Spread Spectrum</h4>
+          <div style="display:flex; gap:16px;">
+            ${Object.entries(s.confidence_spread).map(([rng, cnt]) => `
+              <div style="flex:1; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px; font-size:11px;">
+                <span style="color:#64748b; font-weight:600;">Band ${rng}:</span>
+                <strong style="color:#0f172a; margin-left:4px;">${cnt} candidates</strong>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  } catch (err) {
+    pane.innerHTML = `<div class="card" style="color:#b91c1c; background:#fef2f2;">Simulation error: ${err.message}</div>`;
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 
 // Initial Launch
