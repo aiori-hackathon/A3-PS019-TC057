@@ -69,7 +69,7 @@ function renderReviewBadge(status) {
 
 function renderConfidenceBar(score) {
   const pct = Math.round(score * 100);
-  const color = pct >= 85 ? '#10b981' : pct >= 70 ? '#0284c7' : '#f59e0b';
+  const color = pct >= 85 ? '#10b981' : pct >= 70 ? '#488099' : '#f59e0b';
   return `
     <div style="display:flex; align-items:center; gap:8px;">
       <div style="width:50px; background:#e2e8f0; height:6px; border-radius:3px; overflow:hidden;">
@@ -140,9 +140,9 @@ async function renderDashboard(container) {
 
   const classColors = {
     person_name: '#2563eb',
-    email_address: '#0ea5e9',
+    email_address: '#488099',
     phone_number: '#10b981',
-    government_id: '#0284c7',
+    government_id: '#315267',
     date_of_birth: '#f59e0b'
   };
 
@@ -158,9 +158,9 @@ async function renderDashboard(container) {
 
   container.innerHTML = `
     <!-- Top Welcome Banner -->
-    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0369a1 100%); border-radius:16px; padding:24px; color:white; margin-bottom:24px; box-shadow:0 10px 25px -5px rgba(15,23,42,0.3); display:flex; justify-content:space-between; align-items:center;">
+    <div style="background: linear-gradient(135deg, #16202c 0%, #264357 50%, #488099 100%); border-radius:16px; padding:24px; color:white; margin-bottom:24px; box-shadow:0 10px 25px -5px rgba(15,23,42,0.3); display:flex; justify-content:space-between; align-items:center;">
       <div>
-        <span style="font-size:11px; font-weight:700; background:rgba(56,189,248,0.2); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:2px 8px; border-radius:12px;">AIORI HACKATHON 3 • PS-019</span>
+        <span style="font-size:11px; font-weight:700; background:rgba(56,189,248,0.2); color:#579eba; border:1px solid rgba(56,189,248,0.3); padding:2px 8px; border-radius:12px;">AIORI HACKATHON 3 • PS-019</span>
         <h2 style="font-size:20px; font-weight:800; margin-top:8px;">PrivacyLens Personal-Data Discovery & Evidence Inventory</h2>
         <p style="font-size:12px; color:#cbd5e1; max-width:650px; margin-top:4px;">Multi-signal evidence detection across CSVs and SQLite databases. Links candidate fields to declared purposes and retention periods for auditable human review.</p>
       </div>
@@ -181,10 +181,10 @@ async function renderDashboard(container) {
         <div class="kpi-val">${data.total_tables}</div>
         <div style="font-size:11px; color:#64748b; margin-top:4px;">Across all sources</div>
       </div>
-      <div class="kpi-card" style="background:#f0f9ff; border-color:#bae6fd;">
-        <div class="kpi-label" style="color:#0369a1;">Candidate PII</div>
-        <div class="kpi-val" style="color:#0284c7;">${data.total_candidates}</div>
-        <div style="font-size:11px; color:#0369a1; margin-top:4px;">Discovered fields</div>
+      <div class="kpi-card" style="background:#f0f9ff; border-color:#bcdbe7;">
+        <div class="kpi-label" style="color:#36657c;">Candidate PII</div>
+        <div class="kpi-val" style="color:#488099;">${data.total_candidates}</div>
+        <div style="font-size:11px; color:#36657c; margin-top:4px;">Discovered fields</div>
       </div>
       <div class="kpi-card" style="background:#fffbeb; border-color:#fde68a;">
         <div class="kpi-label" style="color:#b45309;">Missing Purpose</div>
@@ -204,17 +204,17 @@ async function renderDashboard(container) {
     </div>
 
     <!-- DPDP Statutory Readiness & Differentiator Callout -->
-    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0284c7 100%); border-radius:14px; padding:20px; color:white; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 8px 20px -4px rgba(15,23,42,0.3);">
+    <div style="background: linear-gradient(135deg, #101824 0%, #1a2536 50%, #2d4f66 100%); border-radius:14px; padding:20px; color:white; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 8px 20px -4px rgba(15,23,42,0.3);">
       <div>
         <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:10px; font-weight:800; background:#0284c7; color:#ffffff; padding:2px 8px; border-radius:10px; text-transform:uppercase;">DPDP Act 2023 Statutory Matrix</span>
+          <span style="font-size:10px; font-weight:800; background:#488099; color:#ffffff; padding:2px 8px; border-radius:10px; text-transform:uppercase;">DPDP Act 2023 Statutory Matrix</span>
           <span style="font-size:11px; color:#7dd3fc;">• Cryptographic SHA-256 Audit Seal Enabled</span>
         </div>
         <h3 style="font-size:16px; font-weight:700; margin-top:6px;">Personal Data Governance & Regulatory Audit Matrix</h3>
-        <p style="font-size:12px; color:#e0f2fe; max-width:640px; margin-top:2px;">Audits discovery evidence against DPDP Section 5 (Notice), Section 8(7) (Retention Erasure), and Section 9 (Children & Minors Protection with Dihedral Verhoeff validation and Corporate PAN suppression).</p>
+        <p style="font-size:12px; color:#bcdbe7; max-width:640px; margin-top:2px;">Audits discovery evidence against DPDP Section 5 (Notice), Section 8(7) (Retention Erasure), and Section 9 (Children & Minors Protection with Dihedral Verhoeff validation and Corporate PAN suppression).</p>
       </div>
       <div style="display:flex; gap:10px; align-items:center;">
-        <button onclick="navigateTo('dpdp')" class="btn btn-primary" style="background:#0284c7; border-color:#38bdf8; white-space:nowrap;">Inspect DPDP Matrix &rarr;</button>
+        <button onclick="navigateTo('dpdp')" class="btn btn-primary" style="background:#488099; border-color:#579eba; white-space:nowrap;">Inspect DPDP Matrix &rarr;</button>
         <button onclick="navigateTo('simulator')" class="btn btn-secondary" style="background:rgba(255,255,255,0.15); color:white; border-color:rgba(255,255,255,0.25); white-space:nowrap;">Sensitivity Studio</button>
       </div>
     </div>
@@ -258,7 +258,7 @@ async function renderDashboard(container) {
         <div style="display:flex; flex-direction:column; gap:12px;">
           ${Object.entries(data.confidence_distribution).map(([k, val]) => {
             const pct = data.total_candidates > 0 ? Math.round((val / data.total_candidates) * 100) : 0;
-            const barCol = k.includes('Very') ? '#10b981' : k.includes('High') ? '#0284c7' : '#f59e0b';
+            const barCol = k.includes('Very') ? '#10b981' : k.includes('High') ? '#488099' : '#f59e0b';
             return `
               <div>
                 <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
@@ -307,7 +307,7 @@ async function renderDashboard(container) {
                 <td style="font-family:monospace; text-transform:uppercase; font-size:10px;">${s.source_type}</td>
                 <td><span class="badge badge-confirmed">${s.status}</span></td>
                 <td style="font-family:monospace;">${s.total_columns}</td>
-                <td style="font-family:monospace; font-weight:700; color:#0284c7;">${s.candidate_count}</td>
+                <td style="font-family:monospace; font-weight:700; color:#488099;">${s.candidate_count}</td>
                 <td style="color:#64748b;">${new Date(s.started_at).toLocaleTimeString()}</td>
               </tr>
             `).join('') : `<tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No scans recorded yet.</td></tr>`}
@@ -332,7 +332,7 @@ async function renderDataSources(container) {
         <p style="font-size:11px; color:#64748b; margin-bottom:16px;">Supports UTF-8, Latin-1, with header deduplication</p>
         
         <label style="border:2px dashed #cbd5e1; border-radius:12px; padding:24px; display:flex; flex-direction:column; align-items:center; cursor:pointer; background:#f8fafc; transition:all 0.2s;" ondragover="event.preventDefault()">
-          <span style="font-size:12px; font-weight:600; color:#0284c7;">Click to Select CSV File</span>
+          <span style="font-size:12px; font-weight:600; color:#488099;">Click to Select CSV File</span>
           <span style="font-size:10px; color:#94a3b8; margin-top:4px;">.csv format up to 50MB</span>
           <input type="file" accept=".csv" style="display:none;" onchange="uploadFile(event, 'csv')"/>
         </label>
@@ -426,8 +426,8 @@ async function inspectDatasetTables(id) {
   const tables = await res.json();
 
   box.innerHTML = `
-    <div class="card" style="border-color:#0284c7;">
-      <h3 style="font-size:15px; font-weight:700; margin-bottom:12px; color:#0284c7;">Schema & Sample Values Preview</h3>
+    <div class="card" style="border-color:#488099;">
+      <h3 style="font-size:15px; font-weight:700; margin-bottom:12px; color:#488099;">Schema & Sample Values Preview</h3>
       ${tables.map(t => `
         <div style="margin-bottom:20px; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
           <div style="background:#f8fafc; padding:8px 12px; font-weight:700; font-size:11px; border-bottom:1px solid #e2e8f0;">
@@ -519,7 +519,7 @@ async function executeScanJob() {
   const dsId = dsSelect.value;
   btn.disabled = true;
   btn.innerHTML = `Running Multi-Signal Scanner...`;
-  feedback.innerHTML = `<div style="padding:12px; font-size:12px; color:#0284c7;">Scanning columns, computing signals, and generating technical evidence...</div>`;
+  feedback.innerHTML = `<div style="padding:12px; font-size:12px; color:#488099;">Scanning columns, computing signals, and generating technical evidence...</div>`;
 
   try {
     const res = await fetch('/api/scans', {
@@ -793,7 +793,7 @@ async function renderGaps(container) {
 
     <!-- Limitations -->
     <div class="card" style="background:#0f172a; color:#cbd5e1; border-color:#334155;">
-      <h4 style="font-size:12px; font-weight:800; text-transform:uppercase; color:#38bdf8; margin-bottom:10px;">Documented Scanner Limitations</h4>
+      <h4 style="font-size:12px; font-weight:800; text-transform:uppercase; color:#579eba; margin-bottom:10px;">Documented Scanner Limitations</h4>
       <ul style="font-size:11px; line-height:1.8; margin-left:18px;">
         ${limitations.map(l => `<li>${l}</li>`).join('')}
       </ul>
@@ -830,8 +830,8 @@ async function renderEvaluation(container) {
           <div style="font-size:10px; color:#64748b;">TP / (TP + FP)</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label" style="color:#0284c7;">Macro Recall</div>
-          <div class="kpi-val" style="color:#0284c7;">${(latest.overall_recall * 100).toFixed(1)}%</div>
+          <div class="kpi-label" style="color:#488099;">Macro Recall</div>
+          <div class="kpi-val" style="color:#488099;">${(latest.overall_recall * 100).toFixed(1)}%</div>
           <div style="font-size:10px; color:#64748b;">TP / (TP + FN)</div>
         </div>
         <div class="kpi-card">
@@ -1016,7 +1016,7 @@ function openEvidenceModal(recordId) {
       <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
           <div>
-            <span style="font-size:10px; font-weight:700; color:#0284c7; text-transform:uppercase;">Technical Evidence Audit</span>
+            <span style="font-size:10px; font-weight:700; color:#488099; text-transform:uppercase;">Technical Evidence Audit</span>
             <h3 style="font-size:16px; font-weight:800; color:#0f172a;">${r.column_name}</h3>
           </div>
           <button onclick="closeModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">&times;</button>
@@ -1025,7 +1025,7 @@ function openEvidenceModal(recordId) {
         <div class="modal-body" style="display:flex; flex-direction:column; gap:16px; font-size:12px;">
           <!-- Evidence Box -->
           <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:14px;">
-            <strong style="color:#0369a1; display:block; margin-bottom:4px;">Detection Summary:</strong>
+            <strong style="color:#36657c; display:block; margin-bottom:4px;">Detection Summary:</strong>
             <p style="color:#0c4a6e; font-weight:500;">${r.evidence_summary}</p>
           </div>
 
@@ -1217,12 +1217,12 @@ async function renderDPDP(container) {
       <div class="card" style="margin-bottom:0;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <h3 style="font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#488099" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             Cryptographic Tamper-Evident Audit Seal
           </h3>
-          <span style="font-size:10px; font-family:monospace; background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:6px; font-weight:700;">DPBI Section 16 Non-Repudiation</span>
+          <span style="font-size:10px; font-family:monospace; background:#e0f2fe; color:#36657c; padding:2px 8px; border-radius:6px; font-weight:700;">DPBI Section 16 Non-Repudiation</span>
         </div>
-        <div style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; font-family:monospace; font-size:11px; color:#38bdf8; word-break:break-all; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        <div style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; font-family:monospace; font-size:11px; color:#579eba; word-break:break-all; display:flex; justify-content:space-between; align-items:center; gap:10px;">
           <span>${data.tamper_evident_seal_sha256}</span>
           <button onclick="navigator.clipboard.writeText('${data.tamper_evident_seal_sha256}'); alert('Cryptographic Seal copied to clipboard!');" class="btn btn-secondary" style="font-size:10px; padding:4px 8px; background:#1e293b; color:#f0f9ff; border-color:#334155; white-space:nowrap;">Copy Seal</button>
         </div>
@@ -1237,7 +1237,7 @@ async function renderDPDP(container) {
           <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
             <div style="font-size:10px; color:#64748b; font-weight:600;">Entity-Aware PAN Tax ID</div>
             <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:2px;">4th Char Inspection</div>
-            <div style="font-size:10px; color:#0284c7; font-weight:600; margin-top:2px;">Corporate False+ Suppressed</div>
+            <div style="font-size:10px; color:#488099; font-weight:600; margin-top:2px;">Corporate False+ Suppressed</div>
           </div>
           <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
             <div style="font-size:10px; color:#64748b; font-weight:600;">DPDP Sec 9 Minor Protection</div>
@@ -1255,7 +1255,7 @@ async function renderDPDP(container) {
           <h3 style="font-size:15px; font-weight:700;">DPDP Act 2023 Statutory Principles Breakdown</h3>
           <p style="font-size:11px; color:#64748b;">Evaluation of personal data discovery inventory against the statutory mandate</p>
         </div>
-        <a href="/api/reports/dpdp.pdf" target="_blank" class="btn btn-primary" style="background:#0284c7; border-color:#0369a1; font-size:12px;">
+        <a href="/api/reports/dpdp.pdf" target="_blank" class="btn btn-primary" style="background:#488099; border-color:#36657c; font-size:12px;">
           ${icons.dashboard} Download Official DPDP Dossier (PDF)
         </a>
       </div>
@@ -1275,7 +1275,7 @@ async function renderDPDP(container) {
           <tbody>
             ${data.principles.map(p => {
               const statusClass = p.status === 'COMPLIANT' ? 'badge-confirmed' : (p.status === 'PARTIALLY COMPLIANT' ? 'badge-pending' : 'badge-rejected');
-              const barColor = p.score >= 80 ? '#10b981' : (p.score >= 50 ? '#0284c7' : '#ef4444');
+              const barColor = p.score >= 80 ? '#10b981' : (p.score >= 50 ? '#488099' : '#ef4444');
               return `
                 <tr>
                   <td><span style="font-family:monospace; font-weight:700; background:#f1f5f9; color:#0f172a; padding:2px 8px; border-radius:6px; font-size:11px;">${p.statutory_section}</span></td>
@@ -1290,7 +1290,7 @@ async function renderDPDP(container) {
                     </div>
                   </td>
                   <td style="font-size:11px; color:#475569; max-width:280px;">${p.description}</td>
-                  <td style="font-size:11px; color:#0284c7;">
+                  <td style="font-size:11px; color:#488099;">
                     ${p.action_items.map(a => `<div>• ${a}</div>`).join('')}
                   </td>
                 </tr>
@@ -1307,7 +1307,7 @@ async function renderDPDP(container) {
       <div style="display:flex; flex-direction:column; gap:6px;">
         ${data.recommendations.map(r => `
           <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:#334155;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#488099" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
             <span>${r}</span>
           </div>
         `).join('')}
@@ -1322,10 +1322,10 @@ async function renderSimulator(container) {
 
   container.innerHTML = `
     <!-- Simulation Top Banner -->
-    <div style="background: linear-gradient(135deg, #0f172a 0%, #0284c7 100%); border-radius:14px; padding:20px; color:white; margin-bottom:24px;">
+    <div style="background: linear-gradient(135deg, #16202c 0%, #315267 60%, #488099 100%); border-radius:14px; padding:20px; color:white; margin-bottom:24px;">
       <span style="font-size:10px; font-weight:800; background:rgba(56,189,248,0.2); color:#7dd3fc; padding:2px 8px; border-radius:10px; text-transform:uppercase;">What-If Sensitivity Simulation Studio</span>
       <h2 style="font-size:18px; font-weight:800; margin-top:6px;">Multi-Signal Parameter & Threshold Optimization</h2>
-      <p style="font-size:12px; color:#e0f2fe; margin-top:4px;">Evaluate candidate detection sensitivity against the labelled ground-truth benchmark test set in real time. Adjust weights dynamically to optimize Macro F1 and suppress false positives.</p>
+      <p style="font-size:12px; color:#bcdbe7; margin-top:4px;">Evaluate candidate detection sensitivity against the labelled ground-truth benchmark test set in real time. Adjust weights dynamically to optimize Macro F1 and suppress false positives.</p>
     </div>
 
     <!-- Controls & Results Grid -->
@@ -1345,33 +1345,33 @@ async function renderSimulator(container) {
           <div>
             <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
               <label style="font-weight:600; color:#334155;">Column Name Pattern Weight</label>
-              <span id="lbl-col-w" style="font-family:monospace; font-weight:700; color:#0284c7;">${p.column_weight.toFixed(2)}</span>
+              <span id="lbl-col-w" style="font-family:monospace; font-weight:700; color:#488099;">${p.column_weight.toFixed(2)}</span>
             </div>
-            <input type="range" id="rng-col-w" min="0" max="1" step="0.05" value="${p.column_weight}" oninput="updateSimParam('column_weight', this.value, 'lbl-col-w')" style="width:100%; accent-color:#0284c7;"/>
+            <input type="range" id="rng-col-w" min="0" max="1" step="0.05" value="${p.column_weight}" oninput="updateSimParam('column_weight', this.value, 'lbl-col-w')" style="width:100%; accent-color:#488099;"/>
           </div>
 
           <div>
             <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
               <label style="font-weight:600; color:#334155;">Sample Value Pattern Weight</label>
-              <span id="lbl-val-w" style="font-family:monospace; font-weight:700; color:#0284c7;">${p.value_weight.toFixed(2)}</span>
+              <span id="lbl-val-w" style="font-family:monospace; font-weight:700; color:#488099;">${p.value_weight.toFixed(2)}</span>
             </div>
-            <input type="range" id="rng-val-w" min="0" max="1" step="0.05" value="${p.value_weight}" oninput="updateSimParam('value_weight', this.value, 'lbl-val-w')" style="width:100%; accent-color:#0284c7;"/>
+            <input type="range" id="rng-val-w" min="0" max="1" step="0.05" value="${p.value_weight}" oninput="updateSimParam('value_weight', this.value, 'lbl-val-w')" style="width:100%; accent-color:#488099;"/>
           </div>
 
           <div>
             <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
               <label style="font-weight:600; color:#334155;">Format / Checksum Bonus</label>
-              <span id="lbl-bon-w" style="font-family:monospace; font-weight:700; color:#0284c7;">${p.validator_bonus.toFixed(2)}</span>
+              <span id="lbl-bon-w" style="font-family:monospace; font-weight:700; color:#488099;">${p.validator_bonus.toFixed(2)}</span>
             </div>
-            <input type="range" id="rng-bon-w" min="0" max="0.30" step="0.05" value="${p.validator_bonus}" oninput="updateSimParam('validator_bonus', this.value, 'lbl-bon-w')" style="width:100%; accent-color:#0284c7;"/>
+            <input type="range" id="rng-bon-w" min="0" max="0.30" step="0.05" value="${p.validator_bonus}" oninput="updateSimParam('validator_bonus', this.value, 'lbl-bon-w')" style="width:100%; accent-color:#488099;"/>
           </div>
 
           <div>
             <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
               <label style="font-weight:600; color:#334155;">Candidate Confidence Threshold</label>
-              <span id="lbl-thresh" style="font-family:monospace; font-weight:700; color:#0284c7;">${p.threshold.toFixed(2)}</span>
+              <span id="lbl-thresh" style="font-family:monospace; font-weight:700; color:#488099;">${p.threshold.toFixed(2)}</span>
             </div>
-            <input type="range" id="rng-thresh" min="0.1" max="1.0" step="0.05" value="${p.threshold}" oninput="updateSimParam('threshold', this.value, 'lbl-thresh')" style="width:100%; accent-color:#0284c7;"/>
+            <input type="range" id="rng-thresh" min="0.1" max="1.0" step="0.05" value="${p.threshold}" oninput="updateSimParam('threshold', this.value, 'lbl-thresh')" style="width:100%; accent-color:#488099;"/>
           </div>
         </div>
 
@@ -1448,10 +1448,10 @@ async function executeSimulation() {
             <div class="kpi-val">${precPct}% / ${recPct}%</div>
             <div style="font-size:11px; color:#64748b; margin-top:2px;">Accuracy on test set</div>
           </div>
-          <div class="kpi-card" style="background:#f0f9ff; border-color:#bae6fd;">
-            <div class="kpi-label" style="color:#0369a1;">False Positives Suppressed</div>
-            <div class="kpi-val" style="color:#0369a1;">${s.false_positives_suppressed}</div>
-            <div style="font-size:11px; color:#0369a1; margin-top:2px;">Non-personal filtered</div>
+          <div class="kpi-card" style="background:#f0f9ff; border-color:#bcdbe7;">
+            <div class="kpi-label" style="color:#36657c;">False Positives Suppressed</div>
+            <div class="kpi-val" style="color:#36657c;">${s.false_positives_suppressed}</div>
+            <div style="font-size:11px; color:#36657c; margin-top:2px;">Non-personal filtered</div>
           </div>
         </div>
 

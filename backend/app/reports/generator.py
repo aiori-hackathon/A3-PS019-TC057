@@ -195,7 +195,7 @@ class ReportGenerator:
             'ReportTitle',
             parent=styles['Heading1'],
             fontSize=16,
-            textColor=colors.HexColor("#0f172a"),
+            textColor=colors.HexColor("#16202c"),
             spaceAfter=4
         )
         meta_style = ParagraphStyle(
@@ -227,7 +227,7 @@ class ReportGenerator:
                 f"SHA-256 Seal: <font name='Courier' size='7'>{matrix['tamper_evident_seal_sha256'][:24]}...</font>",
                 meta_style
             ),
-            HRFlowable(width="100%", thickness=1, color=colors.HexColor("#0284c7"), spaceAfter=8)
+            HRFlowable(width="100%", thickness=1, color=colors.HexColor("#488099"), spaceAfter=8)
         ]
 
         # Executive Summary Box
@@ -289,7 +289,7 @@ class ReportGenerator:
 
         t = Table(table_data, colWidths=[80, 70, 75, 80, 38, 90, 105, 65, 137])
         t.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#0f172a")),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor("#16202c")),
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
             ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),

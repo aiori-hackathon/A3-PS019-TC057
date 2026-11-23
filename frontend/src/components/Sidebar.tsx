@@ -44,16 +44,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, backe
   ];
 
   return (
-    <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 select-none">
+    <aside className="w-64 bg-[#16202c] text-slate-300 flex flex-col shrink-0 border-r border-[#233446] select-none">
       {/* Brand Header */}
-      <div className="p-4 border-b border-slate-800 flex items-center space-x-3">
-        <div className="w-11 h-11 rounded-xl bg-sky-950/60 p-1 flex items-center justify-center shadow-lg shadow-sky-500/25 border border-sky-500/40">
+      <div className="p-4 border-b border-[#233446] flex items-center space-x-3">
+        <div className="w-11 h-11 rounded-xl bg-white p-1 flex items-center justify-center shadow-lg shadow-[#488099]/25 border border-[#488099]">
           <img src="/logo-icon.png" alt="PrivacyLens Shield" className="w-full h-full object-contain" />
         </div>
         <div>
           <h1 className="text-base font-bold text-white tracking-tight flex items-center gap-1.5">
             PrivacyLens
-            <span className="text-[10px] px-1.5 py-0.5 rounded font-mono bg-sky-950 text-sky-400 border border-sky-800">
+            <span className="text-[10px] px-1.5 py-0.5 rounded font-mono bg-[#1c2b3d] text-[#579eba] border border-[#488099]">
               v1.0
             </span>
           </h1>
@@ -75,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, backe
               onClick={() => onTabChange(item.id)}
               className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                 isActive
-                  ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-md shadow-sky-600/35 font-semibold'
+                  ? 'bg-gradient-to-r from-[#488099] to-[#2d4f66] text-white shadow-md shadow-[#488099]/35 font-semibold'
                   : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
               }`}
             >
@@ -87,7 +87,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, backe
       </nav>
 
       {/* System Status Footer */}
-      <div className="p-4 border-t border-slate-800 bg-slate-950/60">
+      <div className="p-4 border-t border-[#233446] bg-[#101822]">
         <div className="flex items-center justify-between text-xs mb-1">
           <span className="text-slate-400 flex items-center gap-1.5">
             <Activity className="w-3.5 h-3.5 text-slate-400" />
