@@ -49,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, onRefresh, show
               href="/api/reports/inventory.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors shadow-sm shadow-teal-600/25"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-lg transition-colors shadow-sm shadow-sky-600/25"
               title="Download formal technical PDF report"
             >
               <FileText className="w-3.5 h-3.5" />
@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, onRefresh, show
               href="/api/reports/dpdp.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg transition-colors shadow-sm shadow-emerald-700/25"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-indigo-700 hover:bg-indigo-800 rounded-lg transition-colors shadow-sm shadow-indigo-700/25"
               title="Download official DPDP Compliance Dossier"
             >
               <FileText className="w-3.5 h-3.5" />

@@ -44,26 +44,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, backe
   ];
 
   return (
-    <aside className="w-64 bg-[#042023] text-teal-100 flex flex-col shrink-0 border-r border-[#114449] select-none">
+    <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 select-none">
       {/* Brand Header */}
-      <div className="p-4 border-b border-[#114449] flex items-center space-x-3">
-        <div className="w-11 h-11 rounded-xl bg-white p-1 flex items-center justify-center shadow-lg shadow-teal-500/20 border border-teal-500">
-          <img src="/logo.png" alt="PrivacyLens Logo" className="w-full h-full object-contain rounded-lg" />
+      <div className="p-4 border-b border-slate-800 flex items-center space-x-3">
+        <div className="w-11 h-11 rounded-xl bg-sky-950/60 p-1 flex items-center justify-center shadow-lg shadow-sky-500/25 border border-sky-500/40">
+          <img src="/logo-icon.png" alt="PrivacyLens Shield" className="w-full h-full object-contain" />
         </div>
         <div>
           <h1 className="text-base font-bold text-white tracking-tight flex items-center gap-1.5">
             PrivacyLens
-            <span className="text-[10px] px-1.5 py-0.5 rounded font-mono bg-teal-900 text-teal-300 border border-teal-700">
+            <span className="text-[10px] px-1.5 py-0.5 rounded font-mono bg-sky-950 text-sky-400 border border-sky-800">
               v1.0
             </span>
           </h1>
-          <p className="text-xs text-teal-400 font-medium">PII Discovery & Inventory</p>
+          <p className="text-xs text-slate-400 font-medium">PII Discovery & Inventory</p>
         </div>
       </div>
 
       {/* Navigation Links */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        <div className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-teal-400">
+        <div className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
           Core Workflows
         </div>
         {navItems.map((item) => {
@@ -75,11 +75,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, backe
               onClick={() => onTabChange(item.id)}
               className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                 isActive
-                  ? 'bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md shadow-teal-600/40 font-semibold'
-                  : 'text-teal-100 hover:bg-[#0b3336] hover:text-white'
+                  ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-md shadow-sky-600/35 font-semibold'
+                  : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
               }`}
             >
-              <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-teal-400'}`} />
+              <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
               <span>{item.label}</span>
             </button>
           );
@@ -87,7 +87,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onTabChange, backe
       </nav>
 
       {/* System Status Footer */}
-      <div className="p-4 border-t border-[#114449] bg-[#021416]">
+      <div className="p-4 border-t border-slate-800 bg-slate-950/60">
         <div className="flex items-center justify-between text-xs mb-1">
           <span className="text-slate-400 flex items-center gap-1.5">
             <Activity className="w-3.5 h-3.5 text-slate-400" />
