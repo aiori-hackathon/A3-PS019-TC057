@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PrivacyLens — Personal Data Discovery & Compliance Management</title>
+  <title>Privacy Lens — Personal Data Discovery & Compliance Management</title>
   <link rel="icon" type="image/png" href="/static/logo-icon.png">
-  <link rel="stylesheet" href="/static/app.css?v=2.0.0">
+  <link rel="stylesheet" href="/static/app.css?v=2.1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,133 +15,136 @@
   <a href="#main-content" class="skip-to-content">Skip to main content</a>
 
   <div class="app-layout">
-    <!-- Modern Light Sidebar -->
-    <aside class="sidebar" id="app-sidebar" aria-label="Main Navigation">
-      <div class="brand-header">
-        <div class="brand-logo">
-          <img src="/static/logo-icon.png" alt="PrivacyLens Logo">
+    <!-- Full-Width Top Header (Privacy Lens Brand + Logo replaces Dashboard Overview) -->
+    <header class="app-header" role="banner">
+      <div class="header-left">
+        <button type="button" id="sidebar-toggle" class="sidebar-toggle-btn" aria-label="Toggle navigation sidebar" aria-expanded="true" onclick="toggleSidebar()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+
+        <div class="header-brand">
+          <div class="header-logo-box">
+            <img src="/static/logo-icon.png" alt="Privacy Lens" class="header-logo">
+          </div>
+          <div class="header-brand-meta">
+            <span class="header-brand-title">Privacy Lens</span>
+            <span class="header-brand-subtitle">Discovery & Governance</span>
+          </div>
         </div>
-        <div class="brand-meta">
-          <span class="brand-title">PrivacyLens</span>
-          <span class="brand-subtitle">Discovery & Governance</span>
+
+        <div class="header-divider" aria-hidden="true"></div>
+
+        <div class="header-page-context">
+          <h1 class="header-title" id="header-title">Dashboard</h1>
+          <span class="header-dot" aria-hidden="true">&bull;</span>
+          <p class="header-subtitle" id="header-sub">System status and evidence telemetry</p>
         </div>
       </div>
 
-      <div class="sidebar-action-box">
-        <button type="button" onclick="runOneClickDiscovery()" id="btn-sidebar-quickscan" class="btn btn-primary btn-block">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><polyline points="8 11 10 13 14 9"/></svg>
+      <div class="header-actions" role="toolbar" aria-label="Quick Actions and Reports">
+        <button type="button" onclick="runOneClickDiscovery()" id="btn-header-quickscan" class="btn btn-primary btn-sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><polyline points="8 11 10 13 14 9"/></svg>
           Run Discovery Scan
         </button>
+        <a href="/api/reports/inventory.csv" download class="btn btn-secondary btn-sm" title="Export inventory records as CSV">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </a>
+        <a href="/api/reports/inventory.pdf" target="_blank" class="btn btn-secondary btn-sm" title="View PDF inventory summary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Inventory PDF
+        </a>
+        <a href="/api/reports/dpdp.pdf" target="_blank" class="btn btn-secondary btn-sm" title="Download official DPDP Act statutory dossier">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          DPDP Dossier
+        </a>
       </div>
+    </header>
 
-      <nav class="nav-menu" aria-label="Application Sections">
-        <!-- Group 1: Discovery -->
-        <div class="nav-group">
-          <span class="nav-heading" id="heading-discovery">Discovery</span>
-          <div role="group" aria-labelledby="heading-discovery">
-            <button type="button" class="nav-item active" data-tab="dashboard" onclick="navigateTo('dashboard')" aria-current="page">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-              <span>Dashboard</span>
-            </button>
-            <button type="button" class="nav-item" data-tab="datasources" onclick="navigateTo('datasources')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-              <span>Data Sources</span>
-            </button>
-            <button type="button" class="nav-item" data-tab="scandata" onclick="navigateTo('scandata')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <span>Data Scanner</span>
-            </button>
-            <button type="button" class="nav-item" data-tab="inventory" onclick="navigateTo('inventory')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
-              <span>Evidence Inventory</span>
-            </button>
+    <!-- App Body: Sidebar & Scrollable Main Content -->
+    <div class="app-body">
+      <!-- Flush Sidebar: Navigation moved to the very top to fill the gap -->
+      <aside class="sidebar" id="app-sidebar" aria-label="Main Navigation">
+        <nav class="nav-menu" aria-label="Application Sections">
+          <!-- Group 1: Discovery -->
+          <div class="nav-group">
+            <span class="nav-heading" id="heading-discovery">Discovery</span>
+            <div role="group" aria-labelledby="heading-discovery">
+              <button type="button" class="nav-item active" data-tab="dashboard" onclick="navigateTo('dashboard')" aria-current="page">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                <span>Dashboard</span>
+              </button>
+              <button type="button" class="nav-item" data-tab="datasources" onclick="navigateTo('datasources')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                <span>Data Sources</span>
+              </button>
+              <button type="button" class="nav-item" data-tab="scandata" onclick="navigateTo('scandata')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span>Data Scanner</span>
+              </button>
+              <button type="button" class="nav-item" data-tab="inventory" onclick="navigateTo('inventory')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                <span>Evidence Inventory</span>
+              </button>
+            </div>
           </div>
-        </div>
 
-        <!-- Group 2: Governance -->
-        <div class="nav-group">
-          <span class="nav-heading" id="heading-governance">Governance</span>
-          <div role="group" aria-labelledby="heading-governance">
-            <button type="button" class="nav-item" data-tab="reviewcenter" onclick="navigateTo('reviewcenter')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-              <span>Review Queue</span>
-              <span class="nav-badge" id="nav-pending-badge" style="display:none;" aria-label="Items pending review">0</span>
-            </button>
-            <button type="button" class="nav-item" data-tab="purposeretention" onclick="navigateTo('purposeretention')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-              <span>Purpose & Retention</span>
-            </button>
-            <button type="button" class="nav-item" data-tab="evidencegaps" onclick="navigateTo('evidencegaps')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span>Compliance Gaps</span>
-            </button>
+          <!-- Group 2: Governance -->
+          <div class="nav-group">
+            <span class="nav-heading" id="heading-governance">Governance</span>
+            <div role="group" aria-labelledby="heading-governance">
+              <button type="button" class="nav-item" data-tab="reviewcenter" onclick="navigateTo('reviewcenter')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                <span>Review Queue</span>
+                <span class="nav-badge" id="nav-pending-badge" style="display:none;" aria-label="Items pending review">0</span>
+              </button>
+              <button type="button" class="nav-item" data-tab="purposeretention" onclick="navigateTo('purposeretention')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                <span>Purpose & Retention</span>
+              </button>
+              <button type="button" class="nav-item" data-tab="evidencegaps" onclick="navigateTo('evidencegaps')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span>Compliance Gaps</span>
+              </button>
+            </div>
           </div>
-        </div>
 
-        <!-- Group 3: Compliance & Tools -->
-        <div class="nav-group">
-          <span class="nav-heading" id="heading-compliance">Compliance & Settings</span>
-          <div role="group" aria-labelledby="heading-compliance">
-            <button type="button" class="nav-item" data-tab="dpdp" onclick="navigateTo('dpdp')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>
-              <span>DPDP Act 2023</span>
-            </button>
-            <button type="button" class="nav-item" data-tab="simulator" onclick="navigateTo('simulator')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>
-              <span>Sensitivity Studio</span>
-            </button>
-            <button type="button" class="nav-item" data-tab="evaluation" onclick="navigateTo('evaluation')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-              <span>Accuracy Benchmark</span>
-            </button>
-            <button type="button" class="nav-item" data-tab="settings" onclick="navigateTo('settings')">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-              <span>Detection Rules</span>
-            </button>
+          <!-- Group 3: Compliance & Tools -->
+          <div class="nav-group">
+            <span class="nav-heading" id="heading-compliance">Compliance & Settings</span>
+            <div role="group" aria-labelledby="heading-compliance">
+              <button type="button" class="nav-item" data-tab="dpdp" onclick="navigateTo('dpdp')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>
+                <span>DPDP Act 2023</span>
+              </button>
+              <button type="button" class="nav-item" data-tab="simulator" onclick="navigateTo('simulator')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>
+                <span>Sensitivity Studio</span>
+              </button>
+              <button type="button" class="nav-item" data-tab="evaluation" onclick="navigateTo('evaluation')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span>Accuracy Benchmark</span>
+              </button>
+              <button type="button" class="nav-item" data-tab="settings" onclick="navigateTo('settings')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <span>Detection Rules</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
 
-      <div class="sidebar-footer">
-        <div class="status-indicator">
-          <span class="status-dot" aria-hidden="true"></span>
-          <span>Engine: Active</span>
-        </div>
-        <span class="version-label">v1.0.0</span>
-      </div>
-    </aside>
-
-    <!-- Main Content Area -->
-    <div class="main-wrapper">
-      <header class="app-header" role="banner">
-        <div class="header-left">
-          <button type="button" id="sidebar-toggle" class="sidebar-toggle-btn" aria-label="Toggle navigation sidebar" onclick="toggleSidebar()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          </button>
-          <div>
-            <h1 class="header-title" id="header-title">Dashboard Overview</h1>
-            <p class="header-subtitle" id="header-sub">System status and evidence telemetry</p>
+        <div class="sidebar-footer">
+          <div class="status-indicator">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Engine: Active</span>
           </div>
+          <span class="version-label">v2.1.0</span>
         </div>
+      </aside>
 
-        <div class="header-actions" role="toolbar" aria-label="Report export options">
-          <a href="/api/reports/inventory.csv" download class="btn btn-secondary btn-sm" title="Export inventory records as CSV">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export CSV
-          </a>
-          <a href="/api/reports/inventory.pdf" target="_blank" class="btn btn-secondary btn-sm" title="View PDF inventory summary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            Inventory PDF
-          </a>
-          <a href="/api/reports/dpdp.pdf" target="_blank" class="btn btn-primary btn-sm" title="Download official DPDP Act statutory dossier">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            DPDP Dossier (PDF)
-          </a>
-        </div>
-      </header>
-
-      <main id="main-content" class="page-content" role="main" tabindex="-1">
-        <div id="view-container">
+      <!-- Main Content Area -->
+      <main id="main-content" class="main-wrapper" role="main" tabindex="-1">
+        <div id="view-container" class="page-content">
           <!-- Injected dynamically by app.js -->
         </div>
       </main>
@@ -150,6 +153,6 @@
 
   <div id="modal-container" role="region" aria-live="polite"></div>
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <script src="/static/app.js?v=2.0.0"></script>
+  <script src="/static/app.js?v=2.1.0"></script>
 </body>
 </html>
