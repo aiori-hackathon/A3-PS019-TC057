@@ -18,7 +18,7 @@ const state = {
   reviewActiveChip: 'all'
 };
 
-// Icons (SVG strings)
+// SVG Icons
 const icons = {
   dashboard: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>`,
   datasources: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>`,
@@ -162,10 +162,10 @@ function renderConfidenceBar(score) {
   const color = pct >= 85 ? '#10b981' : pct >= 70 ? '#488099' : '#f59e0b';
   return `
     <div style="display:flex; align-items:center; gap:8px;">
-      <div style="width:50px; background:#e2e8f0; height:6px; border-radius:3px; overflow:hidden;">
+      <div style="width:54px; background:#e2e8f0; height:6px; border-radius:3px; overflow:hidden; border:1px solid #cbd5e1;">
         <div style="width:${pct}%; height:100%; background:${color};"></div>
       </div>
-      <span style="font-size:11px; font-family:monospace; font-weight:700;">${pct}%</span>
+      <span style="font-size:11px; font-family:'JetBrains Mono',monospace; font-weight:700;">${pct}%</span>
     </div>
   `;
 }
@@ -315,37 +315,37 @@ async function renderDashboard(container) {
       <div class="kpi-card">
         <div class="kpi-label">Datasets</div>
         <div class="kpi-val">${data.total_datasets}</div>
-        <div style="font-size:11px; color:#64748b; margin-top:4px;">Connected data repositories</div>
+        <div class="kpi-sub">Connected data repositories</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">Tables Inspected</div>
         <div class="kpi-val">${data.total_tables}</div>
-        <div style="font-size:11px; color:#64748b; margin-top:4px;">Inspected schema tables</div>
+        <div class="kpi-sub">Inspected schema tables</div>
       </div>
       <div class="kpi-card" style="background:#f0f9ff; border-color:#bcdbe7;">
         <div class="kpi-label" style="color:#36657c;">Candidate PII</div>
         <div class="kpi-val" style="color:#488099;">${data.total_candidates}</div>
-        <div style="font-size:11px; color:#36657c; margin-top:4px;">Discovered personal fields</div>
+        <div class="kpi-sub" style="color:#36657c;">Discovered personal fields</div>
       </div>
       <div class="kpi-card" style="background:#fffbeb; border-color:#fde68a;">
         <div class="kpi-label" style="color:#b45309;">Missing Purpose</div>
         <div class="kpi-val" style="color:#b45309;">${data.missing_purpose}</div>
-        <div style="font-size:11px; color:#b45309; margin-top:4px;">Lacks Section 5 notice</div>
+        <div class="kpi-sub" style="color:#b45309;">Lacks Section 5 notice</div>
       </div>
       <div class="kpi-card" style="background:#fff7ed; border-color:#fed7aa;">
         <div class="kpi-label" style="color:#c2410c;">Missing Retention</div>
         <div class="kpi-val" style="color:#c2410c;">${data.missing_retention}</div>
-        <div style="font-size:11px; color:#c2410c; margin-top:4px;">Lacks Section 8 schedule</div>
+        <div class="kpi-sub" style="color:#c2410c;">Lacks Section 8 schedule</div>
       </div>
       <div class="kpi-card" style="background:#fef2f2; border-color:#fecaca;">
         <div class="kpi-label" style="color:#b91c1c;">Missing Both</div>
         <div class="kpi-val" style="color:#b91c1c;">${data.missing_both}</div>
-        <div style="font-size:11px; color:#b91c1c; margin-top:4px;">Critical governance gaps</div>
+        <div class="kpi-sub" style="color:#b91c1c;">Critical governance gaps</div>
       </div>
     </div>
 
     <!-- DPDP Statutory Readiness Callout -->
-    <div style="background: linear-gradient(135deg, #101824 0%, #1a2536 50%, #2d4f66 100%); border-radius:14px; padding:20px 24px; color:white; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 8px 20px -4px rgba(15,23,42,0.3);">
+    <div style="background: linear-gradient(135deg, #101824 0%, #1a2536 50%, #2d4f66 100%); border-radius:14px; padding:22px 26px; color:white; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 8px 20px -4px rgba(15,23,42,0.3); border:1px solid #2d4f66;">
       <div>
         <div style="display:flex; align-items:center; gap:8px;">
           <span style="font-size:10px; font-weight:800; background:#488099; color:#ffffff; padding:2px 8px; border-radius:10px; text-transform:uppercase;">DPDP Act 2023 Statutory Matrix</span>
@@ -361,31 +361,31 @@ async function renderDashboard(container) {
     </div>
 
     <!-- Charts Grid -->
-    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; margin-bottom:24px;">
+    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:24px; margin-bottom:24px;">
       <div class="card" style="margin-bottom:0;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div class="card-header">
           <div>
-            <h3 style="font-size:15px; font-weight:700;">Personal Data Class Distribution</h3>
-            <p style="font-size:11px; color:#64748b;">Candidate fields discovered across the five required data classes</p>
+            <h3 class="card-title">Personal Data Class Distribution</h3>
+            <p class="card-subtitle">Discovered candidate fields across statutory personal data classes</p>
           </div>
           <button onclick="navigateTo('inventory')" class="btn btn-secondary" style="font-size:11px;">View Inventory &rarr;</button>
         </div>
 
-        <div style="height:200px; display:flex; align-items:flex-end; gap:16px; padding-bottom:8px; border-bottom:1px solid #e2e8f0;">
+        <div style="height:200px; display:flex; align-items:flex-end; gap:20px; padding:0 10px 10px 10px; border-bottom:1px solid #e2e8f0;">
           ${Object.entries(data.class_counts).map(([k, count]) => {
-            const h = Math.max((count / maxVal) * 160, count > 0 ? 16 : 4);
+            const h = Math.max((count / maxVal) * 150, count > 0 ? 18 : 6);
             const color = classColors[k] || '#94a3b8';
             return `
-              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;">
-                <span style="font-size:11px; font-family:monospace; font-weight:700; color:#334155;">${count}</span>
-                <div style="width:100%; max-width:44px; height:${h}px; background:${color}; border-radius:6px 6px 0 0;" title="${classLabels[k]}: ${count}"></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                <span style="font-size:12px; font-family:'JetBrains Mono',monospace; font-weight:800; color:#1e293b;">${count}</span>
+                <div style="width:100%; max-width:48px; height:${h}px; background:${color}; border-radius:6px 6px 0 0; box-shadow:0 2px 6px rgba(0,0,0,0.12);" title="${classLabels[k]}: ${count}"></div>
               </div>
             `;
           }).join('')}
         </div>
-        <div style="display:flex; gap:16px; margin-top:8px;">
+        <div style="display:flex; gap:20px; margin-top:12px; padding:0 10px;">
           ${Object.entries(data.class_counts).map(([k]) => `
-            <div style="flex:1; text-align:center; font-size:10px; font-weight:600; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${classLabels[k]}">
+            <div style="flex:1; text-align:center; font-size:11px; font-weight:600; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${classLabels[k]}">
               ${classLabels[k]}
             </div>
           `).join('')}
@@ -393,38 +393,42 @@ async function renderDashboard(container) {
       </div>
 
       <div class="card" style="margin-bottom:0;">
-        <h3 style="font-size:15px; font-weight:700;">Confidence Distribution</h3>
-        <p style="font-size:11px; color:#64748b; margin-bottom:20px;">Score spectrum from multi-signal engine</p>
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Confidence Spectrum</h3>
+            <p class="card-subtitle">Multi-signal engine confidence scoring</p>
+          </div>
+        </div>
         
-        <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; flex-direction:column; gap:16px;">
           ${Object.entries(data.confidence_distribution).map(([k, val]) => {
             const pct = data.total_candidates > 0 ? Math.round((val / data.total_candidates) * 100) : 0;
             const barCol = k.includes('Very') ? '#10b981' : k.includes('High') ? '#488099' : '#f59e0b';
             return `
               <div>
-                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
                   <span style="font-weight:600; color:#334155;">${k}</span>
-                  <span style="font-family:monospace; font-weight:700;">${val} (${pct}%)</span>
+                  <span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#0f172a;">${val} (${pct}%)</span>
                 </div>
-                <div style="width:100%; height:8px; background:#f1f5f9; border-radius:4px; overflow:hidden;">
+                <div style="width:100%; height:8px; background:#f1f5f9; border-radius:4px; overflow:hidden; border:1px solid #e2e8f0;">
                   <div style="width:${pct}%; height:100%; background:${barCol}; border-radius:4px;"></div>
                 </div>
               </div>
             `;
           }).join('')}
         </div>
-        <div style="margin-top:24px; padding:10px; background:#f8fafc; border-radius:8px; font-size:10px; color:#64748b; text-align:center;">
-          Multi-signal weights: 40% Column, 45% Regex Ratio, 15% Domain Format
+        <div style="margin-top:24px; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; font-size:11px; color:#64748b; text-align:center;">
+          Multi-signal weights: <strong>40%</strong> Column • <strong>45%</strong> Regex • <strong>15%</strong> Validator
         </div>
       </div>
     </div>
 
     <!-- Recent Scans Table -->
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div class="card-header">
         <div>
-          <h3 style="font-size:15px; font-weight:700;">Recent Scan Jobs</h3>
-          <p style="font-size:11px; color:#64748b;">Auditable log of personal data discovery runs</p>
+          <h3 class="card-title">Recent Discovery Scans</h3>
+          <p class="card-subtitle">Auditable record of personal data discovery runs</p>
         </div>
         <button onclick="navigateTo('scandata')" class="btn btn-secondary" style="font-size:11px;">New Scan &rarr;</button>
       </div>
@@ -437,21 +441,21 @@ async function renderDashboard(container) {
               <th>Type</th>
               <th>Status</th>
               <th>Columns</th>
-              <th>Candidates Found</th>
-              <th>Started</th>
+              <th>Candidates Discovered</th>
+              <th>Execution Time</th>
             </tr>
           </thead>
           <tbody>
             ${data.recent_scans && data.recent_scans.length > 0 ? data.recent_scans.map(s => `
               <tr>
                 <td style="font-weight:700; color:#0f172a;">${s.dataset_name}</td>
-                <td style="font-family:monospace; text-transform:uppercase; font-size:10px;">${s.source_type}</td>
+                <td><span style="font-family:monospace; text-transform:uppercase; font-size:10px; padding:2px 6px; background:#f1f5f9; border-radius:4px; border:1px solid #e2e8f0;">${s.source_type}</span></td>
                 <td><span class="badge badge-confirmed">${s.status}</span></td>
-                <td style="font-family:monospace;">${s.total_columns}</td>
-                <td style="font-family:monospace; font-weight:700; color:#488099;">${s.candidate_count}</td>
+                <td style="font-family:'JetBrains Mono',monospace;">${s.total_columns}</td>
+                <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#488099;">${s.candidate_count}</td>
                 <td style="color:#64748b;">${new Date(s.started_at).toLocaleTimeString()}</td>
               </tr>
-            `).join('') : `<tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">No scans recorded yet. Click '1-Click Discovery' above to run.</td></tr>`}
+            `).join('') : `<tr><td colspan="6" style="text-align:center; padding:24px; color:#94a3b8;">No scans recorded yet. Click '1-Click Discovery' above to run.</td></tr>`}
           </tbody>
         </table>
       </div>
@@ -474,26 +478,36 @@ async function renderDataSources(container) {
       <button onclick="resetDemoData()" class="btn btn-secondary" style="font-size:11px; padding:4px 8px; white-space:nowrap;">↻ Reset Demo Data</button>
     </div>
 
-    <!-- Upload Cards -->
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:24px;">
+    <!-- Upload Cards Grid -->
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-bottom:24px;">
       <div class="card" style="margin-bottom:0;">
-        <h3 style="font-size:15px; font-weight:700; margin-bottom:4px;">Upload Delimited CSV Dataset</h3>
-        <p style="font-size:11px; color:#64748b; margin-bottom:16px;">Supports UTF-8, Latin-1, with header deduplication</p>
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Upload Delimited CSV Dataset</h3>
+            <p class="card-subtitle">Supports UTF-8, Latin-1, with automated header deduplication</p>
+          </div>
+        </div>
         
-        <label style="border:2px dashed #cbd5e1; border-radius:12px; padding:24px; display:flex; flex-direction:column; align-items:center; cursor:pointer; background:#f8fafc; transition:all 0.2s;" ondragover="event.preventDefault()">
-          <span style="font-size:12px; font-weight:600; color:#488099;">Click to Select CSV File</span>
-          <span style="font-size:10px; color:#94a3b8; margin-top:4px;">.csv format up to 50MB</span>
+        <label class="upload-dropzone">
+          <div class="upload-dropzone-icon">📄</div>
+          <span style="font-size:13px; font-weight:700; color:#488099;">Click or Drop CSV File Here</span>
+          <span style="font-size:11px; color:#94a3b8;">.csv format up to 50MB</span>
           <input type="file" accept=".csv" style="display:none;" onchange="uploadFile(event, 'csv')"/>
         </label>
       </div>
 
       <div class="card" style="margin-bottom:0;">
-        <h3 style="font-size:15px; font-weight:700; margin-bottom:4px;">Upload SQLite Database</h3>
-        <p style="font-size:11px; color:#64748b; margin-bottom:16px;">Discovers user tables and schemas in read-only mode</p>
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Upload SQLite Database</h3>
+            <p class="card-subtitle">Discovers user tables and schema relations in read-only mode</p>
+          </div>
+        </div>
         
-        <label style="border:2px dashed #cbd5e1; border-radius:12px; padding:24px; display:flex; flex-direction:column; align-items:center; cursor:pointer; background:#f8fafc; transition:all 0.2s;">
-          <span style="font-size:12px; font-weight:600; color:#36657c;">Click to Select SQLite Database</span>
-          <span style="font-size:10px; color:#94a3b8; margin-top:4px;">.db, .sqlite, .sqlite3 formats</span>
+        <label class="upload-dropzone">
+          <div class="upload-dropzone-icon">🗄️</div>
+          <span style="font-size:13px; font-weight:700; color:#36657c;">Click or Drop SQLite Database Here</span>
+          <span style="font-size:11px; color:#94a3b8;">.db, .sqlite, .sqlite3 formats</span>
           <input type="file" accept=".db,.sqlite,.sqlite3" style="display:none;" onchange="uploadFile(event, 'sqlite')"/>
         </label>
       </div>
@@ -501,8 +515,11 @@ async function renderDataSources(container) {
 
     <!-- Datasets Table -->
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <h3 style="font-size:15px; font-weight:700;">Available Data Sources (${datasets.length})</h3>
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Connected Data Sources (${datasets.length})</h3>
+          <p class="card-subtitle">Registered repositories ready for personal data discovery scanning</p>
+        </div>
         <div class="btn-group">
           <button onclick="runOneClickDiscovery()" class="btn btn-primary" style="font-size:11px;">⚡ Scan All Sources</button>
           <button onclick="renderActiveView()" class="btn btn-secondary" style="font-size:11px;">Refresh</button>
@@ -517,7 +534,7 @@ async function renderDataSources(container) {
               <th>Type</th>
               <th>Tables</th>
               <th>Row Count</th>
-              <th>Registered</th>
+              <th>Registered Date</th>
               <th style="text-align:right;">Actions</th>
             </tr>
           </thead>
@@ -525,9 +542,9 @@ async function renderDataSources(container) {
             ${datasets.map(ds => `
               <tr>
                 <td style="font-weight:700; color:#0f172a;">${ds.name}</td>
-                <td><span style="font-family:monospace; text-transform:uppercase; font-size:10px; padding:2px 6px; background:#f1f5f9; border-radius:4px;">${ds.source_type}</span></td>
-                <td style="font-family:monospace;">${ds.table_count}</td>
-                <td style="font-family:monospace;">${ds.row_count.toLocaleString()}</td>
+                <td><span style="font-family:monospace; text-transform:uppercase; font-size:10px; padding:2px 6px; background:#f1f5f9; border-radius:4px; border:1px solid #e2e8f0;">${ds.source_type}</span></td>
+                <td style="font-family:'JetBrains Mono',monospace;">${ds.table_count}</td>
+                <td style="font-family:'JetBrains Mono',monospace;">${ds.row_count.toLocaleString()}</td>
                 <td style="color:#64748b;">${new Date(ds.created_at).toLocaleDateString()}</td>
                 <td style="text-align:right;">
                   <button onclick="inspectDatasetTables('${ds.id}')" class="btn btn-secondary" style="font-size:11px; padding:4px 8px;">Inspect</button>
@@ -592,34 +609,52 @@ async function deleteDataset(id, name) {
 
 async function inspectDatasetTables(datasetId) {
   const box = document.getElementById('schema-inspector-box');
-  box.innerHTML = `<div class="card" style="padding:20px; text-align:center;">Loading schema tables...</div>`;
+  box.innerHTML = `<div class="card" style="padding:24px; text-align:center; color:#64748b;">Loading schema tables...</div>`;
 
   const res = await fetch(`/api/datasets/${datasetId}/tables`);
   const tables = await res.json();
 
   box.innerHTML = `
-    <div class="card" style="border-color:#488099;">
-      <h3 style="font-size:15px; font-weight:700; margin-bottom:12px; color:#488099;">Schema & Sample Values</h3>
+    <div class="card" style="border:1.5px solid var(--brand-primary); margin-top:24px;">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title" style="color:var(--brand-primary);">Schema Structure & Sample Values</h3>
+          <p class="card-subtitle">Read-only preview of discovered column data types and sanitized samples</p>
+        </div>
+        <button onclick="document.getElementById('schema-inspector-box').innerHTML=''" class="btn btn-secondary" style="font-size:11px;">Close Inspector ✕</button>
+      </div>
       ${tables.map(t => `
-        <div style="margin-bottom:20px; border:1px solid #e2e8f0; border-radius:8px; padding:12px;">
-          <div style="font-weight:700; font-size:13px; margin-bottom:8px; display:flex; justify-content:space-between;">
-            <span>Table: <strong style="font-family:monospace;">${t.table_name}</strong> (${t.row_count} rows, ${t.columns.length} columns)</span>
+        <div style="margin-bottom:20px; border:1px solid #e2e8f0; border-radius:10px; overflow:hidden;">
+          <div style="padding:12px 16px; background:#f8fafc; border-bottom:1px solid #e2e8f0; font-weight:700; font-size:13px; display:flex; justify-content:space-between; align-items:center;">
+            <span>Table: <strong style="font-family:'JetBrains Mono',monospace; color:#0f172a;">${t.table_name}</strong></span>
+            <span style="font-size:11px; color:#64748b; font-weight:500;">${t.row_count} rows • ${t.columns.length} columns</span>
           </div>
-          <table style="font-size:11px;">
-            <thead>
-              <tr><th>Column Name</th><th>Type</th><th>Non-Null</th><th>Sample Values (Sanitized)</th></tr>
-            </thead>
-            <tbody>
-              ${t.columns.map(c => `
+          <div class="table-responsive" style="border:none; border-radius:0;">
+            <table>
+              <thead>
                 <tr>
-                  <td style="font-family:monospace; font-weight:700;">${c.name}</td>
-                  <td style="font-family:monospace; color:#64748b;">${c.data_type}</td>
-                  <td>${c.non_null_count}</td>
-                  <td>${c.sample_values.slice(0, 3).map(v => `<span style="background:#f1f5f9; padding:2px 4px; border-radius:3px; font-family:monospace; margin-right:4px;">${v}</span>`).join('')}</td>
+                  <th style="width:220px;">Column Name</th>
+                  <th style="width:120px;">Data Type</th>
+                  <th style="width:120px;">Non-Null Count</th>
+                  <th>Sanitized Sample Values</th>
                 </tr>
-              `).join('')}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${t.columns.map(c => `
+                  <tr>
+                    <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#0f172a;">${c.name}</td>
+                    <td style="font-family:'JetBrains Mono',monospace; color:#64748b; font-size:11px;">${c.data_type}</td>
+                    <td style="font-family:'JetBrains Mono',monospace;">${c.non_null_count}</td>
+                    <td>
+                      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        ${c.sample_values.slice(0, 3).map(v => `<span style="background:#f1f5f9; border:1px solid #e2e8f0; padding:2px 8px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#334155;">${v}</span>`).join('')}
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
         </div>
       `).join('')}
     </div>
@@ -633,9 +668,9 @@ async function renderScan(container) {
 
   if (!datasets || datasets.length === 0) {
     container.innerHTML = `
-      <div class="card" style="max-width:700px; margin:0 auto; text-align:center; padding:36px;">
-        <h3 style="font-size:16px; font-weight:800; margin-bottom:8px;">No Datasets Available</h3>
-        <p style="font-size:12px; color:#64748b; margin-bottom:16px;">Connect a CSV or SQLite source to run discovery scans.</p>
+      <div class="card" style="max-width:600px; margin:40px auto; text-align:center; padding:40px;">
+        <h3 style="font-size:18px; font-weight:800; margin-bottom:8px;">No Datasets Available</h3>
+        <p style="font-size:12px; color:#64748b; margin-bottom:20px;">Connect a CSV or SQLite source to run discovery scans.</p>
         <button onclick="navigateTo('datasources')" class="btn btn-primary">Go to Data Sources</button>
       </div>
     `;
@@ -655,8 +690,12 @@ async function renderScan(container) {
 
     <!-- Scan Launch Card -->
     <div class="card">
-      <h3 style="font-size:16px; font-weight:800; margin-bottom:4px;">Execute Personal-Data Discovery Scan</h3>
-      <p style="font-size:12px; color:#64748b; margin-bottom:20px;">Select a target data repository to inspect columns and sample rows</p>
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Execute Personal-Data Discovery Scan</h3>
+          <p class="card-subtitle">Select a target data repository to inspect columns and sample rows</p>
+        </div>
+      </div>
 
       <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; align-items:flex-end;">
         <div>
@@ -687,7 +726,7 @@ async function executeScan() {
 
   btn.disabled = true;
   btn.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> Scanning Data...`;
-  feedback.innerHTML = `<div style="padding:12px; font-size:12px; color:#488099;">Scanning columns, computing multi-signal confidence scores, and validating checksums...</div>`;
+  feedback.innerHTML = `<div style="padding:14px; font-size:12px; color:#488099; background:#f0f7fa; border:1px solid #bcdbe7; border-radius:8px;">Scanning columns, computing multi-signal confidence scores, and validating checksums...</div>`;
 
   try {
     const res = await fetch('/api/scans', {
@@ -704,11 +743,11 @@ async function executeScan() {
     await updateSidebarPendingBadge();
 
     feedback.innerHTML = `
-      <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:10px; padding:16px;">
+      <div style="background:#ecfdf5; border:1.5px solid #a7f3d0; border-radius:10px; padding:18px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
-            <h4 style="color:#065f46; font-size:14px; font-weight:700;">✓ Scan Completed Successfully</h4>
-            <p style="font-size:12px; color:#047857; margin-top:2px;">
+            <h4 style="color:#065f46; font-size:15px; font-weight:700;">✓ Discovery Scan Completed Successfully</h4>
+            <p style="font-size:12px; color:#047857; margin-top:3px;">
               Inspected <strong>${job.total_columns}</strong> columns across <strong>${job.total_tables}</strong> tables.
               Discovered <strong>${job.candidate_count}</strong> personal data fields.
             </p>
@@ -718,7 +757,7 @@ async function executeScan() {
       </div>
     `;
   } catch (err) {
-    feedback.innerHTML = `<div style="padding:12px; font-size:12px; color:#b91c1c; background:#fef2f2; border:1px solid #fecaca; border-radius:8px;">Scan error: ${err.message}</div>`;
+    feedback.innerHTML = `<div style="padding:14px; font-size:12px; color:#b91c1c; background:#fef2f2; border:1px solid #fecaca; border-radius:8px;">Scan error: ${err.message}</div>`;
   } finally {
     btn.disabled = false;
     btn.innerHTML = `${icons.scandata} Execute Discovery Scan`;
@@ -750,7 +789,7 @@ async function renderInventory(container) {
       </div>
     </div>
 
-    <!-- Quick Filter Chips -->
+    <!-- Quick Filter Chips Ribbon -->
     <div class="filter-chips-bar">
       <span style="font-size:11px; font-weight:700; color:#64748b; margin-right:4px;">1-Click Filter:</span>
       <div class="filter-chip ${state.invActiveChip === 'all' ? 'active' : ''}" onclick="applyInvChip('all')">All Fields (${inventory.length})</div>
@@ -762,32 +801,38 @@ async function renderInventory(container) {
       <div class="filter-chip ${state.invActiveChip === 'date_of_birth' ? 'active' : ''}" onclick="applyInvChip('date_of_birth')">🎂 DOBs (${dobCount})</div>
     </div>
 
-    <!-- Top Action Bar -->
-    <div class="card" style="margin-bottom:16px; padding:14px 18px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <div style="display:flex; gap:10px; align-items:center;">
-          <input type="text" id="inv-search" oninput="filterInventoryTable()" placeholder="Search column, table, purpose, or dataset..." style="padding:8px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:12px; width:280px;"/>
-          <select id="inv-class-filter" onchange="filterInventoryTable()" style="padding:8px 10px; border:1px solid #cbd5e1; border-radius:8px; font-size:12px;">
-            <option value="">All Data Classes</option>
-            <option value="person_name">Person Name</option>
-            <option value="email_address">Email Address</option>
-            <option value="phone_number">Phone Number</option>
-            <option value="government_id">Gov ID (Aadhaar/PAN)</option>
-            <option value="date_of_birth">Date of Birth</option>
-          </select>
-          <select id="inv-meta-filter" onchange="filterInventoryTable()" style="padding:8px 10px; border:1px solid #cbd5e1; border-radius:8px; font-size:12px;">
-            <option value="">All Metadata Statuses</option>
-            <option value="Complete metadata">Complete</option>
-            <option value="Missing purpose">Missing Purpose</option>
-            <option value="Missing retention">Missing Retention</option>
-            <option value="Missing both">Missing Both</option>
-          </select>
-        </div>
+    <!-- Filter Control Card -->
+    <div class="card" style="margin-bottom:20px; padding:16px 20px;">
+      <div class="filter-box">
+        <input type="text" id="inv-search" oninput="filterInventoryTable()" placeholder="Search column, table, purpose, or dataset..." style="flex:1; min-width:260px;"/>
+        <select id="inv-class-filter" onchange="filterInventoryTable()" style="min-width:180px;">
+          <option value="">All Data Classes</option>
+          <option value="person_name">Person Name</option>
+          <option value="email_address">Email Address</option>
+          <option value="phone_number">Phone Number</option>
+          <option value="government_id">Gov ID (Aadhaar/PAN)</option>
+          <option value="date_of_birth">Date of Birth</option>
+        </select>
+        <select id="inv-meta-filter" onchange="filterInventoryTable()" style="min-width:190px;">
+          <option value="">All Metadata Statuses</option>
+          <option value="Complete metadata">Complete</option>
+          <option value="Missing purpose">Missing Purpose</option>
+          <option value="Missing retention">Missing Retention</option>
+          <option value="Missing both">Missing Both</option>
+        </select>
+        <button onclick="document.getElementById('inv-search').value=''; document.getElementById('inv-class-filter').value=''; document.getElementById('inv-meta-filter').value=''; applyInvChip('all');" class="btn btn-secondary" style="font-size:11px; padding:7px 12px;">Reset</button>
       </div>
     </div>
 
-    <!-- Inventory Table -->
+    <!-- Inventory Table Card -->
     <div class="card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Technical Evidence Records</h3>
+          <p class="card-subtitle">Inspected database columns and classified personal data</p>
+        </div>
+      </div>
+
       <div class="table-responsive">
         <table id="inv-table">
           <thead>
@@ -814,8 +859,8 @@ async function renderInventory(container) {
 
 function applyInvChip(chip) {
   state.invActiveChip = chip;
-  document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
-  if (event && event.target) event.target.classList.add('active');
+  document.querySelectorAll('.filter-chips-bar .filter-chip').forEach(el => el.classList.remove('active'));
+  if (event && event.target && event.target.classList.contains('filter-chip')) event.target.classList.add('active');
 
   const search = (document.getElementById('inv-search')?.value || '').toLowerCase();
   const filtered = state.inventory.filter(r => {
@@ -832,20 +877,21 @@ function applyInvChip(chip) {
     return matchSearch && matchChip;
   });
 
-  document.getElementById('inv-tbody').innerHTML = renderInventoryRows(filtered);
+  const tbody = document.getElementById('inv-tbody');
+  if (tbody) tbody.innerHTML = renderInventoryRows(filtered);
 }
 
 function renderInventoryRows(records) {
   if (records.length === 0) {
-    return `<tr><td colspan="9" style="text-align:center; padding:20px; color:#94a3b8;">No candidate detections matched current filter.</td></tr>`;
+    return `<tr><td colspan="9" style="text-align:center; padding:24px; color:#94a3b8;">No candidate detections matched current filter.</td></tr>`;
   }
   return records.map(r => `
     <tr>
       <td>
         <strong style="color:#0f172a; display:block;">${r.dataset_name}</strong>
-        <span style="font-size:10px; font-family:monospace; color:#64748b;">${r.table_name || 'root table'}</span>
+        <span style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#64748b;">${r.table_name || 'root table'}</span>
       </td>
-      <td style="font-family:monospace; font-weight:700;">${r.column_name}</td>
+      <td style="font-family:'JetBrains Mono',monospace; font-weight:700;">${r.column_name}</td>
       <td>${renderClassBadge(r.candidate_class)}</td>
       <td>${renderConfidenceBar(r.confidence_score)}</td>
       <td>${renderMetaBadge(r.metadata_status)}</td>
@@ -879,7 +925,8 @@ function filterInventoryTable() {
     return matchSearch && matchClass && matchMeta;
   });
 
-  document.getElementById('inv-tbody').innerHTML = renderInventoryRows(filtered);
+  const tbody = document.getElementById('inv-tbody');
+  if (tbody) tbody.innerHTML = renderInventoryRows(filtered);
 }
 
 // 5. Metadata Register View
@@ -893,19 +940,17 @@ async function renderMetadata(container) {
       <div>
         <strong>💡 Purpose & Retention Register:</strong> Documents statutory processing grounds (e.g., customer onboarding, salary disbursement) and retention limits to satisfy DPDP Section 5 & 8 principles.
       </div>
-      <button onclick="openNewMetadataModal()" class="btn btn-primary" style="font-size:11px; padding:4px 10px;">+ New Notice</button>
-    </div>
-
-    <div class="card" style="margin-bottom:16px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <div>
-          <h3 style="font-size:15px; font-weight:700;">Governance Register (${metadata.length} notices declared)</h3>
-          <p style="font-size:11px; color:#64748b;">Registers declared business purpose and retention rules mapped using compound identifiers</p>
-        </div>
-      </div>
+      <button onclick="openNewMetadataModal()" class="btn btn-primary" style="font-size:11px; padding:6px 12px;">+ New Notice</button>
     </div>
 
     <div class="card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Governance Register (${metadata.length} notices declared)</h3>
+          <p class="card-subtitle">Declared business purposes and retention limits mapped to data attributes</p>
+        </div>
+      </div>
+
       <div class="table-responsive">
         <table>
           <thead>
@@ -922,13 +967,13 @@ async function renderMetadata(container) {
           <tbody>
             ${metadata.map(m => `
               <tr>
-                <td><strong>${m.dataset_name || 'Global'}</strong> <span style="font-size:10px; color:#64748b; font-family:monospace;">${m.table_name || 'All'}</span></td>
-                <td style="font-family:monospace; font-weight:700;">${m.column_name}</td>
+                <td><strong>${m.dataset_name || 'Global'}</strong> <span style="font-size:10px; color:#64748b; font-family:'JetBrains Mono',monospace;">${m.table_name || 'All'}</span></td>
+                <td style="font-family:'JetBrains Mono',monospace; font-weight:700;">${m.column_name}</td>
                 <td>${m.data_class ? renderClassBadge(m.data_class) : '—'}</td>
                 <td>${m.declared_purpose || '<span style="color:#b45309; font-style:italic;">⚠️ Unspecified</span>'}</td>
                 <td>${m.retention_period || '<span style="color:#c2410c; font-style:italic;">⚠️ Unspecified</span>'}</td>
                 <td style="color:#64748b;">${m.metadata_owner || 'DPO Team'}</td>
-                <td style="font-family:monospace; font-size:11px;">${m.last_reviewed_date || 'Active'}</td>
+                <td style="font-family:'JetBrains Mono',monospace; font-size:11px;">${m.last_reviewed_date || 'Active'}</td>
               </tr>
             `).join('')}
           </tbody>
@@ -957,27 +1002,33 @@ async function renderGaps(container) {
       <div class="kpi-card" style="background:#fffbeb; border-color:#fde68a;">
         <div class="kpi-label" style="color:#b45309;">Missing Purpose</div>
         <div class="kpi-val" style="color:#b45309;">${s.missing_purpose_count}</div>
-        <div style="font-size:11px; color:#b45309; margin-top:2px;">No notice declared</div>
+        <div class="kpi-sub" style="color:#b45309;">No notice declared</div>
       </div>
       <div class="kpi-card" style="background:#fff7ed; border-color:#fed7aa;">
         <div class="kpi-label" style="color:#c2410c;">Missing Retention</div>
         <div class="kpi-val" style="color:#c2410c;">${s.missing_retention_count}</div>
-        <div style="font-size:11px; color:#c2410c; margin-top:2px;">Indefinite storage risk</div>
+        <div class="kpi-sub" style="color:#c2410c;">Indefinite storage risk</div>
       </div>
       <div class="kpi-card" style="background:#fef2f2; border-color:#fecaca;">
         <div class="kpi-label" style="color:#b91c1c;">Missing Both</div>
         <div class="kpi-val" style="color:#b91c1c;">${s.missing_both_count}</div>
-        <div style="font-size:11px; color:#b91c1c; margin-top:2px;">Severe gap</div>
+        <div class="kpi-sub" style="color:#b91c1c;">Severe gap</div>
       </div>
       <div class="kpi-card" style="background:#f0f9ff; border-color:#bcdbe7;">
         <div class="kpi-label" style="color:#36657c;">Unreviewed</div>
         <div class="kpi-val" style="color:#488099;">${s.unreviewed_candidate_count}</div>
-        <div style="font-size:11px; color:#36657c; margin-top:2px;">Awaiting DPO triage</div>
+        <div class="kpi-sub" style="color:#36657c;">Awaiting DPO triage</div>
       </div>
     </div>
 
     <div class="card">
-      <h3 style="font-size:15px; font-weight:700; margin-bottom:16px;">Identified Technical Evidence Gaps (${data.gap_records.length})</h3>
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Identified Technical Evidence Gaps (${data.gap_records.length})</h3>
+          <p class="card-subtitle">Candidates lacking statutory notices, retention policies, or confirmed review</p>
+        </div>
+      </div>
+
       <div class="table-responsive">
         <table>
           <thead>
@@ -994,8 +1045,8 @@ async function renderGaps(container) {
           <tbody>
             ${data.gap_records.map(r => `
               <tr>
-                <td><strong>${r.dataset_name}</strong> <span style="font-size:10px; font-family:monospace; color:#64748b;">${r.table_name}</span></td>
-                <td style="font-family:monospace; font-weight:700;">${r.column_name}</td>
+                <td><strong>${r.dataset_name}</strong> <span style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#64748b;">${r.table_name}</span></td>
+                <td style="font-family:'JetBrains Mono',monospace; font-weight:700;">${r.column_name}</td>
                 <td>${renderClassBadge(r.candidate_class)}</td>
                 <td>${renderConfidenceBar(r.confidence_score)}</td>
                 <td>${renderMetaBadge(r.metadata_status)}</td>
@@ -1025,31 +1076,41 @@ async function renderEvaluation(container) {
       <div>
         <strong>💡 Accuracy & Benchmark Metrics:</strong> Benchmarked against labelled ground-truth synthetic test cases across all five required PII classes.
       </div>
-      <button onclick="runLiveEvaluation()" id="btn-eval" class="btn btn-primary" style="font-size:11px; padding:4px 10px;">Run Accuracy Test</button>
+      <button onclick="runLiveEvaluation()" id="btn-eval" class="btn btn-primary" style="font-size:11px; padding:5px 12px;">Run Accuracy Test</button>
     </div>
 
-    ${!latest ? `<div class="card" style="text-align:center; padding:30px;">No benchmark evaluation history recorded. Click 'Run Accuracy Test' above.</div>` : `
+    ${!latest ? `<div class="card" style="text-align:center; padding:36px; color:#64748b;">No benchmark evaluation history recorded. Click 'Run Accuracy Test' above.</div>` : `
       <div class="kpi-grid">
         <div class="kpi-card" style="background:#f0fdf4; border-color:#bbf7d0;">
           <div class="kpi-label" style="color:#15803d;">Macro Precision</div>
           <div class="kpi-val" style="color:#15803d;">${(latest.overall_precision * 100).toFixed(1)}%</div>
+          <div class="kpi-sub" style="color:#15803d;">Low false positives</div>
         </div>
         <div class="kpi-card" style="background:#f0f9ff; border-color:#bcdbe7;">
           <div class="kpi-label" style="color:#488099;">Macro Recall</div>
           <div class="kpi-val" style="color:#488099;">${(latest.overall_recall * 100).toFixed(1)}%</div>
+          <div class="kpi-sub" style="color:#488099;">High ground-truth coverage</div>
         </div>
         <div class="kpi-card" style="background:#f0fdf4; border-color:#bbf7d0;">
           <div class="kpi-label" style="color:#15803d;">Macro F1 Score</div>
           <div class="kpi-val" style="color:#15803d;">${(latest.overall_f1 * 100).toFixed(1)}%</div>
+          <div class="kpi-sub" style="color:#15803d;">Harmonic test set accuracy</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">Test Set Samples</div>
+          <div class="kpi-label">Test Samples</div>
           <div class="kpi-val">${latest.total_samples}</div>
+          <div class="kpi-sub">Synthetic ground-truth fields</div>
         </div>
       </div>
 
       <div class="card">
-        <h3 style="font-size:15px; font-weight:700; margin-bottom:16px;">Class-by-Class Benchmark Accuracy</h3>
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Class-by-Class Benchmark Accuracy</h3>
+            <p class="card-subtitle">Precision, recall, and harmonic F1 across the five personal data classes</p>
+          </div>
+        </div>
+
         <div class="table-responsive">
           <table>
             <thead>
@@ -1066,8 +1127,8 @@ async function renderEvaluation(container) {
               ${Object.entries(latest.class_metrics).map(([cls, m]) => `
                 <tr>
                   <td>${renderClassBadge(cls)}</td>
-                  <td style="font-family:monospace;">${m.support}</td>
-                  <td style="font-family:monospace;">${m.true_positives + m.false_positives}</td>
+                  <td style="font-family:'JetBrains Mono',monospace;">${m.support}</td>
+                  <td style="font-family:'JetBrains Mono',monospace;">${m.true_positives + m.false_positives}</td>
                   <td><strong>${(m.precision * 100).toFixed(1)}%</strong></td>
                   <td><strong>${(m.recall * 100).toFixed(1)}%</strong></td>
                   <td><span class="badge badge-complete">${(m.f1 * 100).toFixed(1)}%</span></td>
@@ -1075,6 +1136,29 @@ async function renderEvaluation(container) {
               `).join('')}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Multi-Signal Scoring Mechanics</h3>
+            <p class="card-subtitle">How PrivacyLens combines signals into an auditable confidence score</p>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
+          <div style="padding:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px;">
+            <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">1. Column Regex Pattern (40%)</div>
+            <p style="font-size:11px; color:#64748b;">Header matches against curated positive and negative regular expressions.</p>
+          </div>
+          <div style="padding:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px;">
+            <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">2. Value Pattern Ratio (45%)</div>
+            <p style="font-size:11px; color:#64748b;">Ratio of sampled cell values strictly matching format regex patterns.</p>
+          </div>
+          <div style="padding:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px;">
+            <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">3. Validator Bonus (15%)</div>
+            <p style="font-size:11px; color:#64748b;">Algorithmic verification such as Verhoeff D5 checksum and entity-aware PAN checks.</p>
+          </div>
         </div>
       </div>
     `}
@@ -1125,7 +1209,7 @@ async function renderReviewCenter(container) {
       </div>
     </div>
 
-    <!-- Quick Filter Chips -->
+    <!-- Quick Filter Chips Ribbon -->
     <div class="filter-chips-bar">
       <span style="font-size:11px; font-weight:700; color:#64748b; margin-right:4px;">Filter Queue:</span>
       <div class="filter-chip ${state.reviewActiveChip === 'all' ? 'active' : ''}" onclick="applyReviewChip('all')">All Pending (${pending.length})</div>
@@ -1136,9 +1220,9 @@ async function renderReviewCenter(container) {
 
     <!-- Review Card -->
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <input type="text" id="review-search" oninput="filterReviewTable()" placeholder="Search pending field, dataset, or class..." style="padding:8px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:12px; width:280px;"/>
-        <span style="font-size:12px; color:#64748b;" id="review-counter">${pending.length} candidate fields awaiting review</span>
+      <div class="card-header">
+        <input type="text" id="review-search" oninput="filterReviewTable()" placeholder="Search pending field, dataset, or class..." style="width:280px;"/>
+        <span style="font-size:12px; font-weight:600; color:#475569;" id="review-counter">${pending.length} candidate fields awaiting review</span>
       </div>
 
       <div class="table-responsive">
@@ -1168,7 +1252,7 @@ function renderReviewRows(records) {
   }
   return records.map(r => `
     <tr id="review-row-${r.id}">
-      <td><strong>${r.column_name}</strong> <span style="font-size:10px; font-family:monospace; color:#64748b;">${r.table_name}</span></td>
+      <td><strong>${r.column_name}</strong> <span style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#64748b;">${r.table_name}</span></td>
       <td>${r.dataset_name}</td>
       <td>${renderClassBadge(r.candidate_class)}</td>
       <td>${renderConfidenceBar(r.confidence_score)}</td>
@@ -1184,8 +1268,8 @@ function renderReviewRows(records) {
 
 function applyReviewChip(chip) {
   state.reviewActiveChip = chip;
-  document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
-  if (event && event.target) event.target.classList.add('active');
+  document.querySelectorAll('.filter-chips-bar .filter-chip').forEach(el => el.classList.remove('active'));
+  if (event && event.target && event.target.classList.contains('filter-chip')) event.target.classList.add('active');
   filterReviewTable();
 }
 
@@ -1273,14 +1357,20 @@ async function renderSettings(container) {
       <div>
         <strong>💡 Configurable YAML Rules Engine:</strong> Customize regex patterns, negative suppression lists, scoring weights, and candidate thresholds with backend strict syntax validation.
       </div>
-      <button onclick="saveRulesYaml()" id="btn-save-rules" class="btn btn-primary" style="font-size:11px; padding:4px 10px;">Save & Compile Rules</button>
+      <button onclick="saveRulesYaml()" id="btn-save-rules" class="btn btn-primary" style="font-size:11px; padding:5px 12px;">Save & Compile Rules</button>
     </div>
 
     <div class="card">
-      <h3 style="font-size:16px; font-weight:800; margin-bottom:12px;">Active YAML Rules Specification</h3>
-      <textarea id="rules-textarea" style="width:100%; height:420px; font-family:monospace; font-size:12px; padding:16px; background:#0f172a; color:#34d399; border-radius:8px; border:1px solid #334155; line-height:1.6;" spellcheck="false">${data.yaml_content}</textarea>
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Active YAML Rules Specification</h3>
+          <p class="card-subtitle">Declarative patterns and multi-signal scoring weights</p>
+        </div>
+      </div>
+      
+      <textarea id="rules-textarea" style="width:100%; height:440px; font-family:'JetBrains Mono',monospace; font-size:12px; padding:18px; background:#0f172a; color:#34d399; border-radius:10px; border:1px solid #334155; line-height:1.6;" spellcheck="false">${data.yaml_content}</textarea>
 
-      <div style="margin-top:16px; padding:12px; background:#f8fafc; border-radius:8px; font-size:11px; color:#64748b;">
+      <div style="margin-top:16px; padding:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; font-size:11px; color:#64748b;">
         <strong>Safety Guardrail:</strong> Syntax is validated on the backend before hot-reload. Arbitrary code execution is strictly prevented.
       </div>
     </div>
@@ -1326,19 +1416,19 @@ function openEvidenceModal(recordId) {
       <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
           <div>
-            <span style="font-size:10px; font-weight:700; color:#488099; text-transform:uppercase;">Technical Evidence Audit</span>
-            <h3 style="font-size:16px; font-weight:800; color:#0f172a;">${r.column_name}</h3>
+            <span style="font-size:10px; font-weight:700; color:#488099; text-transform:uppercase; letter-spacing:0.05em;">Technical Evidence Audit</span>
+            <h3 style="font-size:16px; font-weight:800; color:#0f172a; margin-top:2px;">${r.column_name}</h3>
           </div>
-          <button onclick="closeModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">&times;</button>
+          <button onclick="closeModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#64748b;">&times;</button>
         </div>
 
         <div class="modal-body" style="display:flex; flex-direction:column; gap:16px; font-size:12px;">
-          <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:14px;">
+          <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:14px;">
             <strong style="color:#36657c; display:block; margin-bottom:4px;">Detection Summary:</strong>
             <p style="color:#0c4a6e; font-weight:500;">${r.evidence_summary}</p>
           </div>
 
-          <div style="border:1px solid #e2e8f0; border-radius:8px; padding:14px;">
+          <div style="border:1px solid #e2e8f0; border-radius:10px; padding:14px; background:#ffffff;">
             <strong style="display:block; margin-bottom:8px; color:#334155;">Multi-Signal Breakdown:</strong>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
               <div>Column Match: <strong>${sb.column_matched ? '✓ Matched pattern' : '✗ No match'}</strong></div>
@@ -1350,7 +1440,7 @@ function openEvidenceModal(recordId) {
 
           <div>
             <strong style="display:block; margin-bottom:6px; color:#334155;">Redacted Sample Values (Zero-Exposure):</strong>
-            <div style="background:#0f172a; color:#34d399; font-family:monospace; padding:12px; border-radius:8px; font-size:11px;">
+            <div style="background:#0f172a; color:#34d399; font-family:'JetBrains Mono',monospace; padding:12px 14px; border-radius:10px; font-size:11px; line-height:1.6;">
               ${r.sample_values_masked && r.sample_values_masked.length > 0
                 ? r.sample_values_masked.map((v, i) => `<div>[${i+1}] ${v}</div>`).join('')
                 : '<div>No samples available</div>'}
@@ -1379,10 +1469,10 @@ function openReviewModal(recordId) {
       <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
           <div>
-            <span style="font-size:10px; font-weight:700; color:#488099; text-transform:uppercase;">Human-in-the-Loop Review</span>
-            <h3 style="font-size:16px; font-weight:800; color:#0f172a;">${r.column_name}</h3>
+            <span style="font-size:10px; font-weight:700; color:#488099; text-transform:uppercase; letter-spacing:0.05em;">Human-in-the-Loop Review</span>
+            <h3 style="font-size:16px; font-weight:800; color:#0f172a; margin-top:2px;">${r.column_name}</h3>
           </div>
-          <button onclick="closeModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">&times;</button>
+          <button onclick="closeModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#64748b;">&times;</button>
         </div>
 
         <div class="modal-body" style="display:flex; flex-direction:column; gap:16px; font-size:12px;">
@@ -1440,29 +1530,29 @@ function openNewMetadataModal() {
       <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
           <h3 style="font-size:16px; font-weight:800;">Register Declared Processing Purpose & Retention</h3>
-          <button onclick="closeModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">&times;</button>
+          <button onclick="closeModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#64748b;">&times;</button>
         </div>
 
-        <div class="modal-body" style="display:flex; flex-direction:column; gap:12px; font-size:12px;">
+        <div class="modal-body" style="display:flex; flex-direction:column; gap:14px; font-size:12px;">
           <div>
             <label style="font-weight:700; display:block; margin-bottom:4px;">Column Name *</label>
-            <input type="text" id="m-col" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;" placeholder="e.g. email_id or pan_number"/>
+            <input type="text" id="m-col" style="width:100%;" placeholder="e.g. email_id or pan_number"/>
           </div>
           <div>
             <label style="font-weight:700; display:block; margin-bottom:4px;">Dataset Name (Optional)</label>
-            <input type="text" id="m-ds" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;" placeholder="e.g. synthetic_customers.csv"/>
+            <input type="text" id="m-ds" style="width:100%;" placeholder="e.g. synthetic_customers.csv"/>
           </div>
           <div>
             <label style="font-weight:700; display:block; margin-bottom:4px;">Table Name (Optional)</label>
-            <input type="text" id="m-tbl" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;" placeholder="e.g. customers"/>
+            <input type="text" id="m-tbl" style="width:100%;" placeholder="e.g. customers"/>
           </div>
           <div>
             <label style="font-weight:700; display:block; margin-bottom:4px;">Declared Purpose</label>
-            <textarea id="m-purp" style="width:100%; height:60px; padding:8px; border:1px solid #cbd5e1; border-radius:6px;" placeholder="e.g. Account onboarding and transactional communications"></textarea>
+            <textarea id="m-purp" style="width:100%; height:60px;" placeholder="e.g. Account onboarding and transactional communications"></textarea>
           </div>
           <div>
             <label style="font-weight:700; display:block; margin-bottom:4px;">Retention Period</label>
-            <input type="text" id="m-ret" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px;" placeholder="e.g. 7 years post-account closure"/>
+            <input type="text" id="m-ret" style="width:100%;" placeholder="e.g. 7 years post-account closure"/>
           </div>
         </div>
 
@@ -1518,45 +1608,48 @@ async function renderDPDP(container) {
   const riskBadgeClass = data.risk_level.includes('LOW') ? 'badge-confirmed' : (data.risk_level.includes('MODERATE') ? 'badge-pending' : 'badge-rejected');
 
   container.innerHTML = `
-    <!-- Top Summary Card -->
-    <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px; margin-bottom:24px;">
+    <!-- Top Summary Card: 2 equal-height cards -->
+    <div style="display:grid; grid-template-columns: 1fr 2fr; gap:24px; margin-bottom:24px;">
       <!-- Readiness Gauge Card -->
-      <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:30px;">
+      <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:32px 24px;">
         <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">DPDP Statutory Readiness</span>
-        <div style="font-size:48px; font-weight:900; color:${scoreColor}; margin:12px 0;">${data.overall_readiness_score}%</div>
+        <div style="font-size:52px; font-weight:900; color:${scoreColor}; margin:12px 0; font-family:'JetBrains Mono',monospace;">${data.overall_readiness_score}%</div>
         <div><span class="badge ${riskBadgeClass}" style="font-size:12px; padding:4px 12px;">${data.risk_level}</span></div>
-        <p style="font-size:11px; color:#64748b; margin-top:12px;">Scored across statutory principles of the Digital Personal Data Protection Act, 2023.</p>
+        <p style="font-size:11px; color:#64748b; margin-top:14px; max-width:260px;">Scored across statutory principles of the Digital Personal Data Protection Act, 2023.</p>
       </div>
 
       <!-- Audit Integrity & Differentiators Card -->
-      <div class="card" style="margin-bottom:0;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h3 style="font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#488099" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Cryptographic Tamper-Evident Audit Seal
-          </h3>
-          <span style="font-size:10px; font-family:monospace; background:#e0f2fe; color:#36657c; padding:2px 8px; border-radius:6px; font-weight:700;">DPBI Section 16 Non-Repudiation</span>
+      <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:space-between;">
+        <div>
+          <div class="card-header" style="margin-bottom:12px; padding-bottom:10px;">
+            <h3 class="card-title" style="display:flex; align-items:center; gap:8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#488099" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Cryptographic Tamper-Evident Audit Seal
+            </h3>
+            <span style="font-size:10px; font-family:'JetBrains Mono',monospace; background:#e0f2fe; color:#36657c; padding:2px 8px; border-radius:6px; font-weight:700;">DPBI Sec 16 Non-Repudiation</span>
+          </div>
+          
+          <div class="seal-box">
+            <span style="font-size:11px;">${data.tamper_evident_seal_sha256}</span>
+            <button onclick="navigator.clipboard.writeText('${data.tamper_evident_seal_sha256}'); showToast('✓ Audit seal copied to clipboard!', 'info');" class="btn btn-secondary" style="font-size:10px; padding:4px 8px; background:#1e293b; color:#f0f9ff; border-color:#334155; white-space:nowrap;">Copy Seal</button>
+          </div>
+          <p style="font-size:11px; color:#64748b; margin-top:8px;">Deterministic SHA-256 fingerprint generated over discovery inventory records, retention schedules, and timestamp metadata. Guarantees immutable evidentiary integrity for Data Protection Board of India (DPBI) audits.</p>
         </div>
-        <div style="background:#0f172a; border:1px solid #1e293b; border-radius:8px; padding:12px; font-family:monospace; font-size:11px; color:#579eba; word-break:break-all; display:flex; justify-content:space-between; align-items:center; gap:10px;">
-          <span>${data.tamper_evident_seal_sha256}</span>
-          <button onclick="navigator.clipboard.writeText('${data.tamper_evident_seal_sha256}'); showToast('✓ Audit seal copied to clipboard!', 'info');" class="btn btn-secondary" style="font-size:10px; padding:4px 8px; background:#1e293b; color:#f0f9ff; border-color:#334155; white-space:nowrap;">Copy Seal</button>
-        </div>
-        <p style="font-size:11px; color:#64748b; margin-top:8px;">Deterministic SHA-256 fingerprint generated over discovery inventory records, retention schedules, and timestamp metadata. Guarantees immutable evidentiary integrity for Data Protection Board of India (DPBI) audits.</p>
 
         <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:16px; padding-top:16px; border-top:1px solid #e2e8f0;">
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px;">
             <div style="font-size:10px; color:#64748b; font-weight:600;">Verhoeff ($D_5$) Checksum</div>
-            <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:2px;">Dihedral Algorithmic</div>
+            <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:2px;">Dihedral Algorithmic</div>
             <div style="font-size:10px; color:#10b981; font-weight:600; margin-top:2px;">Official UIDAI Checksum</div>
           </div>
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px;">
             <div style="font-size:10px; color:#64748b; font-weight:600;">Entity-Aware PAN Tax ID</div>
-            <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:2px;">4th Char Inspection</div>
-            <div style="font-size:10px; color:#488099; font-weight:600; margin-top:2px;">Corporate False+ Suppressed</div>
+            <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:2px;">4th Char Inspection</div>
+            <div style="font-size:10px; color:#488099; font-weight:600; margin-top:2px;">Corporate Noise Suppressed</div>
           </div>
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px;">
             <div style="font-size:10px; color:#64748b; font-weight:600;">DPDP Sec 9 Minor Protection</div>
-            <div style="font-size:14px; font-weight:800; color:#0f172a; margin-top:2px;">Age &lt; 18 Consent Flag</div>
+            <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:2px;">Age &lt; 18 Consent Flag</div>
             <div style="font-size:10px; color:#f59e0b; font-weight:600; margin-top:2px;">Children's Data Protected</div>
           </div>
         </div>
@@ -1565,10 +1658,10 @@ async function renderDPDP(container) {
 
     <!-- Statutory Principles Table -->
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div class="card-header">
         <div>
-          <h3 style="font-size:15px; font-weight:700;">DPDP Act 2023 Statutory Principles Breakdown</h3>
-          <p style="font-size:11px; color:#64748b;">Evaluation of personal data discovery inventory against the statutory mandate</p>
+          <h3 class="card-title">DPDP Act 2023 Statutory Principles Breakdown</h3>
+          <p class="card-subtitle">Evaluation of personal data discovery inventory against the statutory mandate</p>
         </div>
         <a href="/api/reports/dpdp.pdf" target="_blank" class="btn btn-primary" style="background:#488099; border-color:#36657c; font-size:12px;">
           ${icons.dashboard} Download Official DPDP Dossier (PDF)
@@ -1594,7 +1687,7 @@ async function renderDPDP(container) {
               const barColor = p.score >= 80 ? '#10b981' : (p.score >= 50 ? '#488099' : '#ef4444');
               return `
                 <tr>
-                  <td style="font-family:monospace; font-weight:700; color:#334155;">${p.statutory_section}</td>
+                  <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#334155;">${p.statutory_section}</td>
                   <td>
                     <strong>${p.principle}</strong>
                     <div style="font-size:11px; color:#64748b; margin-top:2px;">${p.description}</div>
@@ -1605,7 +1698,7 @@ async function renderDPDP(container) {
                       <div style="flex:1; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden;">
                         <div style="width:${p.score}%; height:100%; background:${barColor};"></div>
                       </div>
-                      <span style="font-size:11px; font-family:monospace; font-weight:700;">${p.score}%</span>
+                      <span style="font-size:11px; font-family:'JetBrains Mono',monospace; font-weight:700;">${p.score}%</span>
                     </div>
                   </td>
                   <td style="font-size:11px; color:#488099;">
@@ -1629,8 +1722,8 @@ async function renderSimulator(container) {
 
   container.innerHTML = `
     <!-- Top Callout -->
-    <div style="background: linear-gradient(135deg, #16202c 0%, #315267 60%, #488099 100%); border-radius:14px; padding:22px; color:#ffffff; margin-bottom:24px; box-shadow:0 4px 16px rgba(22,32,44,0.18);">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
+    <div style="background: linear-gradient(135deg, #16202c 0%, #315267 60%, #488099 100%); border-radius:14px; padding:22px 26px; color:#ffffff; margin-bottom:24px; box-shadow:0 4px 16px rgba(22,32,44,0.18); border:1px solid #315267;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
         <div>
           <span style="font-size:10px; font-weight:800; background:rgba(255,255,255,0.2); color:#ffffff; padding:2px 8px; border-radius:10px; text-transform:uppercase;">Simulation & What-If Studio</span>
           <h3 style="font-size:18px; font-weight:800; margin-top:6px;">Multi-Signal Weight & Threshold Tuning</h3>
@@ -1640,56 +1733,52 @@ async function renderSimulator(container) {
       </div>
     </div>
 
-    <!-- Sliders Grid -->
-    <div class="card" style="margin-bottom:20px;">
-      <h4 style="font-size:14px; font-weight:700; margin-bottom:16px;">Detection Signal Weights & Decision Boundary</h4>
-      
-      <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px;">
-        <!-- Column Pattern Weight -->
-        <div>
-          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
-            <label style="font-weight:700; color:#334155;">Column Name Pattern</label>
-            <span id="lbl-col-w" style="font-family:monospace; font-weight:700; color:#488099;">${p.column_weight.toFixed(2)}</span>
-          </div>
-          <input type="range" id="rng-col-w" min="0" max="1" step="0.05" value="${p.column_weight}" oninput="updateSimParam('column_weight', this.value)" style="width:100%; accent-color:#488099;"/>
-          <p style="font-size:10px; color:#64748b; margin-top:4px;">Weight for header regex match (e.g. email, pan, phone)</p>
+    <!-- Sliders Grid: 4 distinct framed cards -->
+    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; margin-bottom:24px;">
+      <!-- Column Pattern Weight -->
+      <div class="slider-box">
+        <div class="slider-header">
+          <label class="slider-title">Column Pattern Weight</label>
+          <span id="lbl-col-w" class="slider-val">${p.column_weight.toFixed(2)}</span>
         </div>
+        <input type="range" id="rng-col-w" min="0" max="1" step="0.05" value="${p.column_weight}" oninput="updateSimParam('column_weight', this.value)"/>
+        <p class="slider-desc">Weight for header regex match (e.g. email, pan, phone)</p>
+      </div>
 
-        <!-- Value Regex Weight -->
-        <div>
-          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
-            <label style="font-weight:700; color:#334155;">Value Pattern Match</label>
-            <span id="lbl-val-w" style="font-family:monospace; font-weight:700; color:#488099;">${p.value_weight.toFixed(2)}</span>
-          </div>
-          <input type="range" id="rng-val-w" min="0" max="1" step="0.05" value="${p.value_weight}" oninput="updateSimParam('value_weight', this.value)" style="width:100%; accent-color:#488099;"/>
-          <p style="font-size:10px; color:#64748b; margin-top:4px;">Weight for data value pattern conformance ratio</p>
+      <!-- Value Regex Weight -->
+      <div class="slider-box">
+        <div class="slider-header">
+          <label class="slider-title">Value Pattern Match</label>
+          <span id="lbl-val-w" class="slider-val">${p.value_weight.toFixed(2)}</span>
         </div>
+        <input type="range" id="rng-val-w" min="0" max="1" step="0.05" value="${p.value_weight}" oninput="updateSimParam('value_weight', this.value)"/>
+        <p class="slider-desc">Weight for data value pattern conformance ratio</p>
+      </div>
 
-        <!-- Validator Bonus -->
-        <div>
-          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
-            <label style="font-weight:700; color:#334155;">Format Validator Bonus</label>
-            <span id="lbl-bon-w" style="font-family:monospace; font-weight:700; color:#488099;">${p.validator_bonus.toFixed(2)}</span>
-          </div>
-          <input type="range" id="rng-bon-w" min="0" max="0.30" step="0.05" value="${p.validator_bonus}" oninput="updateSimParam('validator_bonus', this.value)" style="width:100%; accent-color:#488099;"/>
-          <p style="font-size:10px; color:#64748b; margin-top:4px;">Bonus for passing Verhoeff checksum or entity checks</p>
+      <!-- Validator Bonus -->
+      <div class="slider-box">
+        <div class="slider-header">
+          <label class="slider-title">Validator Bonus</label>
+          <span id="lbl-bon-w" class="slider-val">${p.validator_bonus.toFixed(2)}</span>
         </div>
+        <input type="range" id="rng-bon-w" min="0" max="0.30" step="0.05" value="${p.validator_bonus}" oninput="updateSimParam('validator_bonus', this.value)"/>
+        <p class="slider-desc">Bonus for passing Verhoeff checksum or entity checks</p>
+      </div>
 
-        <!-- Threshold -->
-        <div>
-          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
-            <label style="font-weight:700; color:#334155;">Confidence Threshold</label>
-            <span id="lbl-thresh" style="font-family:monospace; font-weight:700; color:#488099;">${p.threshold.toFixed(2)}</span>
-          </div>
-          <input type="range" id="rng-thresh" min="0.1" max="1.0" step="0.05" value="${p.threshold}" oninput="updateSimParam('threshold', this.value)" style="width:100%; accent-color:#488099;"/>
-          <p style="font-size:10px; color:#64748b; margin-top:4px;">Minimum score required to flag candidate personal data</p>
+      <!-- Threshold -->
+      <div class="slider-box">
+        <div class="slider-header">
+          <label class="slider-title">Decision Threshold</label>
+          <span id="lbl-thresh" class="slider-val">${p.threshold.toFixed(2)}</span>
         </div>
+        <input type="range" id="rng-thresh" min="0.1" max="1.0" step="0.05" value="${p.threshold}" oninput="updateSimParam('threshold', this.value)"/>
+        <p class="slider-desc">Minimum score required to flag candidate personal data</p>
       </div>
     </div>
 
     <!-- Live Simulation Output Box -->
     <div id="sim-output-pane">
-      <div class="card" style="text-align:center; padding:30px; color:#64748b;">Computing live simulation metrics...</div>
+      <div class="card" style="text-align:center; padding:36px; color:#64748b;">Computing live simulation metrics...</div>
     </div>
   `;
 
@@ -1743,47 +1832,53 @@ async function executeSimulation() {
     pane.innerHTML = `
       <div>
         <!-- Live Simulated KPIs -->
-        <div class="kpi-grid" style="margin-bottom:16px;">
+        <div class="kpi-grid" style="margin-bottom:20px;">
           <div class="kpi-card" style="background:#f0fdf4; border-color:#bbf7d0;">
             <div class="kpi-label" style="color:#15803d;">Simulated Macro F1</div>
             <div class="kpi-val" style="color:#15803d;">${f1Pct}%</div>
-            <div style="font-size:11px; color:#15803d; margin-top:2px;">Harmonic accuracy</div>
+            <div class="kpi-sub" style="color:#15803d;">Harmonic accuracy</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Simulated Precision</div>
             <div class="kpi-val">${precPct}%</div>
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">True positive accuracy</div>
+            <div class="kpi-sub">True positive accuracy</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Simulated Recall</div>
             <div class="kpi-val">${recPct}%</div>
-            <div style="font-size:11px; color:#64748b; margin-top:2px;">Coverage across test set</div>
+            <div class="kpi-sub">Coverage across test set</div>
           </div>
           <div class="kpi-card" style="background:#f0f9ff; border-color:#bcdbe7;">
             <div class="kpi-label" style="color:#36657c;">False Positives Suppressed</div>
             <div class="kpi-val" style="color:#36657c;">${s.false_positives_suppressed}</div>
-            <div style="font-size:11px; color:#36657c; margin-top:2px;">Non-personal filtered</div>
+            <div class="kpi-sub" style="color:#36657c;">Non-personal filtered</div>
           </div>
         </div>
 
         <!-- Candidate Distribution -->
         <div class="card" style="margin-bottom:0;">
-          <h4 style="font-size:13px; font-weight:700; margin-bottom:12px;">Class Distribution & Candidates Discovered (${s.total_candidates_found})</h4>
-          <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:8px;">
+          <div class="card-header">
+            <div>
+              <h4 class="card-title">Class Distribution & Candidates Discovered (${s.total_candidates_found})</h4>
+              <p class="card-subtitle">Real-time breakdown based on current weight coefficients</p>
+            </div>
+          </div>
+          
+          <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:12px; margin-bottom:20px;">
             ${Object.entries(s.class_distribution).map(([cls, cnt]) => `
-              <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; text-align:center;">
-                <div style="font-size:10px; font-weight:600; color:#64748b; text-transform:uppercase;">${cls.replace('_', ' ')}</div>
-                <div style="font-size:18px; font-weight:800; color:#0f172a; margin-top:2px;">${cnt}</div>
+              <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; text-align:center;">
+                <div style="font-size:10px; font-weight:700; color:#64748b; text-transform:uppercase;">${cls.replace('_', ' ')}</div>
+                <div style="font-size:22px; font-weight:800; color:#0f172a; margin-top:4px; font-family:'JetBrains Mono',monospace;">${cnt}</div>
               </div>
             `).join('')}
           </div>
 
-          <h4 style="font-size:13px; font-weight:700; margin-top:16px; margin-bottom:8px;">Confidence Spread Spectrum</h4>
+          <h4 style="font-size:13px; font-weight:700; margin-bottom:10px; color:#334155;">Confidence Spread Spectrum</h4>
           <div style="display:flex; gap:16px;">
             ${Object.entries(s.confidence_spread).map(([rng, cnt]) => `
-              <div style="flex:1; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px; font-size:11px;">
+              <div style="flex:1; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; font-size:12px;">
                 <span style="color:#64748b; font-weight:600;">Band ${rng}:</span>
-                <strong style="color:#0f172a; margin-left:4px;">${cnt} candidates</strong>
+                <strong style="color:#0f172a; margin-left:4px; font-family:'JetBrains Mono',monospace;">${cnt} fields</strong>
               </div>
             `).join('')}
           </div>
