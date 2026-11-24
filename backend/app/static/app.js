@@ -1069,46 +1069,60 @@ async function renderEvaluation(container) {
   const history = await res.json();
   state.evalHistory = history;
 
-  const latest = history[0];
+  const latest = history && history.length > 0 ? history[0] : null;
+  const classMetrics = latest ? (latest.per_class_metrics || latest.class_metrics || {}) : {};
+  const totalSamples = latest ? (latest.total_evaluated ?? latest.total_samples ?? 0) : 0;
+  const predictions = latest ? (latest.predictions_breakdown || []) : [];
 
   container.innerHTML = `
     <div class="help-callout">
       <div>
-        <strong>💡 Accuracy & Benchmark Metrics:</strong> Benchmarked against labelled ground-truth synthetic test cases across all five required PII classes.
+        <strong>💡 Accuracy & Benchmark Metrics:</strong> Benchmarked against labelled ground-truth synthetic test cases across all five statutory PII classes.
       </div>
-      <button onclick="runLiveEvaluation()" id="btn-eval" class="btn btn-primary" style="font-size:11px; padding:5px 12px;">Run Accuracy Test</button>
+      <button onclick="runLiveEvaluation()" id="btn-eval" class="btn btn-primary" style="font-size:11px; padding:6px 14px; font-weight:700;">
+        ⚡ Run Accuracy Test
+      </button>
     </div>
 
-    ${!latest ? `<div class="card" style="text-align:center; padding:36px; color:#64748b;">No benchmark evaluation history recorded. Click 'Run Accuracy Test' above.</div>` : `
+    ${!latest || Object.keys(classMetrics).length === 0 ? `
+      <div class="card" style="text-align:center; padding:40px; color:#64748b;">
+        <h4 style="font-size:16px; font-weight:700; color:#0f172a; margin-bottom:8px;">No Benchmark Evaluation Runs Yet</h4>
+        <p style="font-size:12px; margin-bottom:20px;">Click the button below to execute an automated multi-signal precision, recall, and F1 test across labelled ground-truth samples.</p>
+        <button onclick="runLiveEvaluation()" class="btn btn-primary">Run First Accuracy Benchmark</button>
+      </div>
+    ` : `
+      <!-- KPI Grid -->
       <div class="kpi-grid">
         <div class="kpi-card" style="background:#f0fdf4; border-color:#bbf7d0;">
           <div class="kpi-label" style="color:#15803d;">Macro Precision</div>
-          <div class="kpi-val" style="color:#15803d;">${(latest.overall_precision * 100).toFixed(1)}%</div>
+          <div class="kpi-val" style="color:#15803d;">${((latest.overall_precision || 0) * 100).toFixed(1)}%</div>
           <div class="kpi-sub" style="color:#15803d;">Low false positives</div>
         </div>
         <div class="kpi-card" style="background:#f0f9ff; border-color:#bcdbe7;">
           <div class="kpi-label" style="color:#488099;">Macro Recall</div>
-          <div class="kpi-val" style="color:#488099;">${(latest.overall_recall * 100).toFixed(1)}%</div>
+          <div class="kpi-val" style="color:#488099;">${((latest.overall_recall || 0) * 100).toFixed(1)}%</div>
           <div class="kpi-sub" style="color:#488099;">High ground-truth coverage</div>
         </div>
         <div class="kpi-card" style="background:#f0fdf4; border-color:#bbf7d0;">
           <div class="kpi-label" style="color:#15803d;">Macro F1 Score</div>
-          <div class="kpi-val" style="color:#15803d;">${(latest.overall_f1 * 100).toFixed(1)}%</div>
+          <div class="kpi-val" style="color:#15803d;">${((latest.overall_f1 || 0) * 100).toFixed(1)}%</div>
           <div class="kpi-sub" style="color:#15803d;">Harmonic test set accuracy</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Test Samples</div>
-          <div class="kpi-val">${latest.total_samples}</div>
+          <div class="kpi-val">${totalSamples}</div>
           <div class="kpi-sub">Synthetic ground-truth fields</div>
         </div>
       </div>
 
+      <!-- Class-by-Class Accuracy Card -->
       <div class="card">
         <div class="card-header">
           <div>
             <h3 class="card-title">Class-by-Class Benchmark Accuracy</h3>
-            <p class="card-subtitle">Precision, recall, and harmonic F1 across the five personal data classes</p>
+            <p class="card-subtitle">Precision, recall, and harmonic F1 across the five personal data classes (${latest.test_set_name || 'Standard Benchmark'})</p>
           </div>
+          <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#64748b;">Run ID: ${(latest.id || '').slice(0, 8)}</span>
         </div>
 
         <div class="table-responsive">
@@ -1116,7 +1130,7 @@ async function renderEvaluation(container) {
             <thead>
               <tr>
                 <th>Personal Data Class</th>
-                <th>True Count</th>
+                <th>True Support</th>
                 <th>Predicted</th>
                 <th>Precision</th>
                 <th>Recall</th>
@@ -1124,21 +1138,30 @@ async function renderEvaluation(container) {
               </tr>
             </thead>
             <tbody>
-              ${Object.entries(latest.class_metrics).map(([cls, m]) => `
-                <tr>
-                  <td>${renderClassBadge(cls)}</td>
-                  <td style="font-family:'JetBrains Mono',monospace;">${m.support}</td>
-                  <td style="font-family:'JetBrains Mono',monospace;">${m.true_positives + m.false_positives}</td>
-                  <td><strong>${(m.precision * 100).toFixed(1)}%</strong></td>
-                  <td><strong>${(m.recall * 100).toFixed(1)}%</strong></td>
-                  <td><span class="badge badge-complete">${(m.f1 * 100).toFixed(1)}%</span></td>
-                </tr>
-              `).join('')}
+              ${Object.entries(classMetrics).map(([cls, m]) => {
+                const f1Val = m.f1_score ?? m.f1 ?? 0;
+                const precVal = m.precision ?? 0;
+                const recVal = m.recall ?? 0;
+                const tp = m.true_positives ?? 0;
+                const fp = m.false_positives ?? 0;
+                const support = m.support ?? 0;
+                return `
+                  <tr>
+                    <td>${renderClassBadge(cls)}</td>
+                    <td style="font-family:'JetBrains Mono',monospace;">${support}</td>
+                    <td style="font-family:'JetBrains Mono',monospace;">${tp + fp}</td>
+                    <td><strong>${(precVal * 100).toFixed(1)}%</strong></td>
+                    <td><strong>${(recVal * 100).toFixed(1)}%</strong></td>
+                    <td><span class="badge badge-complete">${(f1Val * 100).toFixed(1)}%</span></td>
+                  </tr>
+                `;
+              }).join('')}
             </tbody>
           </table>
         </div>
       </div>
 
+      <!-- Multi-Signal Mechanics Card -->
       <div class="card">
         <div class="card-header">
           <div>
@@ -1161,22 +1184,71 @@ async function renderEvaluation(container) {
           </div>
         </div>
       </div>
+
+      <!-- Auditable Sample Predictions Table -->
+      ${predictions.length > 0 ? `
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Sample Benchmark Predictions (${predictions.length} cases tested)</h3>
+              <p class="card-subtitle">Auditable record of true class versus scanner prediction</p>
+            </div>
+          </div>
+          <div class="table-responsive" style="max-height:360px; overflow-y:auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Field / Column</th>
+                  <th>Sample Value</th>
+                  <th>Ground Truth Class</th>
+                  <th>Predicted Class</th>
+                  <th>Confidence</th>
+                  <th style="text-align:right;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${predictions.slice(0, 15).map(p => `
+                  <tr>
+                    <td style="font-family:'JetBrains Mono',monospace; font-weight:700;">${p.column_name}</td>
+                    <td style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#64748b;">${p.sample_value}</td>
+                    <td>${renderClassBadge(p.true_class)}</td>
+                    <td>${renderClassBadge(p.predicted_class)}</td>
+                    <td>${renderConfidenceBar(p.confidence)}</td>
+                    <td style="text-align:right;">
+                      ${p.is_correct ? '<span class="badge badge-complete">✓ Match</span>' : '<span class="badge badge-missing-b">✕ Mismatch</span>'}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ` : ''}
     `}
   `;
 }
 
 async function runLiveEvaluation() {
   const btn = document.getElementById('btn-eval');
-  btn.disabled = true;
-  btn.textContent = 'Evaluating benchmark...';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> Evaluating benchmark...`;
+  }
   try {
-    await fetch('/api/evaluation', { method: 'POST' });
+    const res = await fetch('/api/evaluation', { method: 'POST' });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Evaluation request failed');
+    }
     showToast('✓ Accuracy evaluation completed successfully!', 'success');
-    renderActiveView();
+    await renderActiveView();
   } catch (err) {
     showToast(`Evaluation failed: ${err.message}`, 'error');
   } finally {
-    btn.disabled = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Run Accuracy Test';
+    }
   }
 }
 

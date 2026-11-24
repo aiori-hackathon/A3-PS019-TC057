@@ -1,6 +1,6 @@
 import datetime
 from typing import Optional, Any
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, computed_field
 
 # Dataset Schemas
 class DatasetBase(BaseModel):
@@ -175,6 +175,11 @@ class ClassMetric(BaseModel):
     f1_score: float
     support: int
 
+    @computed_field
+    @property
+    def f1(self) -> float:
+        return self.f1_score
+
 class EvaluationRunResponse(BaseModel):
     id: str
     run_name: str
@@ -188,6 +193,16 @@ class EvaluationRunResponse(BaseModel):
     executed_at: datetime.datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+    @computed_field
+    @property
+    def class_metrics(self) -> dict[str, ClassMetric]:
+        return self.per_class_metrics
+
+    @computed_field
+    @property
+    def total_samples(self) -> int:
+        return self.total_evaluated
 
 
 # DPDP Act 2023 Governance Matrix Schemas
