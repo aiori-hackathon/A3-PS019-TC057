@@ -434,3 +434,269 @@ tr:hover td {
   justify-content: flex-end;
   gap: 10px;
 }
+
+/* --- Guided 4-Step Pipeline --- */
+.guided-pipeline-card {
+  background: #ffffff;
+  border: 1px solid #dbe6eb;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 18px rgba(22, 32, 44, 0.05);
+}
+
+.pipeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.pipeline-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #488099;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.pipeline-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #16202c;
+  letter-spacing: -0.01em;
+}
+
+.pipeline-desc {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+  max-width: 650px;
+  line-height: 1.5;
+}
+
+.pipeline-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.pipeline-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.pipeline-step-box {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.pipeline-step-box:hover {
+  background: #ffffff;
+  border-color: #488099;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(72, 128, 153, 0.15);
+}
+
+.step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #488099 0%, #2d4f66 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(72, 128, 153, 0.3);
+}
+
+.step-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #16202c;
+}
+
+.step-sub {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 1px;
+}
+
+.step-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-top: 6px;
+}
+
+.step-pill-done {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.step-pill-active {
+  background: #f0f7fa;
+  color: #2d4f66;
+  border: 1px solid #bcdbe7;
+}
+
+.step-pill-warn {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.step-pill-primary {
+  background: #16202c;
+  color: #579eba;
+  border: 1px solid #488099;
+}
+
+/* --- Filter Chips / Pills --- */
+.filter-chips-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.filter-chip {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.filter-chip:hover {
+  background: #e2e8f0;
+  color: #16202c;
+}
+
+.filter-chip.active {
+  background: #16202c;
+  color: #ffffff;
+  border-color: #16202c;
+  box-shadow: 0 2px 6px rgba(22, 32, 44, 0.25);
+}
+
+/* --- Toast Notifications --- */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  min-width: 280px;
+  max-width: 420px;
+  background: #16202c;
+  color: #ffffff;
+  border: 1px solid #36657c;
+  border-radius: 12px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  font-size: 13px;
+  font-weight: 600;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast.toast-show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #488099;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.toast-success .toast-icon {
+  background: #10b981;
+}
+
+.toast-error .toast-icon {
+  background: #ef4444;
+}
+
+.toast-warning .toast-icon {
+  background: #f59e0b;
+}
+
+/* --- Explanatory Callout Banner --- */
+.help-callout {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #488099;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.help-callout strong {
+  color: #16202c;
+}
+
+.nav-badge-pill {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: #f59e0b;
+  color: #78350f;
+  margin-left: auto;
+}

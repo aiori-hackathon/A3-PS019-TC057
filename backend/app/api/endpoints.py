@@ -15,6 +15,7 @@ from backend.app.models.models import Dataset, ScanJob, ScanResult, PurposeReten
 from backend.app.schemas.schemas import (
     DatasetResponse, TableInfoResponse, ColumnInfo,
     ScanCreateRequest, ScanJobResponse, ScanResultResponse, ReviewUpdateRequest,
+    BatchReviewRequest, BatchReviewResponse, ScanAllResponse,
     MetadataRecordCreate, MetadataRecordResponse,
     InventoryRecordResponse, EvidenceGapReportResponse, GapStatistics,
     DashboardMetricsResponse, EvaluationRunResponse,
@@ -78,6 +79,13 @@ def health_check():
         "version": settings.VERSION,
         "timestamp": now_utc().isoformat()
     }
+
+@router.post("/demo/reset")
+def reset_demo_environment(db: Session = Depends(get_db)):
+    """Resets and re-seeds synthetic sample datasets and metadata register for seamless testing."""
+    from backend.app.core.init_db import seed_demo_data
+    seed_demo_data()
+    return {"message": "Demo data and governance register reset successfully"}
 
 # --- Datasets ---
 @router.post("/datasets/csv", response_model=DatasetResponse)
@@ -217,12 +225,7 @@ def get_dataset_tables(dataset_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Unsupported source type")
 
 # --- Scans ---
-@router.post("/scans", response_model=ScanJobResponse)
-def trigger_scan(req: ScanCreateRequest, db: Session = Depends(get_db)):
-    dataset = db.query(Dataset).filter(Dataset.id == req.dataset_id).first()
-    if not dataset:
-        raise HTTPException(status_code=404, detail="Dataset not found")
-
+def execute_scan_for_dataset(dataset: Dataset, db: Session, table_names: Optional[List[str]] = None) -> ScanJob:
     file_path = resolve_dataset_file_path(dataset, db)
 
     scan_id = str(uuid.uuid4())
@@ -278,7 +281,7 @@ def trigger_scan(req: ScanCreateRequest, db: Session = Depends(get_db)):
         elif dataset.source_type == "sqlite":
             connector = SQLiteConnector(file_path)
             all_tables = connector.list_tables()
-            target_tables = [t for t in all_tables if not req.table_names or t in req.table_names]
+            target_tables = [t for t in all_tables if not table_names or t in table_names]
             total_tables = len(target_tables)
 
             for t in target_tables:
@@ -323,6 +326,36 @@ def trigger_scan(req: ScanCreateRequest, db: Session = Depends(get_db)):
         scan_job.completed_at = now_utc()
         db.commit()
         raise HTTPException(status_code=500, detail=f"Scan execution failed: {str(e)}")
+
+@router.post("/scans", response_model=ScanJobResponse)
+def trigger_scan(req: ScanCreateRequest, db: Session = Depends(get_db)):
+    dataset = db.query(Dataset).filter(Dataset.id == req.dataset_id).first()
+    if not dataset:
+        raise HTTPException(status_code=404, detail="Dataset not found")
+    return execute_scan_for_dataset(dataset, db, req.table_names)
+
+@router.post("/scans/scan-all", response_model=ScanAllResponse)
+def scan_all_datasets(db: Session = Depends(get_db)):
+    """1-Click Discovery: Automatically runs multi-signal privacy discovery on all active datasets."""
+    datasets = db.query(Dataset).all()
+    if not datasets:
+        return ScanAllResponse(scans_completed=0, total_candidates_found=0, jobs=[])
+    
+    jobs = []
+    total_candidates = 0
+    for d in datasets:
+        try:
+            job = execute_scan_for_dataset(d, db)
+            jobs.append(job)
+            total_candidates += job.candidate_count
+        except Exception:
+            pass
+    
+    return ScanAllResponse(
+        scans_completed=len(jobs),
+        total_candidates_found=total_candidates,
+        jobs=jobs
+    )
 
 @router.get("/scans", response_model=List[ScanJobResponse])
 def list_scans(db: Session = Depends(get_db)):
@@ -479,6 +512,29 @@ def update_review_status(
         metadata_status=m_status,
         created_at=r.created_at
     )
+
+@router.post("/inventory/batch-review", response_model=BatchReviewResponse)
+def batch_review_inventory(
+    req: BatchReviewRequest,
+    db: Session = Depends(get_db)
+):
+    """Batch-reviews candidate detections to streamline human triage."""
+    query = db.query(ScanResult).filter(ScanResult.review_status == "PENDING")
+    if req.record_ids:
+        query = query.filter(ScanResult.id.in_(req.record_ids))
+    elif req.min_confidence is not None:
+        query = query.filter(ScanResult.confidence_score >= req.min_confidence)
+    
+    records = query.all()
+    count = len(records)
+    t_now = now_utc()
+    for r in records:
+        r.review_status = req.target_status
+        r.reviewer_notes = req.reviewer_notes or f"Batch decision: {req.target_status}"
+        r.reviewed_at = t_now
+    
+    db.commit()
+    return BatchReviewResponse(updated_count=count, target_status=req.target_status)
 
 # --- Metadata Register ---
 @router.get("/metadata", response_model=List[MetadataRecordResponse])

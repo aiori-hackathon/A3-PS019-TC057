@@ -73,6 +73,21 @@ class ReviewUpdateRequest(BaseModel):
     review_status: str = Field(..., pattern="^(CONFIRMED|REJECTED|PENDING)$")
     reviewer_notes: Optional[str] = None
 
+class BatchReviewRequest(BaseModel):
+    record_ids: Optional[list[str]] = None
+    min_confidence: Optional[float] = None
+    target_status: str = Field(..., pattern="^(CONFIRMED|REJECTED|PENDING)$")
+    reviewer_notes: Optional[str] = "Batch review decision"
+
+class BatchReviewResponse(BaseModel):
+    updated_count: int
+    target_status: str
+
+class ScanAllResponse(BaseModel):
+    scans_completed: int
+    total_candidates_found: int
+    jobs: list[ScanJobResponse]
+
 # Metadata Schemas
 class MetadataRecordCreate(BaseModel):
     dataset_name: str
