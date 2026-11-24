@@ -1,4 +1,6 @@
-// PrivacyLens Interactive Application Logic
+// PrivacyLens — Application Logic
+// Human-crafted, accessible (WCAG 2.1 AA/AAA), light-theme
+
 const state = {
   currentTab: 'dashboard',
   dashboardData: null,
@@ -15,48 +17,61 @@ const state = {
   inspectRecord: null,
   reviewRecord: null,
   invActiveChip: 'all',
-  reviewActiveChip: 'all'
+  reviewActiveChip: 'all',
+  sidebarCollapsed: false
 };
 
-// SVG Icons
+// Clean SVG Icons (Feather / Lucide style, no emojis)
 const icons = {
-  dashboard: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>`,
-  datasources: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>`,
-  scandata: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><polyline points="8 11 10 13 14 9"/></svg>`,
-  inventory: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>`,
-  purposeretention: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`,
-  evidencegaps: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-  evaluation: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
-  reviewcenter: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>`,
-  settings: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>`,
-  dpdp: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>`,
-  simulator: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>`
+  check: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`,
+  x: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+  info: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+  search: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+  file: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+  database: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>`,
+  shield: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+  copy: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`
 };
 
-// --- Toast Notifications ---
+// Sidebar Toggle Function
+function toggleSidebar() {
+  const sidebar = document.getElementById('app-sidebar');
+  const toggleBtn = document.getElementById('sidebar-toggle');
+  state.sidebarCollapsed = !state.sidebarCollapsed;
+  if (sidebar) {
+    sidebar.classList.toggle('collapsed', state.sidebarCollapsed);
+  }
+  if (toggleBtn) {
+    toggleBtn.setAttribute('aria-expanded', (!state.sidebarCollapsed).toString());
+  }
+}
+
+// Accessible Toast Notifications
 function showToast(message, type = 'success') {
   let container = document.getElementById('toast-container');
   if (!container) {
     container = document.createElement('div');
     container.id = 'toast-container';
     container.className = 'toast-container';
+    container.setAttribute('role', 'status');
+    container.setAttribute('aria-live', 'polite');
     document.body.appendChild(container);
   }
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
   toast.innerHTML = `
-    <span class="toast-icon">${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</span>
+    <span class="toast-icon">${type === 'success' ? icons.check : type === 'error' ? icons.x : icons.info}</span>
     <span class="toast-msg">${message}</span>
   `;
   container.appendChild(toast);
   setTimeout(() => toast.classList.add('toast-show'), 10);
   setTimeout(() => {
     toast.classList.remove('toast-show');
-    setTimeout(() => toast.remove(), 300);
+    setTimeout(() => toast.remove(), 250);
   }, 3500);
 }
 
-// --- Live Sidebar Pending Count Badge ---
+// Sidebar Pending Review Count Badge
 async function updateSidebarPendingBadge() {
   try {
     const res = await fetch('/api/inventory');
@@ -69,6 +84,7 @@ async function updateSidebarPendingBadge() {
       if (pending > 0) {
         badge.textContent = pending;
         badge.style.display = 'inline-block';
+        badge.setAttribute('aria-label', `${pending} items awaiting review`);
       } else {
         badge.style.display = 'none';
       }
@@ -78,7 +94,7 @@ async function updateSidebarPendingBadge() {
   }
 }
 
-// --- 1-Click Complete Discovery ---
+// 1-Click Discovery Action
 async function runOneClickDiscovery() {
   const btns = [
     document.getElementById('btn-1click-discovery'),
@@ -87,33 +103,33 @@ async function runOneClickDiscovery() {
 
   btns.forEach(b => {
     b.disabled = true;
-    b.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> Running Discovery...`;
+    b.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;" aria-hidden="true">&#x25F3;</span> Running Discovery...`;
   });
 
   try {
     const res = await fetch('/api/scans/scan-all', { method: 'POST' });
-    if (!res.ok) throw new Error('Scan failed');
+    if (!res.ok) throw new Error('Discovery scan failed to complete');
     const data = await res.json();
-    showToast(`✓ Discovery complete: Found ${data.total_candidates_found} candidates across ${data.scans_completed} data sources.`, 'success');
+    showToast(`Discovery scan complete: found ${data.total_candidates_found} candidates across ${data.scans_completed} datasets.`, 'success');
     await updateSidebarPendingBadge();
     await renderActiveView();
   } catch (err) {
-    showToast(`Scan failed: ${err.message}`, 'error');
+    showToast(`Discovery failed: ${err.message}`, 'error');
   } finally {
     btns.forEach(b => {
       b.disabled = false;
-      b.innerHTML = `⚡ 1-Click Discovery`;
+      b.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><polyline points="8 11 10 13 14 9"/></svg> Run Discovery Scan`;
     });
   }
 }
 
-// --- Reset Demo Environment ---
+// Reset Demo Environment
 async function resetDemoData() {
-  if (!confirm("Reset demo datasets and governance register to fresh initial state?")) return;
+  if (!confirm("Reset demo databases and compliance registers to fresh initial state?")) return;
   try {
     const res = await fetch('/api/demo/reset', { method: 'POST' });
     if (!res.ok) throw new Error('Reset failed');
-    showToast('✓ Demo databases and registers reset successfully.', 'success');
+    showToast('Demo environment reset successfully.', 'success');
     await updateSidebarPendingBadge();
     await renderActiveView();
   } catch (err) {
@@ -121,13 +137,13 @@ async function resetDemoData() {
   }
 }
 
-// Badges
+// Accessible High-Contrast Badges
 function renderClassBadge(cls) {
   const map = {
     person_name: ['badge-name', 'Person Name'],
     email_address: ['badge-email', 'Email Address'],
     phone_number: ['badge-phone', 'Phone Number'],
-    government_id: ['badge-govid', 'Gov ID (Aadhaar/PAN)'],
+    government_id: ['badge-govid', 'Government ID'],
     date_of_birth: ['badge-dob', 'Date of Birth'],
     non_personal: ['badge-rejected', 'Non-Personal']
   };
@@ -158,14 +174,14 @@ function renderReviewBadge(status) {
 }
 
 function renderConfidenceBar(score) {
-  const pct = Math.round(score * 100);
-  const color = pct >= 85 ? '#10b981' : pct >= 70 ? '#488099' : '#f59e0b';
+  const pct = Math.round((score || 0) * 100);
+  const color = pct >= 85 ? '#059669' : pct >= 70 ? '#24556d' : '#d97706';
   return `
-    <div style="display:flex; align-items:center; gap:8px;">
-      <div style="width:54px; background:#e2e8f0; height:6px; border-radius:3px; overflow:hidden; border:1px solid #cbd5e1;">
-        <div style="width:${pct}%; height:100%; background:${color};"></div>
+    <div style="display:flex; align-items:center; gap:8px;" aria-label="Confidence score: ${pct}%">
+      <div style="width:48px; background:#e2e8f0; height:6px; border-radius:3px; overflow:hidden;" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
+        <div style="width:${pct}%; height:100%; background:${color}; border-radius:3px;"></div>
       </div>
-      <span style="font-size:11px; font-family:'JetBrains Mono',monospace; font-weight:700;">${pct}%</span>
+      <span style="font-size:11px; font-family:'JetBrains Mono',monospace; font-weight:600; color:#334155;">${pct}%</span>
     </div>
   `;
 }
@@ -174,7 +190,13 @@ function renderConfidenceBar(score) {
 function navigateTo(tab) {
   state.currentTab = tab;
   document.querySelectorAll('.nav-item').forEach(el => {
-    el.classList.toggle('active', el.dataset.tab === tab);
+    const isActive = el.dataset.tab === tab;
+    el.classList.toggle('active', isActive);
+    if (isActive) {
+      el.setAttribute('aria-current', 'page');
+    } else {
+      el.removeAttribute('aria-current');
+    }
   });
   renderActiveView();
 }
@@ -186,22 +208,22 @@ async function renderActiveView() {
   const headerSub = document.getElementById('header-sub');
 
   const titles = {
-    dashboard: ['Dashboard Overview', 'Real-time telemetry, 4-step guided discovery, and evidence posture'],
-    datasources: ['Data Sources Management', 'Connect CSV files, SQLite databases, and inspect schemas with zero exfiltration'],
-    scandata: ['Personal-Data Scanner', 'Execute multi-signal discovery across column patterns, formats, and sampled values'],
-    inventory: ['Privacy Evidence Inventory', 'Searchable master catalog linking detected personal data to declared purposes'],
-    purposeretention: ['Purpose & Retention Register', 'Declared business processing notices and statutory retention schedules'],
-    evidencegaps: ['Technical Evidence Gaps', 'Identified compliance gaps: missing purposes, indefinite retention, and unreviewed PII'],
-    evaluation: ['Evaluation & Benchmark Metrics', 'Transparent precision, recall, and F1 calculations from labelled synthetic test set'],
-    reviewcenter: ['Human Review & Triage Center', 'Human-in-the-loop decision center with 1-click batch confirmation and rejection'],
-    settings: ['Configurable Rules & Settings', 'Inspect and customize YAML regex patterns and scoring weights'],
-    dpdp: ['DPDP Act 2023 Statutory Compliance Matrix', 'Regulatory readiness, Dihedral Verhoeff Aadhaar verification, and cryptographic audit seal'],
-    simulator: ['What-If Sensitivity Simulation Studio', 'Live parameter optimization against labelled benchmark dataset']
+    dashboard: ['Dashboard Overview', 'System status, discovery metrics, and privacy evidence telemetry'],
+    datasources: ['Data Sources Management', 'Connected CSV files, SQLite databases, and schema inspection'],
+    scandata: ['Personal Data Scanner', 'Multi-signal discovery across database columns, formats, and values'],
+    inventory: ['Privacy Evidence Inventory', 'Master catalog mapping detected personal data to declared purposes'],
+    purposeretention: ['Purpose & Retention Register', 'Documented processing grounds and statutory retention schedules'],
+    evidencegaps: ['Compliance Gaps', 'Identified gaps: missing notices, indefinite retention, and unreviewed fields'],
+    evaluation: ['Accuracy & Benchmark Metrics', 'Precision, recall, and harmonic F1 evaluated against synthetic ground truth'],
+    reviewcenter: ['Human Review Queue', 'Triage center to confirm or reject candidate personal data fields'],
+    settings: ['Detection Rules & Configuration', 'YAML pattern configurations and multi-signal scoring weights'],
+    dpdp: ['DPDP Act 2023 Compliance Matrix', 'Statutory readiness, Aadhaar Verhoeff validation, and audit seal'],
+    simulator: ['Sensitivity Simulation Studio', 'Live parameter and threshold optimization on benchmark data']
   };
 
   headerTitle.textContent = titles[state.currentTab][0];
   headerSub.textContent = titles[state.currentTab][1];
-  container.innerHTML = `<div style="padding:40px; text-align:center; color:#64748b;">Loading ${titles[state.currentTab][0]}...</div>`;
+  container.innerHTML = `<div style="padding:48px; text-align:center; color:#64748b;" role="status">Loading ${titles[state.currentTab][0]}...</div>`;
 
   try {
     if (state.currentTab === 'dashboard') await renderDashboard(container);
@@ -217,9 +239,11 @@ async function renderActiveView() {
     else if (state.currentTab === 'simulator') await renderSimulator(container);
     updateSidebarPendingBadge();
   } catch (err) {
-    container.innerHTML = `<div class="card" style="border-color:#fecaca; background:#fef2f2; color:#991b1b; padding:20px;">
-      <strong>Error loading view:</strong> ${err.message}
-    </div>`;
+    container.innerHTML = `
+      <div class="card" style="border-color:#fecaca; background:#fef2f2; color:#991b1b; padding:20px;" role="alert">
+        <strong>Error loading view:</strong> ${err.message}
+      </div>
+    `;
   }
 }
 
@@ -235,227 +259,233 @@ async function renderDashboard(container) {
   const pendingCount = inv.filter(r => r.review_status === 'PENDING').length;
 
   const classColors = {
-    person_name: '#264759',
-    email_address: '#488099',
-    phone_number: '#10b981',
-    government_id: '#315267',
-    date_of_birth: '#f59e0b'
+    person_name: '#475569',
+    email_address: '#24556d',
+    phone_number: '#0d9488',
+    government_id: '#0284c7',
+    date_of_birth: '#d97706'
   };
 
   const classLabels = {
     person_name: 'Person Name',
     email_address: 'Email Address',
     phone_number: 'Phone Number',
-    government_id: 'Gov ID',
+    government_id: 'Government ID',
     date_of_birth: 'Date of Birth'
   };
 
   const maxVal = Math.max(...Object.values(data.class_counts), 1);
 
   container.innerHTML = `
-    <!-- Guided 4-Step Discovery Pipeline Card -->
-    <div class="guided-pipeline-card">
+    <!-- Guided Workflow Card -->
+    <div class="pipeline-card">
       <div class="pipeline-header">
         <div>
-          <div class="pipeline-badge">⚡ GUIDED 4-STEP DISCOVERY & AUDIT PIPELINE</div>
-          <h3 class="pipeline-title">Simple End-to-End Privacy Discovery Workflow</h3>
-          <p class="pipeline-desc">Follow these 4 simple steps to connect data, run multi-signal discovery, verify evidence, and generate your statutory DPDP Act dossier.</p>
+          <h2 class="pipeline-title">Getting Started &mdash; Discovery & Compliance Workflow</h2>
+          <p class="pipeline-desc">Follow these 4 core steps to connect data sources, run discovery scans, verify candidate personal data, and generate your audit dossier.</p>
         </div>
         <div class="pipeline-actions">
-          <button onclick="runOneClickDiscovery()" id="btn-1click-discovery" class="btn btn-primary" style="padding:10px 18px; font-weight:700;">
-            ⚡ 1-Click Discovery
+          <button type="button" onclick="runOneClickDiscovery()" id="btn-1click-discovery" class="btn btn-primary">
+            Run Discovery Scan
           </button>
-          <button onclick="resetDemoData()" class="btn btn-secondary" style="font-size:11px; padding:8px 12px;" title="Reset demo databases and registers">
-            ↻ Reset Demo
+          <button type="button" onclick="resetDemoData()" class="btn btn-secondary" title="Reset demo databases to clean state">
+            Reset Demo
           </button>
         </div>
       </div>
 
       <div class="pipeline-steps-grid">
-        <div class="pipeline-step-box" onclick="navigateTo('datasources')">
+        <div class="pipeline-step-box" onclick="navigateTo('datasources')" tabindex="0" role="button" aria-label="Step 1: Connect Data Sources">
           <div class="step-num">1</div>
           <div class="step-info">
-            <div class="step-title">Connect Data Sources</div>
+            <div class="step-title">Connect Sources</div>
             <div class="step-sub">CSVs & SQLite schemas</div>
-            <span class="step-pill step-pill-done">✓ ${data.total_datasets} Sources Connected</span>
+            <span class="step-pill step-pill-done">${data.total_datasets} Sources Connected</span>
           </div>
         </div>
 
-        <div class="pipeline-step-box" onclick="navigateTo('scandata')">
+        <div class="pipeline-step-box" onclick="navigateTo('scandata')" tabindex="0" role="button" aria-label="Step 2: Scan Data Repositories">
           <div class="step-num">2</div>
           <div class="step-info">
-            <div class="step-title">Multi-Signal Scan</div>
-            <div class="step-sub">Column, format, value regex</div>
+            <div class="step-title">Scan Repositories</div>
+            <div class="step-sub">Multi-signal detection</div>
             <span class="step-pill step-pill-active">${data.total_candidates} Fields Detected</span>
           </div>
         </div>
 
-        <div class="pipeline-step-box" onclick="navigateTo('reviewcenter')">
+        <div class="pipeline-step-box" onclick="navigateTo('reviewcenter')" tabindex="0" role="button" aria-label="Step 3: Review Candidates">
           <div class="step-num">3</div>
           <div class="step-info">
-            <div class="step-title">Human Triage</div>
-            <div class="step-sub">Confirm / reject candidate PII</div>
-            <span class="step-pill ${pendingCount > 0 ? 'step-pill-warn' : 'step-pill-done'}">${pendingCount > 0 ? pendingCount + ' Pending Review' : '✓ All Reviewed'}</span>
+            <div class="step-title">Review Queue</div>
+            <div class="step-sub">Human-in-the-loop triage</div>
+            <span class="step-pill ${pendingCount > 0 ? 'step-pill-warn' : 'step-pill-done'}">${pendingCount > 0 ? pendingCount + ' Pending' : 'All Reviewed'}</span>
           </div>
         </div>
 
-        <div class="pipeline-step-box" onclick="navigateTo('dpdp')">
+        <div class="pipeline-step-box" onclick="navigateTo('dpdp')" tabindex="0" role="button" aria-label="Step 4: DPDP Compliance Report">
           <div class="step-num">4</div>
           <div class="step-info">
-            <div class="step-title">DPDP Act Compliance</div>
-            <div class="step-sub">Tamper-evident SHA-256 seal</div>
-            <span class="step-pill step-pill-primary">Download PDF Dossier</span>
+            <div class="step-title">DPDP Act Report</div>
+            <div class="step-sub">Statutory compliance dossier</div>
+            <span class="step-pill step-pill-active">View Matrix &rarr;</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- KPIs Grid with Plain-English Explanations -->
+    <!-- KPI Grid -->
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-label">Datasets</div>
         <div class="kpi-val">${data.total_datasets}</div>
-        <div class="kpi-sub">Connected data repositories</div>
+        <div class="kpi-sub">Connected repositories</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">Tables Inspected</div>
         <div class="kpi-val">${data.total_tables}</div>
-        <div class="kpi-sub">Inspected schema tables</div>
+        <div class="kpi-sub">Relational schema tables</div>
       </div>
-      <div class="kpi-card" style="background:#f0f9ff; border-color:#bcdbe7;">
-        <div class="kpi-label" style="color:#36657c;">Candidate PII</div>
-        <div class="kpi-val" style="color:#488099;">${data.total_candidates}</div>
-        <div class="kpi-sub" style="color:#36657c;">Discovered personal fields</div>
+      <div class="kpi-card" style="border-top-color:#24556d;">
+        <div class="kpi-label" style="color:#24556d;">Candidate PII</div>
+        <div class="kpi-val" style="color:#24556d;">${data.total_candidates}</div>
+        <div class="kpi-sub">Personal fields found</div>
       </div>
-      <div class="kpi-card" style="background:#fffbeb; border-color:#fde68a;">
-        <div class="kpi-label" style="color:#b45309;">Missing Purpose</div>
-        <div class="kpi-val" style="color:#b45309;">${data.missing_purpose}</div>
-        <div class="kpi-sub" style="color:#b45309;">Lacks Section 5 notice</div>
+      <div class="kpi-card" style="border-top-color:#d97706;">
+        <div class="kpi-label" style="color:#92400e;">Missing Purpose</div>
+        <div class="kpi-val" style="color:#92400e;">${data.missing_purpose}</div>
+        <div class="kpi-sub">Section 5 notice gap</div>
       </div>
-      <div class="kpi-card" style="background:#fff7ed; border-color:#fed7aa;">
-        <div class="kpi-label" style="color:#c2410c;">Missing Retention</div>
-        <div class="kpi-val" style="color:#c2410c;">${data.missing_retention}</div>
-        <div class="kpi-sub" style="color:#c2410c;">Lacks Section 8 schedule</div>
+      <div class="kpi-card" style="border-top-color:#ea580c;">
+        <div class="kpi-label" style="color:#9a3412;">Missing Retention</div>
+        <div class="kpi-val" style="color:#9a3412;">${data.missing_retention}</div>
+        <div class="kpi-sub">Section 8 erasure gap</div>
       </div>
-      <div class="kpi-card" style="background:#fef2f2; border-color:#fecaca;">
-        <div class="kpi-label" style="color:#b91c1c;">Missing Both</div>
-        <div class="kpi-val" style="color:#b91c1c;">${data.missing_both}</div>
-        <div class="kpi-sub" style="color:#b91c1c;">Critical governance gaps</div>
+      <div class="kpi-card" style="border-top-color:#dc2626;">
+        <div class="kpi-label" style="color:#991b1b;">Missing Both</div>
+        <div class="kpi-val" style="color:#991b1b;">${data.missing_both}</div>
+        <div class="kpi-sub">Critical compliance gaps</div>
       </div>
     </div>
 
-    <!-- DPDP Statutory Readiness Callout -->
-    <div style="background: linear-gradient(135deg, #101824 0%, #1a2536 50%, #2d4f66 100%); border-radius:14px; padding:22px 26px; color:white; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 8px 20px -4px rgba(15,23,42,0.3); border:1px solid #2d4f66;">
-      <div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:10px; font-weight:800; background:#488099; color:#ffffff; padding:2px 8px; border-radius:10px; text-transform:uppercase;">DPDP Act 2023 Statutory Matrix</span>
-          <span style="font-size:11px; color:#bcdbe7;">• Cryptographic SHA-256 Audit Seal Enabled</span>
+    <!-- DPDP Statutory Summary Banner -->
+    <div class="card" style="border-left:3px solid var(--brand-primary); margin-bottom:20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+        <div>
+          <div style="font-size:11px; font-weight:700; color:var(--brand-primary); text-transform:uppercase; letter-spacing:0.04em;">
+            Statutory Alignment &bull; Digital Personal Data Protection Act, 2023
+          </div>
+          <h3 style="font-size:15px; font-weight:700; color:#0f172a; margin-top:2px;">
+            Evidence Mapping & Regulatory Compliance Matrix
+          </h3>
+          <p style="font-size:12px; color:#475569; max-width:680px; margin-top:3px; line-height:1.5;">
+            Evaluates discovered data assets against Section 5 (Notice requirement), Section 8(7) (Retention limit and erasure), and Section 9 (Protection of minors' data).
+          </p>
         </div>
-        <h3 style="font-size:16px; font-weight:700; margin-top:6px;">Personal Data Governance & Regulatory Audit Matrix</h3>
-        <p style="font-size:12px; color:#bcdbe7; max-width:640px; margin-top:2px;">Audits discovery evidence against DPDP Section 5 (Notice), Section 8(7) (Retention Erasure), and Section 9 (Children & Minors Protection with Dihedral Verhoeff validation and Corporate PAN suppression).</p>
-      </div>
-      <div style="display:flex; gap:10px; align-items:center;">
-        <button onclick="navigateTo('dpdp')" class="btn btn-primary" style="background:#488099; border-color:#579eba; white-space:nowrap;">Inspect DPDP Matrix &rarr;</button>
-        <button onclick="navigateTo('simulator')" class="btn btn-secondary" style="background:rgba(255,255,255,0.15); color:white; border-color:rgba(255,255,255,0.25); white-space:nowrap;">Sensitivity Studio</button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" onclick="navigateTo('dpdp')" class="btn btn-primary btn-sm">Inspect DPDP Matrix &rarr;</button>
+          <button type="button" onclick="navigateTo('simulator')" class="btn btn-secondary btn-sm">Sensitivity Studio</button>
+        </div>
       </div>
     </div>
 
-    <!-- Charts Grid -->
-    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:24px; margin-bottom:24px;">
+    <!-- Two-Column Charts Grid -->
+    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; margin-bottom:20px;">
+      <!-- Class Distribution Card -->
       <div class="card" style="margin-bottom:0;">
         <div class="card-header">
           <div>
             <h3 class="card-title">Personal Data Class Distribution</h3>
-            <p class="card-subtitle">Discovered candidate fields across statutory personal data classes</p>
+            <p class="card-subtitle">Candidate fields identified across standard statutory categories</p>
           </div>
-          <button onclick="navigateTo('inventory')" class="btn btn-secondary" style="font-size:11px;">View Inventory &rarr;</button>
+          <button type="button" onclick="navigateTo('inventory')" class="btn btn-secondary btn-sm">View Inventory &rarr;</button>
         </div>
 
-        <div style="height:200px; display:flex; align-items:flex-end; gap:20px; padding:0 10px 10px 10px; border-bottom:1px solid #e2e8f0;">
+        <div style="height:190px; display:flex; align-items:flex-end; gap:20px; padding:0 8px 10px 8px; border-bottom:1px solid #e2e8f0;" aria-label="Class distribution bar chart">
           ${Object.entries(data.class_counts).map(([k, count]) => {
-            const h = Math.max((count / maxVal) * 150, count > 0 ? 18 : 6);
-            const color = classColors[k] || '#94a3b8';
+            const h = Math.max((count / maxVal) * 140, count > 0 ? 18 : 6);
+            const color = classColors[k] || '#475569';
             return `
-              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
-                <span style="font-size:12px; font-family:'JetBrains Mono',monospace; font-weight:800; color:#1e293b;">${count}</span>
-                <div style="width:100%; max-width:48px; height:${h}px; background:${color}; border-radius:6px 6px 0 0; box-shadow:0 2px 6px rgba(0,0,0,0.12);" title="${classLabels[k]}: ${count}"></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;">
+                <span style="font-size:12px; font-family:'JetBrains Mono',monospace; font-weight:600; color:#1e293b;">${count}</span>
+                <div style="width:100%; max-width:44px; height:${h}px; background:${color}; border-radius:4px 4px 0 0;" title="${classLabels[k]}: ${count}"></div>
               </div>
             `;
           }).join('')}
         </div>
-        <div style="display:flex; gap:20px; margin-top:12px; padding:0 10px;">
+        <div style="display:flex; gap:20px; margin-top:10px; padding:0 8px;">
           ${Object.entries(data.class_counts).map(([k]) => `
-            <div style="flex:1; text-align:center; font-size:11px; font-weight:600; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${classLabels[k]}">
+            <div style="flex:1; text-align:center; font-size:11px; font-weight:500; color:#475569; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${classLabels[k]}">
               ${classLabels[k]}
             </div>
           `).join('')}
         </div>
       </div>
 
+      <!-- Confidence Breakdown Card -->
       <div class="card" style="margin-bottom:0;">
         <div class="card-header">
           <div>
             <h3 class="card-title">Confidence Spectrum</h3>
-            <p class="card-subtitle">Multi-signal engine confidence scoring</p>
+            <p class="card-subtitle">Score distribution from detection engine</p>
           </div>
         </div>
         
-        <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; flex-direction:column; gap:14px;">
           ${Object.entries(data.confidence_distribution).map(([k, val]) => {
             const pct = data.total_candidates > 0 ? Math.round((val / data.total_candidates) * 100) : 0;
-            const barCol = k.includes('Very') ? '#10b981' : k.includes('High') ? '#488099' : '#f59e0b';
+            const barCol = k.includes('Very') ? '#059669' : k.includes('High') ? '#24556d' : '#d97706';
             return `
               <div>
-                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
-                  <span style="font-weight:600; color:#334155;">${k}</span>
-                  <span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#0f172a;">${val} (${pct}%)</span>
+                <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
+                  <span style="font-weight:500; color:#334155;">${k}</span>
+                  <span style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#0f172a;">${val} (${pct}%)</span>
                 </div>
-                <div style="width:100%; height:8px; background:#f1f5f9; border-radius:4px; overflow:hidden; border:1px solid #e2e8f0;">
-                  <div style="width:${pct}%; height:100%; background:${barCol}; border-radius:4px;"></div>
+                <div style="width:100%; height:7px; background:#f1f5f9; border-radius:3px; overflow:hidden;">
+                  <div style="width:${pct}%; height:100%; background:${barCol}; border-radius:3px;"></div>
                 </div>
               </div>
             `;
           }).join('')}
         </div>
-        <div style="margin-top:24px; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; font-size:11px; color:#64748b; text-align:center;">
-          Multi-signal weights: <strong>40%</strong> Column • <strong>45%</strong> Regex • <strong>15%</strong> Validator
+        <div style="margin-top:20px; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; font-size:11px; color:#475569; text-align:center;">
+          Multi-signal weights: <strong>40%</strong> Column &bull; <strong>45%</strong> Regex &bull; <strong>15%</strong> Validator
         </div>
       </div>
     </div>
 
-    <!-- Recent Scans Table -->
+    <!-- Recent Discovery Scans Table -->
     <div class="card">
       <div class="card-header">
         <div>
           <h3 class="card-title">Recent Discovery Scans</h3>
-          <p class="card-subtitle">Auditable record of personal data discovery runs</p>
+          <p class="card-subtitle">Auditable history of personal data discovery runs</p>
         </div>
-        <button onclick="navigateTo('scandata')" class="btn btn-secondary" style="font-size:11px;">New Scan &rarr;</button>
+        <button type="button" onclick="navigateTo('scandata')" class="btn btn-secondary btn-sm">New Scan &rarr;</button>
       </div>
 
       <div class="table-responsive">
         <table>
           <thead>
             <tr>
-              <th>Dataset</th>
-              <th>Type</th>
-              <th>Status</th>
-              <th>Columns</th>
-              <th>Candidates Discovered</th>
-              <th>Execution Time</th>
+              <th scope="col">Dataset</th>
+              <th scope="col">Format</th>
+              <th scope="col">Status</th>
+              <th scope="col">Columns Inspected</th>
+              <th scope="col">Candidates Found</th>
+              <th scope="col">Execution Time</th>
             </tr>
           </thead>
           <tbody>
             ${data.recent_scans && data.recent_scans.length > 0 ? data.recent_scans.map(s => `
               <tr>
-                <td style="font-weight:700; color:#0f172a;">${s.dataset_name}</td>
-                <td><span style="font-family:monospace; text-transform:uppercase; font-size:10px; padding:2px 6px; background:#f1f5f9; border-radius:4px; border:1px solid #e2e8f0;">${s.source_type}</span></td>
-                <td><span class="badge badge-confirmed">${s.status}</span></td>
+                <td style="font-weight:600; color:#0f172a;">${s.dataset_name}</td>
+                <td><span style="font-family:'JetBrains Mono',monospace; text-transform:uppercase; font-size:10px; padding:2px 6px; background:#f1f5f9; border-radius:4px; border:1px solid #e2e8f0;">${s.source_type}</span></td>
+                <td><span class="badge badge-complete">${s.status}</span></td>
                 <td style="font-family:'JetBrains Mono',monospace;">${s.total_columns}</td>
-                <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#488099;">${s.candidate_count}</td>
-                <td style="color:#64748b;">${new Date(s.started_at).toLocaleTimeString()}</td>
+                <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#24556d;">${s.candidate_count}</td>
+                <td style="color:#64748b;">${new Date(s.started_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
               </tr>
-            `).join('') : `<tr><td colspan="6" style="text-align:center; padding:24px; color:#94a3b8;">No scans recorded yet. Click '1-Click Discovery' above to run.</td></tr>`}
+            `).join('') : `<tr><td colspan="6" style="text-align:center; padding:24px; color:#94a3b8;">No discovery scans recorded yet. Click 'Run Discovery Scan' above.</td></tr>`}
           </tbody>
         </table>
       </div>
@@ -470,28 +500,28 @@ async function renderDataSources(container) {
   state.datasets = datasets;
 
   container.innerHTML = `
-    <!-- Explanatory Banner -->
+    <!-- Info Banner -->
     <div class="help-callout">
       <div>
-        <strong>💡 Enterprise Data Connectors:</strong> Connect CSV files or SQLite databases in read-only mode. All analysis is executed locally in-memory with zero data exfiltration.
+        <strong>Local Data Connectors:</strong> Connect CSV files or SQLite databases. All data inspection runs locally within your environment with zero network exfiltration.
       </div>
-      <button onclick="resetDemoData()" class="btn btn-secondary" style="font-size:11px; padding:4px 8px; white-space:nowrap;">↻ Reset Demo Data</button>
+      <button type="button" onclick="resetDemoData()" class="btn btn-secondary btn-sm" title="Restore default demo data">Reset Demo</button>
     </div>
 
-    <!-- Upload Cards Grid -->
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-bottom:24px;">
+    <!-- Upload Dropzones Grid -->
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
       <div class="card" style="margin-bottom:0;">
         <div class="card-header">
           <div>
-            <h3 class="card-title">Upload Delimited CSV Dataset</h3>
-            <p class="card-subtitle">Supports UTF-8, Latin-1, with automated header deduplication</p>
+            <h3 class="card-title">Add CSV Dataset</h3>
+            <p class="card-subtitle">Delimited format with automatic header deduplication</p>
           </div>
         </div>
         
-        <label class="upload-dropzone">
-          <div class="upload-dropzone-icon">📄</div>
-          <span style="font-size:13px; font-weight:700; color:#488099;">Click or Drop CSV File Here</span>
-          <span style="font-size:11px; color:#94a3b8;">.csv format up to 50MB</span>
+        <label class="upload-dropzone" tabindex="0" role="button" aria-label="Upload CSV file">
+          <div class="upload-dropzone-icon">${icons.file}</div>
+          <span style="font-size:13px; font-weight:600; color:#24556d;">Select or Drop CSV File</span>
+          <span style="font-size:11px; color:#64748b; margin-top:2px;">.csv format up to 50MB</span>
           <input type="file" accept=".csv" style="display:none;" onchange="uploadFile(event, 'csv')"/>
         </label>
       </div>
@@ -499,30 +529,30 @@ async function renderDataSources(container) {
       <div class="card" style="margin-bottom:0;">
         <div class="card-header">
           <div>
-            <h3 class="card-title">Upload SQLite Database</h3>
-            <p class="card-subtitle">Discovers user tables and schema relations in read-only mode</p>
+            <h3 class="card-title">Add SQLite Database</h3>
+            <p class="card-subtitle">Connect database file in read-only inspection mode</p>
           </div>
         </div>
         
-        <label class="upload-dropzone">
-          <div class="upload-dropzone-icon">🗄️</div>
-          <span style="font-size:13px; font-weight:700; color:#36657c;">Click or Drop SQLite Database Here</span>
-          <span style="font-size:11px; color:#94a3b8;">.db, .sqlite, .sqlite3 formats</span>
+        <label class="upload-dropzone" tabindex="0" role="button" aria-label="Upload SQLite database file">
+          <div class="upload-dropzone-icon">${icons.database}</div>
+          <span style="font-size:13px; font-weight:600; color:#24556d;">Select or Drop SQLite File</span>
+          <span style="font-size:11px; color:#64748b; margin-top:2px;">.db, .sqlite, .sqlite3 formats</span>
           <input type="file" accept=".db,.sqlite,.sqlite3" style="display:none;" onchange="uploadFile(event, 'sqlite')"/>
         </label>
       </div>
     </div>
 
-    <!-- Datasets Table -->
+    <!-- Connected Datasets Table -->
     <div class="card">
       <div class="card-header">
         <div>
           <h3 class="card-title">Connected Data Sources (${datasets.length})</h3>
-          <p class="card-subtitle">Registered repositories ready for personal data discovery scanning</p>
+          <p class="card-subtitle">Configured repositories ready for discovery scanning</p>
         </div>
         <div class="btn-group">
-          <button onclick="runOneClickDiscovery()" class="btn btn-primary" style="font-size:11px;">⚡ Scan All Sources</button>
-          <button onclick="renderActiveView()" class="btn btn-secondary" style="font-size:11px;">Refresh</button>
+          <button type="button" onclick="runOneClickDiscovery()" class="btn btn-primary btn-sm">Scan All Sources</button>
+          <button type="button" onclick="renderActiveView()" class="btn btn-secondary btn-sm">Refresh</button>
         </div>
       </div>
 
@@ -530,26 +560,26 @@ async function renderDataSources(container) {
         <table>
           <thead>
             <tr>
-              <th>Dataset Name</th>
-              <th>Type</th>
-              <th>Tables</th>
-              <th>Row Count</th>
-              <th>Registered Date</th>
-              <th style="text-align:right;">Actions</th>
+              <th scope="col">Dataset Name</th>
+              <th scope="col">Format</th>
+              <th scope="col">Tables</th>
+              <th scope="col">Row Count</th>
+              <th scope="col">Date Registered</th>
+              <th scope="col" style="text-align:right;">Actions</th>
             </tr>
           </thead>
           <tbody>
             ${datasets.map(ds => `
               <tr>
-                <td style="font-weight:700; color:#0f172a;">${ds.name}</td>
-                <td><span style="font-family:monospace; text-transform:uppercase; font-size:10px; padding:2px 6px; background:#f1f5f9; border-radius:4px; border:1px solid #e2e8f0;">${ds.source_type}</span></td>
+                <td style="font-weight:600; color:#0f172a;">${ds.name}</td>
+                <td><span style="font-family:'JetBrains Mono',monospace; text-transform:uppercase; font-size:10px; padding:2px 6px; background:#f1f5f9; border-radius:4px; border:1px solid #e2e8f0;">${ds.source_type}</span></td>
                 <td style="font-family:'JetBrains Mono',monospace;">${ds.table_count}</td>
                 <td style="font-family:'JetBrains Mono',monospace;">${ds.row_count.toLocaleString()}</td>
                 <td style="color:#64748b;">${new Date(ds.created_at).toLocaleDateString()}</td>
                 <td style="text-align:right;">
-                  <button onclick="inspectDatasetTables('${ds.id}')" class="btn btn-secondary" style="font-size:11px; padding:4px 8px;">Inspect</button>
-                  <button onclick="quickScanDataset('${ds.id}', '${ds.name}')" class="btn btn-primary" style="font-size:11px; padding:4px 10px;">⚡ Scan</button>
-                  <button onclick="deleteDataset('${ds.id}', '${ds.name}')" class="btn btn-danger" style="font-size:11px; padding:4px 8px;">Delete</button>
+                  <button type="button" onclick="inspectDatasetTables('${ds.id}')" class="btn btn-secondary btn-sm">Inspect</button>
+                  <button type="button" onclick="quickScanDataset('${ds.id}', '${ds.name}')" class="btn btn-primary btn-sm">Scan</button>
+                  <button type="button" onclick="deleteDataset('${ds.id}', '${ds.name}')" class="btn btn-danger btn-sm">Delete</button>
                 </td>
               </tr>
             `).join('')}
@@ -572,7 +602,7 @@ async function quickScanDataset(datasetId, datasetName) {
     });
     if (!res.ok) throw new Error('Scan failed');
     const job = await res.json();
-    showToast(`✓ Scanned ${datasetName}: Found ${job.candidate_count} candidate fields.`, 'success');
+    showToast(`Scan complete for ${datasetName}: found ${job.candidate_count} candidate fields.`, 'success');
     await updateSidebarPendingBadge();
     await renderActiveView();
   } catch (e) {
@@ -593,7 +623,7 @@ async function uploadFile(event, type) {
       const err = await res.json();
       throw new Error(err.detail || 'Upload failed');
     }
-    showToast(`✓ File "${file.name}" registered successfully!`, 'success');
+    showToast(`File "${file.name}" registered successfully.`, 'success');
     renderActiveView();
   } catch (err) {
     showToast(`Upload error: ${err.message}`, 'error');
@@ -603,51 +633,51 @@ async function uploadFile(event, type) {
 async function deleteDataset(id, name) {
   if (!confirm(`Delete dataset "${name}"?`)) return;
   await fetch(`/api/datasets/${id}`, { method: 'DELETE' });
-  showToast(`Deleted ${name}`, 'info');
+  showToast(`Deleted ${name}.`, 'info');
   renderActiveView();
 }
 
 async function inspectDatasetTables(datasetId) {
   const box = document.getElementById('schema-inspector-box');
-  box.innerHTML = `<div class="card" style="padding:24px; text-align:center; color:#64748b;">Loading schema tables...</div>`;
+  box.innerHTML = `<div class="card" style="padding:20px; text-align:center; color:#64748b;" role="status">Loading schema tables...</div>`;
 
   const res = await fetch(`/api/datasets/${datasetId}/tables`);
   const tables = await res.json();
 
   box.innerHTML = `
-    <div class="card" style="border:1.5px solid var(--brand-primary); margin-top:24px;">
+    <div class="card" style="border:1.5px solid var(--brand-primary); margin-top:20px;">
       <div class="card-header">
         <div>
           <h3 class="card-title" style="color:var(--brand-primary);">Schema Structure & Sample Values</h3>
-          <p class="card-subtitle">Read-only preview of discovered column data types and sanitized samples</p>
+          <p class="card-subtitle">Read-only preview of discovered column types and sanitized cell samples</p>
         </div>
-        <button onclick="document.getElementById('schema-inspector-box').innerHTML=''" class="btn btn-secondary" style="font-size:11px;">Close Inspector ✕</button>
+        <button type="button" onclick="document.getElementById('schema-inspector-box').innerHTML=''" class="btn btn-secondary btn-sm">Close Inspector</button>
       </div>
       ${tables.map(t => `
-        <div style="margin-bottom:20px; border:1px solid #e2e8f0; border-radius:10px; overflow:hidden;">
-          <div style="padding:12px 16px; background:#f8fafc; border-bottom:1px solid #e2e8f0; font-weight:700; font-size:13px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="margin-bottom:18px; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
+          <div style="padding:10px 14px; background:#f8fafc; border-bottom:1px solid #e2e8f0; font-weight:600; font-size:13px; display:flex; justify-content:space-between; align-items:center;">
             <span>Table: <strong style="font-family:'JetBrains Mono',monospace; color:#0f172a;">${t.table_name}</strong></span>
-            <span style="font-size:11px; color:#64748b; font-weight:500;">${t.row_count} rows • ${t.columns.length} columns</span>
+            <span style="font-size:11px; color:#64748b; font-weight:500;">${t.row_count} rows &bull; ${t.columns.length} columns</span>
           </div>
           <div class="table-responsive" style="border:none; border-radius:0;">
             <table>
               <thead>
                 <tr>
-                  <th style="width:220px;">Column Name</th>
-                  <th style="width:120px;">Data Type</th>
-                  <th style="width:120px;">Non-Null Count</th>
-                  <th>Sanitized Sample Values</th>
+                  <th scope="col" style="width:200px;">Column Name</th>
+                  <th scope="col" style="width:110px;">Data Type</th>
+                  <th scope="col" style="width:110px;">Non-Null Count</th>
+                  <th scope="col">Sanitized Sample Values</th>
                 </tr>
               </thead>
               <tbody>
                 ${t.columns.map(c => `
                   <tr>
-                    <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#0f172a;">${c.name}</td>
+                    <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#0f172a;">${c.name}</td>
                     <td style="font-family:'JetBrains Mono',monospace; color:#64748b; font-size:11px;">${c.data_type}</td>
                     <td style="font-family:'JetBrains Mono',monospace;">${c.non_null_count}</td>
                     <td>
                       <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                        ${c.sample_values.slice(0, 3).map(v => `<span style="background:#f1f5f9; border:1px solid #e2e8f0; padding:2px 8px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#334155;">${v}</span>`).join('')}
+                        ${c.sample_values.slice(0, 3).map(v => `<span style="background:#f1f5f9; border:1px solid #e2e8f0; padding:1px 6px; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#334155;">${v}</span>`).join('')}
                       </div>
                     </td>
                   </tr>
@@ -668,10 +698,10 @@ async function renderScan(container) {
 
   if (!datasets || datasets.length === 0) {
     container.innerHTML = `
-      <div class="card" style="max-width:600px; margin:40px auto; text-align:center; padding:40px;">
-        <h3 style="font-size:18px; font-weight:800; margin-bottom:8px;">No Datasets Available</h3>
-        <p style="font-size:12px; color:#64748b; margin-bottom:20px;">Connect a CSV or SQLite source to run discovery scans.</p>
-        <button onclick="navigateTo('datasources')" class="btn btn-primary">Go to Data Sources</button>
+      <div class="card" style="max-width:540px; margin:40px auto; text-align:center; padding:36px;">
+        <h3 style="font-size:16px; font-weight:700; margin-bottom:8px;">No Datasets Configured</h3>
+        <p style="font-size:13px; color:#64748b; margin-bottom:20px;">Connect a CSV or SQLite source to execute discovery scans.</p>
+        <button type="button" onclick="navigateTo('datasources')" class="btn btn-primary">Go to Data Sources</button>
       </div>
     `;
     return;
@@ -680,41 +710,40 @@ async function renderScan(container) {
   const selectedDs = state.selectedScanDatasetId || datasets[0].id;
 
   container.innerHTML = `
-    <!-- Callout -->
     <div class="help-callout">
       <div>
-        <strong>💡 Multi-Signal Detection Engine:</strong> Evaluates header naming patterns (40%), regex value distributions (45%), and format validators (15% Aadhaar Verhoeff, Indian Phone, Entity-aware PAN, DOB) to score confidence.
+        <strong>Multi-Signal Detection Methodology:</strong> Combines column header patterns (40%), value format regular expressions (45%), and algorithmic format validators (15% Aadhaar Verhoeff, Indian Phone, Entity-aware PAN, DOB) to score confidence.
       </div>
-      <button onclick="runOneClickDiscovery()" class="btn btn-primary" style="font-size:11px; padding:4px 10px; white-space:nowrap;">⚡ 1-Click Scan All</button>
+      <button type="button" onclick="runOneClickDiscovery()" class="btn btn-primary btn-sm">Scan All Sources</button>
     </div>
 
     <!-- Scan Launch Card -->
     <div class="card">
       <div class="card-header">
         <div>
-          <h3 class="card-title">Execute Personal-Data Discovery Scan</h3>
-          <p class="card-subtitle">Select a target data repository to inspect columns and sample rows</p>
+          <h3 class="card-title">Run Personal Data Discovery Scan</h3>
+          <p class="card-subtitle">Select a target data repository to analyze column schemas and value distributions</p>
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; align-items:flex-end;">
+      <div style="display:grid; grid-template-columns: 2fr 1fr; gap:16px; align-items:flex-end;">
         <div>
-          <label style="font-size:12px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">Target Data Repository</label>
-          <select id="scan-dataset-select" style="width:100%; padding:10px 12px; border:1px solid #cbd5e1; border-radius:8px; font-size:13px; font-weight:600; background:#ffffff;">
+          <label for="scan-dataset-select" style="font-size:12px; font-weight:600; color:#334155; display:block; margin-bottom:6px;">Target Repository</label>
+          <select id="scan-dataset-select" style="width:100%;">
             ${datasets.map(d => `
-              <option value="${d.id}" ${d.id === selectedDs ? 'selected' : ''}>${d.name} (${d.source_type.toUpperCase()} • ${d.row_count.toLocaleString()} rows)</option>
+              <option value="${d.id}" ${d.id === selectedDs ? 'selected' : ''}>${d.name} (${d.source_type.toUpperCase()} &bull; ${d.row_count.toLocaleString()} rows)</option>
             `).join('')}
           </select>
         </div>
 
         <div>
-          <button onclick="executeScan()" id="btn-run-scan" class="btn btn-primary" style="width:100%; padding:11px; justify-content:center; font-size:13px; font-weight:700;">
-            ${icons.scandata} Execute Discovery Scan
+          <button type="button" onclick="executeScan()" id="btn-run-scan" class="btn btn-primary" style="width:100%; padding:10px; justify-content:center;">
+            Execute Discovery Scan
           </button>
         </div>
       </div>
 
-      <div id="scan-feedback" style="margin-top:20px;"></div>
+      <div id="scan-feedback" style="margin-top:16px;"></div>
     </div>
   `;
 }
@@ -725,8 +754,8 @@ async function executeScan() {
   const feedback = document.getElementById('scan-feedback');
 
   btn.disabled = true;
-  btn.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> Scanning Data...`;
-  feedback.innerHTML = `<div style="padding:14px; font-size:12px; color:#488099; background:#f0f7fa; border:1px solid #bcdbe7; border-radius:8px;">Scanning columns, computing multi-signal confidence scores, and validating checksums...</div>`;
+  btn.textContent = 'Scanning Data...';
+  feedback.innerHTML = `<div style="padding:12px; font-size:12px; color:#24556d; background:#f0f7fa; border:1px solid #bcdbe7; border-radius:6px;" role="status">Inspecting column values, calculating multi-signal confidence scores, and verifying checksums...</div>`;
 
   try {
     const res = await fetch('/api/scans', {
@@ -739,28 +768,28 @@ async function executeScan() {
       throw new Error(err.detail || 'Scan failed');
     }
     const job = await res.json();
-    showToast(`✓ Scan completed! Discovered ${job.candidate_count} candidate fields.`, 'success');
+    showToast(`Scan completed: discovered ${job.candidate_count} candidate fields.`, 'success');
     await updateSidebarPendingBadge();
 
     feedback.innerHTML = `
-      <div style="background:#ecfdf5; border:1.5px solid #a7f3d0; border-radius:10px; padding:18px;">
+      <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; padding:16px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
-            <h4 style="color:#065f46; font-size:15px; font-weight:700;">✓ Discovery Scan Completed Successfully</h4>
-            <p style="font-size:12px; color:#047857; margin-top:3px;">
+            <h4 style="color:#065f46; font-size:14px; font-weight:700;">Discovery Scan Complete</h4>
+            <p style="font-size:12px; color:#047857; margin-top:2px;">
               Inspected <strong>${job.total_columns}</strong> columns across <strong>${job.total_tables}</strong> tables.
               Discovered <strong>${job.candidate_count}</strong> personal data fields.
             </p>
           </div>
-          <button onclick="navigateTo('inventory')" class="btn btn-primary" style="background:#047857; border-color:#065f46;">View Evidence Inventory &rarr;</button>
+          <button type="button" onclick="navigateTo('inventory')" class="btn btn-primary btn-sm" style="background:#065f46; border-color:#065f46;">View in Inventory &rarr;</button>
         </div>
       </div>
     `;
   } catch (err) {
-    feedback.innerHTML = `<div style="padding:14px; font-size:12px; color:#b91c1c; background:#fef2f2; border:1px solid #fecaca; border-radius:8px;">Scan error: ${err.message}</div>`;
+    feedback.innerHTML = `<div style="padding:12px; font-size:12px; color:#991b1b; background:#fef2f2; border:1px solid #fecaca; border-radius:6px;" role="alert">Scan error: ${err.message}</div>`;
   } finally {
     btn.disabled = false;
-    btn.innerHTML = `${icons.scandata} Execute Discovery Scan`;
+    btn.textContent = 'Execute Discovery Scan';
   }
 }
 
@@ -778,49 +807,49 @@ async function renderInventory(container) {
   const dobCount = inventory.filter(r => r.candidate_class === 'date_of_birth').length;
 
   container.innerHTML = `
-    <!-- Explanatory Banner -->
+    <!-- Top Callout -->
     <div class="help-callout">
       <div>
-        <strong>💡 Master Evidence Inventory:</strong> Centralized technical catalog linking every detected field to declared processing purpose, retention period, and human review verification.
+        <strong>Master Evidence Inventory:</strong> Centralized technical catalog linking each detected field to declared processing purpose, retention schedules, and review status.
       </div>
       <div class="btn-group">
-        <a href="/api/reports/inventory.csv" download class="btn btn-secondary" style="font-size:11px; padding:4px 8px;">Export CSV</a>
-        <a href="/api/reports/inventory.pdf" target="_blank" class="btn btn-primary" style="font-size:11px; padding:4px 8px;">Export PDF</a>
+        <a href="/api/reports/inventory.csv" download class="btn btn-secondary btn-sm">Export CSV</a>
+        <a href="/api/reports/inventory.pdf" target="_blank" class="btn btn-primary btn-sm">Export PDF</a>
       </div>
     </div>
 
-    <!-- Quick Filter Chips Ribbon -->
-    <div class="filter-chips-bar">
-      <span style="font-size:11px; font-weight:700; color:#64748b; margin-right:4px;">1-Click Filter:</span>
-      <div class="filter-chip ${state.invActiveChip === 'all' ? 'active' : ''}" onclick="applyInvChip('all')">All Fields (${inventory.length})</div>
-      <div class="filter-chip ${state.invActiveChip === 'missing' ? 'active' : ''}" onclick="applyInvChip('missing')" style="${missingCount > 0 ? 'border-color:#fde68a;' : ''}">⚠️ Missing Notice/Retention (${missingCount})</div>
-      <div class="filter-chip ${state.invActiveChip === 'government_id' ? 'active' : ''}" onclick="applyInvChip('government_id')">🛡️ Gov IDs (${govidCount})</div>
-      <div class="filter-chip ${state.invActiveChip === 'email_address' ? 'active' : ''}" onclick="applyInvChip('email_address')">📧 Emails (${emailCount})</div>
-      <div class="filter-chip ${state.invActiveChip === 'phone_number' ? 'active' : ''}" onclick="applyInvChip('phone_number')">📞 Phones (${phoneCount})</div>
-      <div class="filter-chip ${state.invActiveChip === 'person_name' ? 'active' : ''}" onclick="applyInvChip('person_name')">👤 Names (${nameCount})</div>
-      <div class="filter-chip ${state.invActiveChip === 'date_of_birth' ? 'active' : ''}" onclick="applyInvChip('date_of_birth')">🎂 DOBs (${dobCount})</div>
+    <!-- Filter Chips Ribbon -->
+    <div class="filter-chips-bar" role="toolbar" aria-label="Category Filters">
+      <span style="font-size:11px; font-weight:600; color:#64748b; margin-right:4px;">Filter:</span>
+      <button type="button" class="filter-chip ${state.invActiveChip === 'all' ? 'active' : ''}" onclick="applyInvChip('all')">All Fields (${inventory.length})</button>
+      <button type="button" class="filter-chip ${state.invActiveChip === 'missing' ? 'active' : ''}" onclick="applyInvChip('missing')">Missing Notice/Retention (${missingCount})</button>
+      <button type="button" class="filter-chip ${state.invActiveChip === 'government_id' ? 'active' : ''}" onclick="applyInvChip('government_id')">Government IDs (${govidCount})</button>
+      <button type="button" class="filter-chip ${state.invActiveChip === 'email_address' ? 'active' : ''}" onclick="applyInvChip('email_address')">Email Addresses (${emailCount})</button>
+      <button type="button" class="filter-chip ${state.invActiveChip === 'phone_number' ? 'active' : ''}" onclick="applyInvChip('phone_number')">Phone Numbers (${phoneCount})</button>
+      <button type="button" class="filter-chip ${state.invActiveChip === 'person_name' ? 'active' : ''}" onclick="applyInvChip('person_name')">Person Names (${nameCount})</button>
+      <button type="button" class="filter-chip ${state.invActiveChip === 'date_of_birth' ? 'active' : ''}" onclick="applyInvChip('date_of_birth')">Dates of Birth (${dobCount})</button>
     </div>
 
     <!-- Filter Control Card -->
-    <div class="card" style="margin-bottom:20px; padding:16px 20px;">
+    <div class="card" style="margin-bottom:16px; padding:14px 18px;">
       <div class="filter-box">
-        <input type="text" id="inv-search" oninput="filterInventoryTable()" placeholder="Search column, table, purpose, or dataset..." style="flex:1; min-width:260px;"/>
-        <select id="inv-class-filter" onchange="filterInventoryTable()" style="min-width:180px;">
-          <option value="">All Data Classes</option>
+        <input type="text" id="inv-search" oninput="filterInventoryTable()" placeholder="Search column, table, purpose, or dataset..." style="flex:1; min-width:240px;" aria-label="Search inventory"/>
+        <select id="inv-class-filter" onchange="filterInventoryTable()" style="min-width:160px;" aria-label="Filter by data class">
+          <option value="">All Categories</option>
           <option value="person_name">Person Name</option>
           <option value="email_address">Email Address</option>
           <option value="phone_number">Phone Number</option>
-          <option value="government_id">Gov ID (Aadhaar/PAN)</option>
+          <option value="government_id">Government ID</option>
           <option value="date_of_birth">Date of Birth</option>
         </select>
-        <select id="inv-meta-filter" onchange="filterInventoryTable()" style="min-width:190px;">
-          <option value="">All Metadata Statuses</option>
+        <select id="inv-meta-filter" onchange="filterInventoryTable()" style="min-width:170px;" aria-label="Filter by notice status">
+          <option value="">All Statuses</option>
           <option value="Complete metadata">Complete</option>
           <option value="Missing purpose">Missing Purpose</option>
           <option value="Missing retention">Missing Retention</option>
           <option value="Missing both">Missing Both</option>
         </select>
-        <button onclick="document.getElementById('inv-search').value=''; document.getElementById('inv-class-filter').value=''; document.getElementById('inv-meta-filter').value=''; applyInvChip('all');" class="btn btn-secondary" style="font-size:11px; padding:7px 12px;">Reset</button>
+        <button type="button" onclick="document.getElementById('inv-search').value=''; document.getElementById('inv-class-filter').value=''; document.getElementById('inv-meta-filter').value=''; applyInvChip('all');" class="btn btn-secondary btn-sm">Clear Filters</button>
       </div>
     </div>
 
@@ -829,7 +858,7 @@ async function renderInventory(container) {
       <div class="card-header">
         <div>
           <h3 class="card-title">Technical Evidence Records</h3>
-          <p class="card-subtitle">Inspected database columns and classified personal data</p>
+          <p class="card-subtitle">Inspected database columns and classified personal data attributes</p>
         </div>
       </div>
 
@@ -837,15 +866,15 @@ async function renderInventory(container) {
         <table id="inv-table">
           <thead>
             <tr>
-              <th>Dataset / Table</th>
-              <th>Column Name</th>
-              <th>Data Class</th>
-              <th>Confidence</th>
-              <th>Metadata Status</th>
-              <th>Declared Purpose</th>
-              <th>Retention Rule</th>
-              <th>Review</th>
-              <th style="text-align:right;">Actions</th>
+              <th scope="col">Dataset / Table</th>
+              <th scope="col">Column Name</th>
+              <th scope="col">Data Class</th>
+              <th scope="col">Confidence</th>
+              <th scope="col">Notice Status</th>
+              <th scope="col">Declared Purpose</th>
+              <th scope="col">Retention Schedule</th>
+              <th scope="col">Review Status</th>
+              <th scope="col" style="text-align:right;">Actions</th>
             </tr>
           </thead>
           <tbody id="inv-tbody">
@@ -883,28 +912,28 @@ function applyInvChip(chip) {
 
 function renderInventoryRows(records) {
   if (records.length === 0) {
-    return `<tr><td colspan="9" style="text-align:center; padding:24px; color:#94a3b8;">No candidate detections matched current filter.</td></tr>`;
+    return `<tr><td colspan="9" style="text-align:center; padding:24px; color:#64748b;">No candidate detections match the current filter.</td></tr>`;
   }
   return records.map(r => `
     <tr>
       <td>
         <strong style="color:#0f172a; display:block;">${r.dataset_name}</strong>
-        <span style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#64748b;">${r.table_name || 'root table'}</span>
+        <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#64748b;">${r.table_name || 'root table'}</span>
       </td>
-      <td style="font-family:'JetBrains Mono',monospace; font-weight:700;">${r.column_name}</td>
+      <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#0f172a;">${r.column_name}</td>
       <td>${renderClassBadge(r.candidate_class)}</td>
       <td>${renderConfidenceBar(r.confidence_score)}</td>
       <td>${renderMetaBadge(r.metadata_status)}</td>
-      <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.declared_purpose || ''}">
-        ${r.declared_purpose || '<span style="color:#b45309; font-style:italic;">⚠️ Unspecified</span>'}
+      <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.declared_purpose || ''}">
+        ${r.declared_purpose || '<span style="color:#92400e; font-style:italic;">Unspecified</span>'}
       </td>
       <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-        ${r.retention_period || '<span style="color:#c2410c; font-style:italic;">⚠️ Unspecified</span>'}
+        ${r.retention_period || '<span style="color:#9a3412; font-style:italic;">Unspecified</span>'}
       </td>
       <td>${renderReviewBadge(r.review_status)}</td>
       <td style="text-align:right; white-space:nowrap;">
-        <button onclick="openEvidenceModal('${r.id}')" class="btn btn-secondary" style="font-size:11px; padding:4px 8px;">Evidence</button>
-        <button onclick="openReviewModal('${r.id}')" class="btn btn-primary" style="font-size:11px; padding:4px 8px;">Review</button>
+        <button type="button" onclick="openEvidenceModal('${r.id}')" class="btn btn-secondary btn-sm">Evidence</button>
+        <button type="button" onclick="openReviewModal('${r.id}')" class="btn btn-primary btn-sm">Review</button>
       </td>
     </tr>
   `).join('');
@@ -938,9 +967,9 @@ async function renderMetadata(container) {
   container.innerHTML = `
     <div class="help-callout">
       <div>
-        <strong>💡 Purpose & Retention Register:</strong> Documents statutory processing grounds (e.g., customer onboarding, salary disbursement) and retention limits to satisfy DPDP Section 5 & 8 principles.
+        <strong>Purpose & Retention Register:</strong> Documents statutory processing grounds (e.g., account onboarding, payroll) and retention schedules required under DPDP Section 5 & 8 principles.
       </div>
-      <button onclick="openNewMetadataModal()" class="btn btn-primary" style="font-size:11px; padding:6px 12px;">+ New Notice</button>
+      <button type="button" onclick="openNewMetadataModal()" class="btn btn-primary btn-sm">+ Add Purpose Notice</button>
     </div>
 
     <div class="card">
@@ -955,24 +984,24 @@ async function renderMetadata(container) {
         <table>
           <thead>
             <tr>
-              <th>Dataset / Table</th>
-              <th>Column Name</th>
-              <th>Class</th>
-              <th>Declared Purpose</th>
-              <th>Retention Rule</th>
-              <th>Owner</th>
-              <th>Reviewed</th>
+              <th scope="col">Dataset / Table</th>
+              <th scope="col">Column Name</th>
+              <th scope="col">Class</th>
+              <th scope="col">Declared Purpose</th>
+              <th scope="col">Retention Schedule</th>
+              <th scope="col">Owner</th>
+              <th scope="col">Last Reviewed</th>
             </tr>
           </thead>
           <tbody>
             ${metadata.map(m => `
               <tr>
                 <td><strong>${m.dataset_name || 'Global'}</strong> <span style="font-size:10px; color:#64748b; font-family:'JetBrains Mono',monospace;">${m.table_name || 'All'}</span></td>
-                <td style="font-family:'JetBrains Mono',monospace; font-weight:700;">${m.column_name}</td>
-                <td>${m.data_class ? renderClassBadge(m.data_class) : '—'}</td>
-                <td>${m.declared_purpose || '<span style="color:#b45309; font-style:italic;">⚠️ Unspecified</span>'}</td>
-                <td>${m.retention_period || '<span style="color:#c2410c; font-style:italic;">⚠️ Unspecified</span>'}</td>
-                <td style="color:#64748b;">${m.metadata_owner || 'DPO Team'}</td>
+                <td style="font-family:'JetBrains Mono',monospace; font-weight:600;">${m.column_name}</td>
+                <td>${m.data_class ? renderClassBadge(m.data_class) : '&mdash;'}</td>
+                <td>${m.declared_purpose || '<span style="color:#92400e; font-style:italic;">Unspecified</span>'}</td>
+                <td>${m.retention_period || '<span style="color:#9a3412; font-style:italic;">Unspecified</span>'}</td>
+                <td style="color:#475569;">${m.metadata_owner || 'DPO Team'}</td>
                 <td style="font-family:'JetBrains Mono',monospace; font-size:11px;">${m.last_reviewed_date || 'Active'}</td>
               </tr>
             `).join('')}
@@ -993,39 +1022,39 @@ async function renderGaps(container) {
   container.innerHTML = `
     <div class="help-callout">
       <div>
-        <strong>💡 Compliance Gap Diagnostics:</strong> Highlights discovered personal data fields that lack documented processing notices, indefinite retention, or pending human review.
+        <strong>Compliance Gap Diagnostics:</strong> Highlights discovered personal data fields that lack documented processing notices, indefinite retention, or unconfirmed triage.
       </div>
-      <a href="/api/reports/gaps.csv" download class="btn btn-warning" style="font-size:11px; padding:4px 8px;">Export Gaps CSV</a>
+      <a href="/api/reports/gaps.csv" download class="btn btn-warning btn-sm">Export Gaps CSV</a>
     </div>
 
     <div class="kpi-grid">
-      <div class="kpi-card" style="background:#fffbeb; border-color:#fde68a;">
-        <div class="kpi-label" style="color:#b45309;">Missing Purpose</div>
-        <div class="kpi-val" style="color:#b45309;">${s.missing_purpose_count}</div>
-        <div class="kpi-sub" style="color:#b45309;">No notice declared</div>
+      <div class="kpi-card" style="border-top-color:#d97706;">
+        <div class="kpi-label" style="color:#92400e;">Missing Purpose</div>
+        <div class="kpi-val" style="color:#92400e;">${s.missing_purpose_count}</div>
+        <div class="kpi-sub">No declared notice</div>
       </div>
-      <div class="kpi-card" style="background:#fff7ed; border-color:#fed7aa;">
-        <div class="kpi-label" style="color:#c2410c;">Missing Retention</div>
-        <div class="kpi-val" style="color:#c2410c;">${s.missing_retention_count}</div>
-        <div class="kpi-sub" style="color:#c2410c;">Indefinite storage risk</div>
+      <div class="kpi-card" style="border-top-color:#ea580c;">
+        <div class="kpi-label" style="color:#9a3412;">Missing Retention</div>
+        <div class="kpi-val" style="color:#9a3412;">${s.missing_retention_count}</div>
+        <div class="kpi-sub">Indefinite storage risk</div>
       </div>
-      <div class="kpi-card" style="background:#fef2f2; border-color:#fecaca;">
-        <div class="kpi-label" style="color:#b91c1c;">Missing Both</div>
-        <div class="kpi-val" style="color:#b91c1c;">${s.missing_both_count}</div>
-        <div class="kpi-sub" style="color:#b91c1c;">Severe gap</div>
+      <div class="kpi-card" style="border-top-color:#dc2626;">
+        <div class="kpi-label" style="color:#991b1b;">Missing Both</div>
+        <div class="kpi-val" style="color:#991b1b;">${s.missing_both_count}</div>
+        <div class="kpi-sub">Severe compliance gap</div>
       </div>
-      <div class="kpi-card" style="background:#f0f9ff; border-color:#bcdbe7;">
-        <div class="kpi-label" style="color:#36657c;">Unreviewed</div>
-        <div class="kpi-val" style="color:#488099;">${s.unreviewed_candidate_count}</div>
-        <div class="kpi-sub" style="color:#36657c;">Awaiting DPO triage</div>
+      <div class="kpi-card" style="border-top-color:#24556d;">
+        <div class="kpi-label" style="color:#24556d;">Unreviewed</div>
+        <div class="kpi-val" style="color:#24556d;">${s.unreviewed_candidate_count}</div>
+        <div class="kpi-sub">Awaiting triage</div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <div>
-          <h3 class="card-title">Identified Technical Evidence Gaps (${data.gap_records.length})</h3>
-          <p class="card-subtitle">Candidates lacking statutory notices, retention policies, or confirmed review</p>
+          <h3 class="card-title">Identified Compliance Gaps (${data.gap_records.length})</h3>
+          <p class="card-subtitle">Candidates lacking statutory notices, retention policies, or verified review</p>
         </div>
       </div>
 
@@ -1033,26 +1062,26 @@ async function renderGaps(container) {
         <table>
           <thead>
             <tr>
-              <th>Dataset / Table</th>
-              <th>Field</th>
-              <th>Class</th>
-              <th>Confidence</th>
-              <th>Metadata Gap Status</th>
-              <th>Review Status</th>
-              <th style="text-align:right;">Action</th>
+              <th scope="col">Dataset / Table</th>
+              <th scope="col">Field</th>
+              <th scope="col">Class</th>
+              <th scope="col">Confidence</th>
+              <th scope="col">Identified Gap</th>
+              <th scope="col">Review Status</th>
+              <th scope="col" style="text-align:right;">Action</th>
             </tr>
           </thead>
           <tbody>
             ${data.gap_records.map(r => `
               <tr>
                 <td><strong>${r.dataset_name}</strong> <span style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#64748b;">${r.table_name}</span></td>
-                <td style="font-family:'JetBrains Mono',monospace; font-weight:700;">${r.column_name}</td>
+                <td style="font-family:'JetBrains Mono',monospace; font-weight:600;">${r.column_name}</td>
                 <td>${renderClassBadge(r.candidate_class)}</td>
                 <td>${renderConfidenceBar(r.confidence_score)}</td>
                 <td>${renderMetaBadge(r.metadata_status)}</td>
                 <td>${renderReviewBadge(r.review_status)}</td>
                 <td style="text-align:right;">
-                  <button onclick="openReviewModal('${r.id}')" class="btn btn-primary" style="font-size:11px; padding:3px 8px;">Remediate</button>
+                  <button type="button" onclick="openReviewModal('${r.id}')" class="btn btn-primary btn-sm">Remediate</button>
                 </td>
               </tr>
             `).join('')}
@@ -1077,36 +1106,34 @@ async function renderEvaluation(container) {
   container.innerHTML = `
     <div class="help-callout">
       <div>
-        <strong>💡 Accuracy & Benchmark Metrics:</strong> Benchmarked against labelled ground-truth synthetic test cases across all five statutory PII classes.
+        <strong>Accuracy & Benchmark Metrics:</strong> Benchmarked against labelled ground-truth synthetic test cases across all five statutory personal data classes.
       </div>
-      <button onclick="runLiveEvaluation()" id="btn-eval" class="btn btn-primary" style="font-size:11px; padding:6px 14px; font-weight:700;">
-        ⚡ Run Accuracy Test
-      </button>
+      <button type="button" onclick="runLiveEvaluation()" id="btn-eval" class="btn btn-primary btn-sm">Run Accuracy Benchmark</button>
     </div>
 
     ${!latest || Object.keys(classMetrics).length === 0 ? `
-      <div class="card" style="text-align:center; padding:40px; color:#64748b;">
-        <h4 style="font-size:16px; font-weight:700; color:#0f172a; margin-bottom:8px;">No Benchmark Evaluation Runs Yet</h4>
-        <p style="font-size:12px; margin-bottom:20px;">Click the button below to execute an automated multi-signal precision, recall, and F1 test across labelled ground-truth samples.</p>
-        <button onclick="runLiveEvaluation()" class="btn btn-primary">Run First Accuracy Benchmark</button>
+      <div class="card" style="text-align:center; padding:36px; color:#64748b;">
+        <h4 style="font-size:15px; font-weight:600; color:#0f172a; margin-bottom:6px;">No Benchmark Evaluations Recorded</h4>
+        <p style="font-size:13px; margin-bottom:16px;">Execute an automated accuracy test across labelled test cases to compute precision, recall, and F1 score.</p>
+        <button type="button" onclick="runLiveEvaluation()" class="btn btn-primary">Run First Accuracy Benchmark</button>
       </div>
     ` : `
       <!-- KPI Grid -->
       <div class="kpi-grid">
-        <div class="kpi-card" style="background:#f0fdf4; border-color:#bbf7d0;">
-          <div class="kpi-label" style="color:#15803d;">Macro Precision</div>
-          <div class="kpi-val" style="color:#15803d;">${((latest.overall_precision || 0) * 100).toFixed(1)}%</div>
-          <div class="kpi-sub" style="color:#15803d;">Low false positives</div>
+        <div class="kpi-card" style="border-top-color:#059669;">
+          <div class="kpi-label" style="color:#065f46;">Macro Precision</div>
+          <div class="kpi-val" style="color:#065f46;">${((latest.overall_precision || 0) * 100).toFixed(1)}%</div>
+          <div class="kpi-sub">Low false positive rate</div>
         </div>
-        <div class="kpi-card" style="background:#f0f9ff; border-color:#bcdbe7;">
-          <div class="kpi-label" style="color:#488099;">Macro Recall</div>
-          <div class="kpi-val" style="color:#488099;">${((latest.overall_recall || 0) * 100).toFixed(1)}%</div>
-          <div class="kpi-sub" style="color:#488099;">High ground-truth coverage</div>
+        <div class="kpi-card" style="border-top-color:#24556d;">
+          <div class="kpi-label" style="color:#24556d;">Macro Recall</div>
+          <div class="kpi-val" style="color:#24556d;">${((latest.overall_recall || 0) * 100).toFixed(1)}%</div>
+          <div class="kpi-sub">High coverage across test set</div>
         </div>
-        <div class="kpi-card" style="background:#f0fdf4; border-color:#bbf7d0;">
-          <div class="kpi-label" style="color:#15803d;">Macro F1 Score</div>
-          <div class="kpi-val" style="color:#15803d;">${((latest.overall_f1 || 0) * 100).toFixed(1)}%</div>
-          <div class="kpi-sub" style="color:#15803d;">Harmonic test set accuracy</div>
+        <div class="kpi-card" style="border-top-color:#059669;">
+          <div class="kpi-label" style="color:#065f46;">Macro F1 Score</div>
+          <div class="kpi-val" style="color:#065f46;">${((latest.overall_f1 || 0) * 100).toFixed(1)}%</div>
+          <div class="kpi-sub">Harmonic benchmark balance</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Test Samples</div>
@@ -1115,26 +1142,26 @@ async function renderEvaluation(container) {
         </div>
       </div>
 
-      <!-- Class-by-Class Accuracy Card -->
+      <!-- Class-by-Class Table -->
       <div class="card">
         <div class="card-header">
           <div>
             <h3 class="card-title">Class-by-Class Benchmark Accuracy</h3>
-            <p class="card-subtitle">Precision, recall, and harmonic F1 across the five personal data classes (${latest.test_set_name || 'Standard Benchmark'})</p>
+            <p class="card-subtitle">Precision, recall, and harmonic F1 across the five personal data classes</p>
           </div>
-          <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#64748b;">Run ID: ${(latest.id || '').slice(0, 8)}</span>
+          <span style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#64748b;">Run: ${(latest.id || '').slice(0, 8)}</span>
         </div>
 
         <div class="table-responsive">
           <table>
             <thead>
               <tr>
-                <th>Personal Data Class</th>
-                <th>True Support</th>
-                <th>Predicted</th>
-                <th>Precision</th>
-                <th>Recall</th>
-                <th>F1 Score</th>
+                <th scope="col">Personal Data Class</th>
+                <th scope="col">True Support</th>
+                <th scope="col">Predicted</th>
+                <th scope="col">Precision</th>
+                <th scope="col">Recall</th>
+                <th scope="col">F1 Score</th>
               </tr>
             </thead>
             <tbody>
@@ -1169,23 +1196,23 @@ async function renderEvaluation(container) {
             <p class="card-subtitle">How PrivacyLens combines signals into an auditable confidence score</p>
           </div>
         </div>
-        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
-          <div style="padding:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px;">
-            <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">1. Column Regex Pattern (40%)</div>
-            <p style="font-size:11px; color:#64748b;">Header matches against curated positive and negative regular expressions.</p>
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:14px;">
+          <div style="padding:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
+            <div style="font-weight:600; color:#0f172a; margin-bottom:2px; font-size:13px;">1. Column Pattern (40%)</div>
+            <p style="font-size:12px; color:#475569; line-height:1.4;">Header matches against positive and negative regular expressions.</p>
           </div>
-          <div style="padding:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px;">
-            <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">2. Value Pattern Ratio (45%)</div>
-            <p style="font-size:11px; color:#64748b;">Ratio of sampled cell values strictly matching format regex patterns.</p>
+          <div style="padding:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
+            <div style="font-weight:600; color:#0f172a; margin-bottom:2px; font-size:13px;">2. Value Pattern Ratio (45%)</div>
+            <p style="font-size:12px; color:#475569; line-height:1.4;">Ratio of sampled cell values strictly matching format regex patterns.</p>
           </div>
-          <div style="padding:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px;">
-            <div style="font-weight:700; color:#0f172a; margin-bottom:4px;">3. Validator Bonus (15%)</div>
-            <p style="font-size:11px; color:#64748b;">Algorithmic verification such as Verhoeff D5 checksum and entity-aware PAN checks.</p>
+          <div style="padding:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
+            <div style="font-weight:600; color:#0f172a; margin-bottom:2px; font-size:13px;">3. Validator Bonus (15%)</div>
+            <p style="font-size:12px; color:#475569; line-height:1.4;">Algorithmic verification including Verhoeff checksum and entity PAN checks.</p>
           </div>
         </div>
       </div>
 
-      <!-- Auditable Sample Predictions Table -->
+      <!-- Sample Benchmark Predictions Table -->
       ${predictions.length > 0 ? `
         <div class="card">
           <div class="card-header">
@@ -1194,28 +1221,28 @@ async function renderEvaluation(container) {
               <p class="card-subtitle">Auditable record of true class versus scanner prediction</p>
             </div>
           </div>
-          <div class="table-responsive" style="max-height:360px; overflow-y:auto;">
+          <div class="table-responsive" style="max-height:340px; overflow-y:auto;">
             <table>
               <thead>
                 <tr>
-                  <th>Field / Column</th>
-                  <th>Sample Value</th>
-                  <th>Ground Truth Class</th>
-                  <th>Predicted Class</th>
-                  <th>Confidence</th>
-                  <th style="text-align:right;">Status</th>
+                  <th scope="col">Field / Column</th>
+                  <th scope="col">Sample Value</th>
+                  <th scope="col">Ground Truth</th>
+                  <th scope="col">Predicted Class</th>
+                  <th scope="col">Confidence</th>
+                  <th scope="col" style="text-align:right;">Status</th>
                 </tr>
               </thead>
               <tbody>
                 ${predictions.slice(0, 15).map(p => `
                   <tr>
-                    <td style="font-family:'JetBrains Mono',monospace; font-weight:700;">${p.column_name}</td>
-                    <td style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#64748b;">${p.sample_value}</td>
+                    <td style="font-family:'JetBrains Mono',monospace; font-weight:600;">${p.column_name}</td>
+                    <td style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#475569;">${p.sample_value}</td>
                     <td>${renderClassBadge(p.true_class)}</td>
                     <td>${renderClassBadge(p.predicted_class)}</td>
                     <td>${renderConfidenceBar(p.confidence)}</td>
                     <td style="text-align:right;">
-                      ${p.is_correct ? '<span class="badge badge-complete">✓ Match</span>' : '<span class="badge badge-missing-b">✕ Mismatch</span>'}
+                      ${p.is_correct ? '<span class="badge badge-complete">Match</span>' : '<span class="badge badge-missing-b">Mismatch</span>'}
                     </td>
                   </tr>
                 `).join('')}
@@ -1232,7 +1259,7 @@ async function runLiveEvaluation() {
   const btn = document.getElementById('btn-eval');
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;">⏳</span> Evaluating benchmark...`;
+    btn.textContent = 'Evaluating benchmark...';
   }
   try {
     const res = await fetch('/api/evaluation', { method: 'POST' });
@@ -1240,14 +1267,14 @@ async function runLiveEvaluation() {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.detail || 'Evaluation request failed');
     }
-    showToast('✓ Accuracy evaluation completed successfully!', 'success');
+    showToast('Accuracy evaluation completed successfully.', 'success');
     await renderActiveView();
   } catch (err) {
     showToast(`Evaluation failed: ${err.message}`, 'error');
   } finally {
     if (btn) {
       btn.disabled = false;
-      btn.textContent = 'Run Accuracy Test';
+      btn.textContent = 'Run Accuracy Benchmark';
     }
   }
 }
@@ -1265,48 +1292,48 @@ async function renderReviewCenter(container) {
     <!-- Explanatory Callout Banner -->
     <div class="help-callout">
       <div>
-        <strong>💡 Human-in-the-Loop Triage Center:</strong> Verify automated multi-signal detections. Use 1-click batch actions to rapidly confirm high-confidence matches (>85%) or adjudicate borderline candidates.
+        <strong>Human-in-the-Loop Triage:</strong> Confirm or reject candidate personal data fields. Use batch actions to quickly confirm high-confidence matches (>85%) or adjudicate borderline candidates.
       </div>
       <div class="btn-group">
         ${highConfCount > 0 ? `
-          <button onclick="quickBatchReview(0.85, 'CONFIRMED')" class="btn btn-primary" style="font-size:11px; padding:5px 12px; font-weight:700;">
-            ✓ Confirm High-Confidence (>85%) [${highConfCount}]
+          <button type="button" onclick="quickBatchReview(0.85, 'CONFIRMED')" class="btn btn-primary btn-sm">
+            Confirm High Confidence (>85%) [${highConfCount}]
           </button>
         ` : ''}
         ${pending.length > 0 ? `
-          <button onclick="quickBatchReview(null, 'CONFIRMED')" class="btn btn-secondary" style="font-size:11px; padding:5px 10px;">
+          <button type="button" onclick="quickBatchReview(null, 'CONFIRMED')" class="btn btn-secondary btn-sm">
             Confirm All [${pending.length}]
           </button>
         ` : ''}
       </div>
     </div>
 
-    <!-- Quick Filter Chips Ribbon -->
-    <div class="filter-chips-bar">
-      <span style="font-size:11px; font-weight:700; color:#64748b; margin-right:4px;">Filter Queue:</span>
-      <div class="filter-chip ${state.reviewActiveChip === 'all' ? 'active' : ''}" onclick="applyReviewChip('all')">All Pending (${pending.length})</div>
-      <div class="filter-chip ${state.reviewActiveChip === 'high' ? 'active' : ''}" onclick="applyReviewChip('high')">High Confidence >85% (${highConfCount})</div>
-      <div class="filter-chip ${state.reviewActiveChip === 'moderate' ? 'active' : ''}" onclick="applyReviewChip('moderate')">Moderate 70-84% (${modConfCount})</div>
-      <div class="filter-chip ${state.reviewActiveChip === 'borderline' ? 'active' : ''}" onclick="applyReviewChip('borderline')">Borderline &lt;70% (${lowConfCount})</div>
+    <!-- Quick Filter Chips -->
+    <div class="filter-chips-bar" role="toolbar" aria-label="Review Queue Filter">
+      <span style="font-size:11px; font-weight:600; color:#64748b; margin-right:4px;">Filter Queue:</span>
+      <button type="button" class="filter-chip ${state.reviewActiveChip === 'all' ? 'active' : ''}" onclick="applyReviewChip('all')">All Pending (${pending.length})</button>
+      <button type="button" class="filter-chip ${state.reviewActiveChip === 'high' ? 'active' : ''}" onclick="applyReviewChip('high')">High Confidence >85% (${highConfCount})</button>
+      <button type="button" class="filter-chip ${state.reviewActiveChip === 'moderate' ? 'active' : ''}" onclick="applyReviewChip('moderate')">Moderate 70-84% (${modConfCount})</button>
+      <button type="button" class="filter-chip ${state.reviewActiveChip === 'borderline' ? 'active' : ''}" onclick="applyReviewChip('borderline')">Borderline &lt;70% (${lowConfCount})</button>
     </div>
 
     <!-- Review Card -->
     <div class="card">
       <div class="card-header">
-        <input type="text" id="review-search" oninput="filterReviewTable()" placeholder="Search pending field, dataset, or class..." style="width:280px;"/>
-        <span style="font-size:12px; font-weight:600; color:#475569;" id="review-counter">${pending.length} candidate fields awaiting review</span>
+        <input type="text" id="review-search" oninput="filterReviewTable()" placeholder="Search pending field, dataset, or class..." style="width:260px;" aria-label="Search pending reviews"/>
+        <span style="font-size:12px; font-weight:500; color:#475569;" id="review-counter">${pending.length} candidate fields awaiting review</span>
       </div>
 
       <div class="table-responsive">
         <table>
           <thead>
             <tr>
-              <th>Field Identifier</th>
-              <th>Dataset Source</th>
-              <th>Candidate Class</th>
-              <th>Confidence</th>
-              <th>Technical Evidence</th>
-              <th style="text-align:right;">Decision</th>
+              <th scope="col">Field Identifier</th>
+              <th scope="col">Dataset Source</th>
+              <th scope="col">Candidate Class</th>
+              <th scope="col">Confidence</th>
+              <th scope="col">Detection Evidence</th>
+              <th scope="col" style="text-align:right;">Decision</th>
             </tr>
           </thead>
           <tbody id="review-tbody">
@@ -1320,7 +1347,7 @@ async function renderReviewCenter(container) {
 
 function renderReviewRows(records) {
   if (records.length === 0) {
-    return `<tr><td colspan="6" style="text-align:center; padding:36px; color:#10b981; font-weight:700;">✓ Review queue empty! All candidate detections reviewed.</td></tr>`;
+    return `<tr><td colspan="6" style="text-align:center; padding:32px; color:#065f46; font-weight:600;">Review queue is clear. All candidate detections have been verified.</td></tr>`;
   }
   return records.map(r => `
     <tr id="review-row-${r.id}">
@@ -1330,9 +1357,9 @@ function renderReviewRows(records) {
       <td>${renderConfidenceBar(r.confidence_score)}</td>
       <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.evidence_summary}">${r.evidence_summary}</td>
       <td style="text-align:right; white-space:nowrap;">
-        <button onclick="openEvidenceModal('${r.id}')" class="btn btn-secondary" style="font-size:11px; padding:3px 8px;">Evidence</button>
-        <button onclick="quickReview('${r.id}', 'CONFIRMED')" class="btn btn-primary" style="font-size:11px; padding:3px 8px; background:#047857; border-color:#065f46;">Confirm</button>
-        <button onclick="quickReview('${r.id}', 'REJECTED')" class="btn btn-danger" style="font-size:11px; padding:3px 8px;">Reject</button>
+        <button type="button" onclick="openEvidenceModal('${r.id}')" class="btn btn-secondary btn-sm">Evidence</button>
+        <button type="button" onclick="quickReview('${r.id}', 'CONFIRMED')" class="btn btn-primary btn-sm" style="background:#065f46; border-color:#065f46;">Confirm PII</button>
+        <button type="button" onclick="quickReview('${r.id}', 'REJECTED')" class="btn btn-danger btn-sm">Reject</button>
       </td>
     </tr>
   `).join('');
@@ -1376,7 +1403,7 @@ async function quickReview(id, status) {
       body: JSON.stringify({ review_status: status, reviewer_notes: `Decision: ${status}` })
     });
     if (!res.ok) throw new Error('Review failed');
-    showToast(`✓ Field ${status === 'CONFIRMED' ? 'confirmed as PII' : 'rejected / suppressed'}`, 'success');
+    showToast(`Field ${status === 'CONFIRMED' ? 'confirmed as PII' : 'rejected / suppressed'}.`, 'success');
     
     // Update local state
     const record = state.inventory.find(r => r.id === id);
@@ -1391,7 +1418,7 @@ async function quickReview(id, status) {
         row.remove();
         updateSidebarPendingBadge();
         filterReviewTable();
-      }, 250);
+      }, 200);
     }
   } catch (err) {
     showToast(`Error: ${err.message}`, 'error');
@@ -1410,7 +1437,7 @@ async function quickBatchReview(minConfidence, targetStatus) {
     });
     if (!res.ok) throw new Error('Batch review failed');
     const data = await res.json();
-    showToast(`✓ Batch review applied: ${data.updated_count} fields ${targetStatus}.`, 'success');
+    showToast(`Batch update applied: ${data.updated_count} fields set to ${targetStatus}.`, 'success');
     await updateSidebarPendingBadge();
     await renderActiveView();
   } catch (err) {
@@ -1427,23 +1454,23 @@ async function renderSettings(container) {
   container.innerHTML = `
     <div class="help-callout">
       <div>
-        <strong>💡 Configurable YAML Rules Engine:</strong> Customize regex patterns, negative suppression lists, scoring weights, and candidate thresholds with backend strict syntax validation.
+        <strong>Declarative Rules Specification:</strong> Customize regular expression patterns, negative suppression lists, and multi-signal weights with strict server-side validation.
       </div>
-      <button onclick="saveRulesYaml()" id="btn-save-rules" class="btn btn-primary" style="font-size:11px; padding:5px 12px;">Save & Compile Rules</button>
+      <button type="button" onclick="saveRulesYaml()" id="btn-save-rules" class="btn btn-primary btn-sm">Save & Compile Rules</button>
     </div>
 
     <div class="card">
       <div class="card-header">
         <div>
           <h3 class="card-title">Active YAML Rules Specification</h3>
-          <p class="card-subtitle">Declarative patterns and multi-signal scoring weights</p>
+          <p class="card-subtitle">Syntax is validated before hot-reload to prevent configuration errors</p>
         </div>
       </div>
       
-      <textarea id="rules-textarea" style="width:100%; height:440px; font-family:'JetBrains Mono',monospace; font-size:12px; padding:18px; background:#0f172a; color:#34d399; border-radius:10px; border:1px solid #334155; line-height:1.6;" spellcheck="false">${data.yaml_content}</textarea>
+      <textarea id="rules-textarea" style="width:100%; height:400px; font-family:'JetBrains Mono',monospace; font-size:12px; padding:14px; background:#f8fafc; color:#0f172a; border-radius:6px; border:1px solid #cbd5e1; line-height:1.6;" spellcheck="false" aria-label="YAML rules configuration">${data.yaml_content}</textarea>
 
-      <div style="margin-top:16px; padding:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; font-size:11px; color:#64748b;">
-        <strong>Safety Guardrail:</strong> Syntax is validated on the backend before hot-reload. Arbitrary code execution is strictly prevented.
+      <div style="margin-top:14px; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; font-size:12px; color:#475569;">
+        <strong>Validation Guardrail:</strong> Syntax is compiled in an isolated sandbox before reloading. Invalid expressions are safely rejected.
       </div>
     </div>
   `;
@@ -1453,7 +1480,7 @@ async function saveRulesYaml() {
   const content = document.getElementById('rules-textarea').value;
   const btn = document.getElementById('btn-save-rules');
   btn.disabled = true;
-  btn.textContent = 'Validating & Compiling...';
+  btn.textContent = 'Validating...';
 
   try {
     const res = await fetch('/api/rules', {
@@ -1465,7 +1492,7 @@ async function saveRulesYaml() {
       const err = await res.json();
       throw new Error(err.detail || 'Validation failed');
     }
-    showToast('✓ Rules updated and compiled successfully!', 'success');
+    showToast('Rules updated and compiled successfully.', 'success');
   } catch (err) {
     showToast(`Rules error: ${err.message}`, 'error');
   } finally {
@@ -1474,7 +1501,18 @@ async function saveRulesYaml() {
   }
 }
 
-// Evidence Modal
+// Accessible Modals with Escape Key Support
+function setupModalKeyListeners() {
+  document.removeEventListener('keydown', handleModalKeyDown);
+  document.addEventListener('keydown', handleModalKeyDown);
+}
+
+function handleModalKeyDown(e) {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+}
+
 function openEvidenceModal(recordId) {
   const r = (state.inventory.find(i => i.id === recordId)) ||
             (state.gapsReport?.gap_records.find(i => i.id === recordId));
@@ -1485,34 +1523,34 @@ function openEvidenceModal(recordId) {
 
   modal.innerHTML = `
     <div class="modal-overlay" onclick="closeModal(event)">
-      <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modal-evidence-title">
         <div class="modal-header">
           <div>
-            <span style="font-size:10px; font-weight:700; color:#488099; text-transform:uppercase; letter-spacing:0.05em;">Technical Evidence Audit</span>
-            <h3 style="font-size:16px; font-weight:800; color:#0f172a; margin-top:2px;">${r.column_name}</h3>
+            <span style="font-size:11px; font-weight:600; color:#24556d; text-transform:uppercase; letter-spacing:0.04em;">Technical Evidence Audit</span>
+            <h3 id="modal-evidence-title" style="font-size:16px; font-weight:700; color:#0f172a; margin-top:2px;">${r.column_name}</h3>
           </div>
-          <button onclick="closeModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#64748b;">&times;</button>
+          <button type="button" onclick="closeModal()" class="sidebar-toggle-btn" aria-label="Close dialog">&times;</button>
         </div>
 
-        <div class="modal-body" style="display:flex; flex-direction:column; gap:16px; font-size:12px;">
-          <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:14px;">
-            <strong style="color:#36657c; display:block; margin-bottom:4px;">Detection Summary:</strong>
-            <p style="color:#0c4a6e; font-weight:500;">${r.evidence_summary}</p>
+        <div class="modal-body" style="display:flex; flex-direction:column; gap:14px; font-size:13px;">
+          <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:12px;">
+            <strong style="color:#075985; display:block; margin-bottom:2px;">Detection Summary:</strong>
+            <p style="color:#0c4a6e;">${r.evidence_summary}</p>
           </div>
 
-          <div style="border:1px solid #e2e8f0; border-radius:10px; padding:14px; background:#ffffff;">
-            <strong style="display:block; margin-bottom:8px; color:#334155;">Multi-Signal Breakdown:</strong>
+          <div style="border:1px solid #e2e8f0; border-radius:8px; padding:14px; background:#ffffff;">
+            <strong style="display:block; margin-bottom:8px; color:#0f172a;">Multi-Signal Contribution:</strong>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-              <div>Column Match: <strong>${sb.column_matched ? '✓ Matched pattern' : '✗ No match'}</strong></div>
-              <div>Negative Penalty: <strong>${sb.negative_column_match ? '⚠️ Applied' : 'None'}</strong></div>
+              <div>Column Match: <strong>${sb.column_matched ? 'Matched pattern' : 'No pattern match'}</strong></div>
+              <div>Negative Penalty: <strong>${sb.negative_column_match ? 'Penalty applied' : 'None'}</strong></div>
               <div>Value Match Ratio: <strong>${Math.round((sb.value_match_ratio || 0) * 100)}%</strong></div>
               <div>Format Validator: <strong>${Math.round((sb.validator_pass_ratio || 0) * 100)}%</strong></div>
             </div>
           </div>
 
           <div>
-            <strong style="display:block; margin-bottom:6px; color:#334155;">Redacted Sample Values (Zero-Exposure):</strong>
-            <div style="background:#0f172a; color:#34d399; font-family:'JetBrains Mono',monospace; padding:12px 14px; border-radius:10px; font-size:11px; line-height:1.6;">
+            <strong style="display:block; margin-bottom:6px; color:#0f172a;">Sanitized Sample Values:</strong>
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; color:#0f172a; font-family:'JetBrains Mono',monospace; padding:10px 12px; border-radius:6px; font-size:11px; line-height:1.6;">
               ${r.sample_values_masked && r.sample_values_masked.length > 0
                 ? r.sample_values_masked.map((v, i) => `<div>[${i+1}] ${v}</div>`).join('')
                 : '<div>No samples available</div>'}
@@ -1521,14 +1559,14 @@ function openEvidenceModal(recordId) {
         </div>
 
         <div class="modal-footer">
-          <button onclick="closeModal()" class="btn btn-secondary">Close</button>
+          <button type="button" onclick="closeModal()" class="btn btn-secondary btn-sm">Close</button>
         </div>
       </div>
     </div>
   `;
+  setupModalKeyListeners();
 }
 
-// Review Decision Modal
 function openReviewModal(recordId) {
   const r = state.inventory.find(i => i.id === recordId) ||
             (state.gapsReport?.gap_records.find(i => i.id === recordId));
@@ -1538,40 +1576,41 @@ function openReviewModal(recordId) {
   const modal = document.getElementById('modal-container');
   modal.innerHTML = `
     <div class="modal-overlay" onclick="closeModal(event)">
-      <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modal-review-title">
         <div class="modal-header">
           <div>
-            <span style="font-size:10px; font-weight:700; color:#488099; text-transform:uppercase; letter-spacing:0.05em;">Human-in-the-Loop Review</span>
-            <h3 style="font-size:16px; font-weight:800; color:#0f172a; margin-top:2px;">${r.column_name}</h3>
+            <span style="font-size:11px; font-weight:600; color:#24556d; text-transform:uppercase; letter-spacing:0.04em;">Human Review Decision</span>
+            <h3 id="modal-review-title" style="font-size:16px; font-weight:700; color:#0f172a; margin-top:2px;">${r.column_name}</h3>
           </div>
-          <button onclick="closeModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#64748b;">&times;</button>
+          <button type="button" onclick="closeModal()" class="sidebar-toggle-btn" aria-label="Close dialog">&times;</button>
         </div>
 
-        <div class="modal-body" style="display:flex; flex-direction:column; gap:16px; font-size:12px;">
+        <div class="modal-body" style="display:flex; flex-direction:column; gap:14px; font-size:13px;">
           <div>
-            <label style="font-weight:700; display:block; margin-bottom:6px;">Decision</label>
-            <div style="display:flex; gap:10px;">
-              <button onclick="submitReviewDecision('CONFIRMED')" class="btn btn-primary" style="flex:1; justify-content:center; background:#047857; border-color:#065f46; padding:10px;">
-                ✓ Confirm as Personal Data (PII)
+            <label style="font-weight:600; display:block; margin-bottom:6px;">Review Decision</label>
+            <div style="display:flex; gap:8px;">
+              <button type="button" onclick="submitReviewDecision('CONFIRMED')" class="btn btn-primary" style="flex:1; justify-content:center; background:#065f46; border-color:#065f46; padding:9px;">
+                Confirm as Personal Data
               </button>
-              <button onclick="submitReviewDecision('REJECTED')" class="btn btn-danger" style="flex:1; justify-content:center; padding:10px;">
-                ✕ Reject / Suppress
+              <button type="button" onclick="submitReviewDecision('REJECTED')" class="btn btn-danger" style="flex:1; justify-content:center; padding:9px;">
+                Reject / Suppress
               </button>
             </div>
           </div>
 
           <div>
-            <label style="font-weight:700; display:block; margin-bottom:4px;">Reviewer Notes & Justification</label>
-            <textarea id="modal-rev-notes" style="width:100%; height:80px; padding:10px; border:1px solid #cbd5e1; border-radius:8px; font-size:12px;" placeholder="Optional justification or regulatory rationale...">${r.reviewer_notes || ''}</textarea>
+            <label for="modal-rev-notes" style="font-weight:600; display:block; margin-bottom:4px;">Reviewer Notes & Justification</label>
+            <textarea id="modal-rev-notes" style="width:100%; height:75px;" placeholder="Optional justification or regulatory rationale...">${r.reviewer_notes || ''}</textarea>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+          <button type="button" onclick="closeModal()" class="btn btn-secondary btn-sm">Cancel</button>
         </div>
       </div>
     </div>
   `;
+  setupModalKeyListeners();
 }
 
 async function submitReviewDecision(status) {
@@ -1586,7 +1625,7 @@ async function submitReviewDecision(status) {
       body: JSON.stringify({ review_status: status, reviewer_notes: notes })
     });
     if (!res.ok) throw new Error('Review failed');
-    showToast(`✓ Field "${r.column_name}" marked as ${status}`, 'success');
+    showToast(`Field "${r.column_name}" marked as ${status}.`, 'success');
     closeModal();
     await updateSidebarPendingBadge();
     await renderActiveView();
@@ -1599,47 +1638,48 @@ function openNewMetadataModal() {
   const modal = document.getElementById('modal-container');
   modal.innerHTML = `
     <div class="modal-overlay" onclick="closeModal(event)">
-      <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-content" onclick="event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modal-meta-title">
         <div class="modal-header">
-          <h3 style="font-size:16px; font-weight:800;">Register Declared Processing Purpose & Retention</h3>
-          <button onclick="closeModal()" style="background:none; border:none; font-size:20px; cursor:pointer; color:#64748b;">&times;</button>
+          <h3 id="modal-meta-title" style="font-size:15px; font-weight:700;">Add Purpose & Retention Notice</h3>
+          <button type="button" onclick="closeModal()" class="sidebar-toggle-btn" aria-label="Close dialog">&times;</button>
         </div>
 
-        <div class="modal-body" style="display:flex; flex-direction:column; gap:14px; font-size:12px;">
+        <div class="modal-body" style="display:flex; flex-direction:column; gap:12px; font-size:13px;">
           <div>
-            <label style="font-weight:700; display:block; margin-bottom:4px;">Column Name *</label>
-            <input type="text" id="m-col" style="width:100%;" placeholder="e.g. email_id or pan_number"/>
+            <label for="m-col" style="font-weight:600; display:block; margin-bottom:4px;">Column Name *</label>
+            <input type="text" id="m-col" style="width:100%;" placeholder="e.g. email_address or pan_number"/>
           </div>
           <div>
-            <label style="font-weight:700; display:block; margin-bottom:4px;">Dataset Name (Optional)</label>
+            <label for="m-ds" style="font-weight:600; display:block; margin-bottom:4px;">Dataset Name (Optional)</label>
             <input type="text" id="m-ds" style="width:100%;" placeholder="e.g. synthetic_customers.csv"/>
           </div>
           <div>
-            <label style="font-weight:700; display:block; margin-bottom:4px;">Table Name (Optional)</label>
+            <label for="m-tbl" style="font-weight:600; display:block; margin-bottom:4px;">Table Name (Optional)</label>
             <input type="text" id="m-tbl" style="width:100%;" placeholder="e.g. customers"/>
           </div>
           <div>
-            <label style="font-weight:700; display:block; margin-bottom:4px;">Declared Purpose</label>
-            <textarea id="m-purp" style="width:100%; height:60px;" placeholder="e.g. Account onboarding and transactional communications"></textarea>
+            <label for="m-purp" style="font-weight:600; display:block; margin-bottom:4px;">Declared Purpose</label>
+            <textarea id="m-purp" style="width:100%; height:55px;" placeholder="e.g. Account onboarding and transactional communications"></textarea>
           </div>
           <div>
-            <label style="font-weight:700; display:block; margin-bottom:4px;">Retention Period</label>
-            <input type="text" id="m-ret" style="width:100%;" placeholder="e.g. 7 years post-account closure"/>
+            <label for="m-ret" style="font-weight:600; display:block; margin-bottom:4px;">Retention Period</label>
+            <input type="text" id="m-ret" style="width:100%;" placeholder="e.g. 7 years following account closure"/>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button onclick="closeModal()" class="btn btn-secondary">Cancel</button>
-          <button onclick="saveNewMetadata()" class="btn btn-primary">Save Notice</button>
+          <button type="button" onclick="closeModal()" class="btn btn-secondary btn-sm">Cancel</button>
+          <button type="button" onclick="saveNewMetadata()" class="btn btn-primary btn-sm">Save Notice</button>
         </div>
       </div>
     </div>
   `;
+  setupModalKeyListeners();
 }
 
 async function saveNewMetadata() {
   const col = document.getElementById('m-col').value;
-  if (!col.trim()) return showToast('Column Name is required', 'warning');
+  if (!col.trim()) return showToast('Column Name is required.', 'warning');
 
   try {
     const res = await fetch('/api/metadata', {
@@ -1655,7 +1695,7 @@ async function saveNewMetadata() {
       })
     });
     if (!res.ok) throw new Error('Save failed');
-    showToast('✓ Metadata notice registered successfully!', 'success');
+    showToast('Metadata notice registered successfully.', 'success');
     closeModal();
     renderActiveView();
   } catch (err) {
@@ -1676,53 +1716,55 @@ async function renderDPDP(container) {
   const data = await res.json();
   state.dpdpData = data;
 
-  const scoreColor = data.overall_readiness_score >= 80 ? '#10b981' : (data.overall_readiness_score >= 60 ? '#f59e0b' : '#ef4444');
-  const riskBadgeClass = data.risk_level.includes('LOW') ? 'badge-confirmed' : (data.risk_level.includes('MODERATE') ? 'badge-pending' : 'badge-rejected');
+  const scoreColor = data.overall_readiness_score >= 80 ? '#059669' : (data.overall_readiness_score >= 60 ? '#d97706' : '#dc2626');
+  const riskBadgeClass = data.risk_level.includes('LOW') ? 'badge-complete' : (data.risk_level.includes('MODERATE') ? 'badge-missing-p' : 'badge-missing-b');
 
   container.innerHTML = `
-    <!-- Top Summary Card: 2 equal-height cards -->
-    <div style="display:grid; grid-template-columns: 1fr 2fr; gap:24px; margin-bottom:24px;">
+    <!-- Top Summary Cards (2 Equal-Height Cards) -->
+    <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px; margin-bottom:20px;">
       <!-- Readiness Gauge Card -->
-      <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:32px 24px;">
-        <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">DPDP Statutory Readiness</span>
-        <div style="font-size:52px; font-weight:900; color:${scoreColor}; margin:12px 0; font-family:'JetBrains Mono',monospace;">${data.overall_readiness_score}%</div>
-        <div><span class="badge ${riskBadgeClass}" style="font-size:12px; padding:4px 12px;">${data.risk_level}</span></div>
-        <p style="font-size:11px; color:#64748b; margin-top:14px; max-width:260px;">Scored across statutory principles of the Digital Personal Data Protection Act, 2023.</p>
+      <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:28px 20px;">
+        <span style="font-size:11px; font-weight:600; color:#475569; text-transform:uppercase; letter-spacing:0.04em;">DPDP Statutory Readiness</span>
+        <div style="font-size:48px; font-weight:800; color:${scoreColor}; margin:10px 0; font-family:'JetBrains Mono',monospace;">${data.overall_readiness_score}%</div>
+        <div><span class="badge ${riskBadgeClass}" style="font-size:12px; padding:3px 10px;">${data.risk_level}</span></div>
+        <p style="font-size:12px; color:#475569; margin-top:12px; max-width:240px; line-height:1.4;">Scored across statutory principles of the Digital Personal Data Protection Act, 2023.</p>
       </div>
 
-      <!-- Audit Integrity & Differentiators Card -->
+      <!-- Audit Integrity & Validation Differentiators -->
       <div class="card" style="margin-bottom:0; display:flex; flex-direction:column; justify-content:space-between;">
         <div>
-          <div class="card-header" style="margin-bottom:12px; padding-bottom:10px;">
+          <div class="card-header" style="margin-bottom:10px; padding-bottom:8px;">
             <h3 class="card-title" style="display:flex; align-items:center; gap:8px;">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#488099" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              Cryptographic Tamper-Evident Audit Seal
+              ${icons.shield}
+              Cryptographic Audit Seal
             </h3>
-            <span style="font-size:10px; font-family:'JetBrains Mono',monospace; background:#e0f2fe; color:#36657c; padding:2px 8px; border-radius:6px; font-weight:700;">DPBI Sec 16 Non-Repudiation</span>
+            <span style="font-size:10px; font-family:'JetBrains Mono',monospace; background:#f0f9ff; color:#075985; border:1px solid #bae6fd; padding:2px 8px; border-radius:4px; font-weight:600;">DPBI Sec 16 Non-Repudiation</span>
           </div>
           
           <div class="seal-box">
             <span style="font-size:11px;">${data.tamper_evident_seal_sha256}</span>
-            <button onclick="navigator.clipboard.writeText('${data.tamper_evident_seal_sha256}'); showToast('✓ Audit seal copied to clipboard!', 'info');" class="btn btn-secondary" style="font-size:10px; padding:4px 8px; background:#1e293b; color:#f0f9ff; border-color:#334155; white-space:nowrap;">Copy Seal</button>
+            <button type="button" onclick="navigator.clipboard.writeText('${data.tamper_evident_seal_sha256}'); showToast('Audit seal copied to clipboard.', 'info');" class="btn btn-secondary btn-sm" style="white-space:nowrap;">
+              ${icons.copy} Copy Seal
+            </button>
           </div>
-          <p style="font-size:11px; color:#64748b; margin-top:8px;">Deterministic SHA-256 fingerprint generated over discovery inventory records, retention schedules, and timestamp metadata. Guarantees immutable evidentiary integrity for Data Protection Board of India (DPBI) audits.</p>
+          <p style="font-size:12px; color:#475569; margin-top:8px; line-height:1.4;">Deterministic SHA-256 fingerprint generated over discovery inventory records, retention schedules, and timestamp metadata. Guarantees immutable evidentiary integrity for Data Protection Board of India (DPBI) audits.</p>
         </div>
 
-        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:16px; padding-top:16px; border-top:1px solid #e2e8f0;">
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px;">
-            <div style="font-size:10px; color:#64748b; font-weight:600;">Verhoeff ($D_5$) Checksum</div>
-            <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:2px;">Dihedral Algorithmic</div>
-            <div style="font-size:10px; color:#10b981; font-weight:600; margin-top:2px;">Official UIDAI Checksum</div>
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid #e2e8f0;">
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
+            <div style="font-size:11px; color:#475569; font-weight:500;">Aadhaar Verification</div>
+            <div style="font-size:13px; font-weight:700; color:#0f172a; margin-top:2px;">Dihedral D5 Algorithm</div>
+            <div style="font-size:11px; color:#059669; font-weight:500; margin-top:2px;">UIDAI Algorithmic Check</div>
           </div>
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px;">
-            <div style="font-size:10px; color:#64748b; font-weight:600;">Entity-Aware PAN Tax ID</div>
-            <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:2px;">4th Char Inspection</div>
-            <div style="font-size:10px; color:#488099; font-weight:600; margin-top:2px;">Corporate Noise Suppressed</div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
+            <div style="font-size:11px; color:#475569; font-weight:500;">Corporate PAN Filter</div>
+            <div style="font-size:13px; font-weight:700; color:#0f172a; margin-top:2px;">4th Character Check</div>
+            <div style="font-size:11px; color:#24556d; font-weight:500; margin-top:2px;">Entity Noise Suppressed</div>
           </div>
-          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px;">
-            <div style="font-size:10px; color:#64748b; font-weight:600;">DPDP Sec 9 Minor Protection</div>
-            <div style="font-size:13px; font-weight:800; color:#0f172a; margin-top:2px;">Age &lt; 18 Consent Flag</div>
-            <div style="font-size:10px; color:#f59e0b; font-weight:600; margin-top:2px;">Children's Data Protected</div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
+            <div style="font-size:11px; color:#475569; font-weight:500;">Section 9 Minors</div>
+            <div style="font-size:13px; font-weight:700; color:#0f172a; margin-top:2px;">Age &lt; 18 Consent Flag</div>
+            <div style="font-size:11px; color:#d97706; font-weight:500; margin-top:2px;">Children's Data Protected</div>
           </div>
         </div>
       </div>
@@ -1735,8 +1777,8 @@ async function renderDPDP(container) {
           <h3 class="card-title">DPDP Act 2023 Statutory Principles Breakdown</h3>
           <p class="card-subtitle">Evaluation of personal data discovery inventory against the statutory mandate</p>
         </div>
-        <a href="/api/reports/dpdp.pdf" target="_blank" class="btn btn-primary" style="background:#488099; border-color:#36657c; font-size:12px;">
-          ${icons.dashboard} Download Official DPDP Dossier (PDF)
+        <a href="/api/reports/dpdp.pdf" target="_blank" class="btn btn-primary btn-sm">
+          ${icons.shield} Download DPDP Dossier (PDF)
         </a>
       </div>
 
@@ -1744,25 +1786,25 @@ async function renderDPDP(container) {
         <table>
           <thead>
             <tr>
-              <th style="width:110px;">Section</th>
-              <th>Statutory Principle</th>
-              <th>Status</th>
-              <th style="width:140px;">Readiness Score</th>
-              <th>Technical Action Items</th>
+              <th scope="col" style="width:100px;">Section</th>
+              <th scope="col">Statutory Principle</th>
+              <th scope="col">Status</th>
+              <th scope="col" style="width:130px;">Readiness Score</th>
+              <th scope="col">Recommended Actions</th>
             </tr>
           </thead>
           <tbody>
             ${data.principles.map(p => {
               const statusBadge = p.status === 'COMPLIANT'
-                ? '<span class="badge badge-complete">COMPLIANT</span>'
-                : (p.status === 'ACTION_REQUIRED' ? '<span class="badge badge-missing-p">ACTION REQUIRED</span>' : '<span class="badge badge-missing-b">CRITICAL GAP</span>');
-              const barColor = p.score >= 80 ? '#10b981' : (p.score >= 50 ? '#488099' : '#ef4444');
+                ? '<span class="badge badge-complete">Compliant</span>'
+                : (p.status === 'ACTION_REQUIRED' ? '<span class="badge badge-missing-p">Action Required</span>' : '<span class="badge badge-missing-b">Critical Gap</span>');
+              const barColor = p.score >= 80 ? '#059669' : (p.score >= 50 ? '#24556d' : '#dc2626');
               return `
                 <tr>
-                  <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:#334155;">${p.statutory_section}</td>
+                  <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#1e293b;">${p.statutory_section}</td>
                   <td>
                     <strong>${p.principle}</strong>
-                    <div style="font-size:11px; color:#64748b; margin-top:2px;">${p.description}</div>
+                    <div style="font-size:11px; color:#64748b; margin-top:1px;">${p.description}</div>
                   </td>
                   <td>${statusBadge}</td>
                   <td>
@@ -1770,13 +1812,13 @@ async function renderDPDP(container) {
                       <div style="flex:1; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden;">
                         <div style="width:${p.score}%; height:100%; background:${barColor};"></div>
                       </div>
-                      <span style="font-size:11px; font-family:'JetBrains Mono',monospace; font-weight:700;">${p.score}%</span>
+                      <span style="font-size:11px; font-family:'JetBrains Mono',monospace; font-weight:600;">${p.score}%</span>
                     </div>
                   </td>
-                  <td style="font-size:11px; color:#488099;">
+                  <td style="font-size:12px; color:#334155;">
                     ${p.action_items && p.action_items.length > 0
-                      ? p.action_items.map(a => `<div>• ${a}</div>`).join('')
-                      : 'None required'}
+                      ? p.action_items.map(a => `<div>&bull; ${a}</div>`).join('')
+                      : '&mdash;'}
                   </td>
                 </tr>
               `;
@@ -1794,63 +1836,59 @@ async function renderSimulator(container) {
 
   container.innerHTML = `
     <!-- Top Callout -->
-    <div style="background: linear-gradient(135deg, #16202c 0%, #315267 60%, #488099 100%); border-radius:14px; padding:22px 26px; color:#ffffff; margin-bottom:24px; box-shadow:0 4px 16px rgba(22,32,44,0.18); border:1px solid #315267;">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
-        <div>
-          <span style="font-size:10px; font-weight:800; background:rgba(255,255,255,0.2); color:#ffffff; padding:2px 8px; border-radius:10px; text-transform:uppercase;">Simulation & What-If Studio</span>
-          <h3 style="font-size:18px; font-weight:800; margin-top:6px;">Multi-Signal Weight & Threshold Tuning</h3>
-          <p style="font-size:12px; color:#cbd5e1; max-width:620px; margin-top:2px;">Adjust signal weights and confidence threshold in real-time. Immediately simulates discoveries, precision, recall, and suppressed corporate noise on the labelled benchmark.</p>
-        </div>
-        <button onclick="resetSimParams()" class="btn btn-secondary" style="background:rgba(255,255,255,0.15); color:white; border-color:rgba(255,255,255,0.3); font-size:11px;">Reset Defaults</button>
+    <div class="help-callout">
+      <div>
+        <strong>What-If Sensitivity Simulation Studio:</strong> Adjust detection signal weights and confidence thresholds in real-time to observe discoveries, precision, recall, and false positive suppression on labelled benchmark data.
       </div>
+      <button type="button" onclick="resetSimParams()" class="btn btn-secondary btn-sm">Reset Defaults</button>
     </div>
 
-    <!-- Sliders Grid: 4 distinct framed cards -->
-    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; margin-bottom:24px;">
+    <!-- Sliders Grid (4 Clean Framed Cards) -->
+    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:16px; margin-bottom:20px;">
       <!-- Column Pattern Weight -->
       <div class="slider-box">
         <div class="slider-header">
-          <label class="slider-title">Column Pattern Weight</label>
+          <label for="rng-col-w" class="slider-title">Column Pattern Weight</label>
           <span id="lbl-col-w" class="slider-val">${p.column_weight.toFixed(2)}</span>
         </div>
         <input type="range" id="rng-col-w" min="0" max="1" step="0.05" value="${p.column_weight}" oninput="updateSimParam('column_weight', this.value)"/>
-        <p class="slider-desc">Weight for header regex match (e.g. email, pan, phone)</p>
+        <p class="slider-desc">Weight assigned to column name regex matches (e.g. email, pan, phone).</p>
       </div>
 
       <!-- Value Regex Weight -->
       <div class="slider-box">
         <div class="slider-header">
-          <label class="slider-title">Value Pattern Match</label>
+          <label for="rng-val-w" class="slider-title">Value Pattern Weight</label>
           <span id="lbl-val-w" class="slider-val">${p.value_weight.toFixed(2)}</span>
         </div>
         <input type="range" id="rng-val-w" min="0" max="1" step="0.05" value="${p.value_weight}" oninput="updateSimParam('value_weight', this.value)"/>
-        <p class="slider-desc">Weight for data value pattern conformance ratio</p>
+        <p class="slider-desc">Weight assigned to data cell format pattern conformance ratio.</p>
       </div>
 
       <!-- Validator Bonus -->
       <div class="slider-box">
         <div class="slider-header">
-          <label class="slider-title">Validator Bonus</label>
+          <label for="rng-bon-w" class="slider-title">Format Validator Bonus</label>
           <span id="lbl-bon-w" class="slider-val">${p.validator_bonus.toFixed(2)}</span>
         </div>
         <input type="range" id="rng-bon-w" min="0" max="0.30" step="0.05" value="${p.validator_bonus}" oninput="updateSimParam('validator_bonus', this.value)"/>
-        <p class="slider-desc">Bonus for passing Verhoeff checksum or entity checks</p>
+        <p class="slider-desc">Bonus for passing Verhoeff checksum or entity checks.</p>
       </div>
 
-      <!-- Threshold -->
+      <!-- Decision Threshold -->
       <div class="slider-box">
         <div class="slider-header">
-          <label class="slider-title">Decision Threshold</label>
+          <label for="rng-thresh" class="slider-title">Decision Threshold</label>
           <span id="lbl-thresh" class="slider-val">${p.threshold.toFixed(2)}</span>
         </div>
         <input type="range" id="rng-thresh" min="0.1" max="1.0" step="0.05" value="${p.threshold}" oninput="updateSimParam('threshold', this.value)"/>
-        <p class="slider-desc">Minimum score required to flag candidate personal data</p>
+        <p class="slider-desc">Minimum score required to classify a field as candidate personal data.</p>
       </div>
     </div>
 
     <!-- Live Simulation Output Box -->
     <div id="sim-output-pane">
-      <div class="card" style="text-align:center; padding:36px; color:#64748b;">Computing live simulation metrics...</div>
+      <div class="card" style="text-align:center; padding:32px; color:#64748b;" role="status">Computing live simulation metrics...</div>
     </div>
   `;
 
@@ -1897,18 +1935,18 @@ async function executeSimulation() {
     const s = await res.json();
     state.simData = s;
 
-    const f1Pct = Math.round(s.macro_f1 * 100);
-    const precPct = Math.round(s.macro_precision * 100);
-    const recPct = Math.round(s.macro_recall * 100);
+    const f1Pct = Math.round((s.macro_f1 || 0) * 100);
+    const precPct = Math.round((s.macro_precision || 0) * 100);
+    const recPct = Math.round((s.macro_recall || 0) * 100);
 
     pane.innerHTML = `
       <div>
         <!-- Live Simulated KPIs -->
-        <div class="kpi-grid" style="margin-bottom:20px;">
-          <div class="kpi-card" style="background:#f0fdf4; border-color:#bbf7d0;">
-            <div class="kpi-label" style="color:#15803d;">Simulated Macro F1</div>
-            <div class="kpi-val" style="color:#15803d;">${f1Pct}%</div>
-            <div class="kpi-sub" style="color:#15803d;">Harmonic accuracy</div>
+        <div class="kpi-grid" style="margin-bottom:16px;">
+          <div class="kpi-card" style="border-top-color:#059669;">
+            <div class="kpi-label" style="color:#065f46;">Simulated Macro F1</div>
+            <div class="kpi-val" style="color:#065f46;">${f1Pct}%</div>
+            <div class="kpi-sub">Harmonic benchmark balance</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Simulated Precision</div>
@@ -1918,12 +1956,12 @@ async function executeSimulation() {
           <div class="kpi-card">
             <div class="kpi-label">Simulated Recall</div>
             <div class="kpi-val">${recPct}%</div>
-            <div class="kpi-sub">Coverage across test set</div>
+            <div class="kpi-sub">Ground-truth coverage</div>
           </div>
-          <div class="kpi-card" style="background:#f0f9ff; border-color:#bcdbe7;">
-            <div class="kpi-label" style="color:#36657c;">False Positives Suppressed</div>
-            <div class="kpi-val" style="color:#36657c;">${s.false_positives_suppressed}</div>
-            <div class="kpi-sub" style="color:#36657c;">Non-personal filtered</div>
+          <div class="kpi-card" style="border-top-color:#24556d;">
+            <div class="kpi-label" style="color:#24556d;">False Positives Suppressed</div>
+            <div class="kpi-val" style="color:#24556d;">${s.false_positives_suppressed}</div>
+            <div class="kpi-sub">Non-personal data filtered</div>
           </div>
         </div>
 
@@ -1936,20 +1974,20 @@ async function executeSimulation() {
             </div>
           </div>
           
-          <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:12px; margin-bottom:20px;">
+          <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:10px; margin-bottom:16px;">
             ${Object.entries(s.class_distribution).map(([cls, cnt]) => `
-              <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px; text-align:center;">
-                <div style="font-size:10px; font-weight:700; color:#64748b; text-transform:uppercase;">${cls.replace('_', ' ')}</div>
-                <div style="font-size:22px; font-weight:800; color:#0f172a; margin-top:4px; font-family:'JetBrains Mono',monospace;">${cnt}</div>
+              <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:12px; text-align:center;">
+                <div style="font-size:11px; font-weight:600; color:#475569; text-transform:uppercase;">${cls.replace('_', ' ')}</div>
+                <div style="font-size:20px; font-weight:700; color:#0f172a; margin-top:2px; font-family:'JetBrains Mono',monospace;">${cnt}</div>
               </div>
             `).join('')}
           </div>
 
-          <h4 style="font-size:13px; font-weight:700; margin-bottom:10px; color:#334155;">Confidence Spread Spectrum</h4>
-          <div style="display:flex; gap:16px;">
+          <h4 style="font-size:13px; font-weight:600; margin-bottom:8px; color:#334155;">Confidence Score Bands</h4>
+          <div style="display:flex; gap:12px;">
             ${Object.entries(s.confidence_spread).map(([rng, cnt]) => `
-              <div style="flex:1; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; font-size:12px;">
-                <span style="color:#64748b; font-weight:600;">Band ${rng}:</span>
+              <div style="flex:1; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px 10px; font-size:12px;">
+                <span style="color:#64748b;">Band ${rng}:</span>
                 <strong style="color:#0f172a; margin-left:4px; font-family:'JetBrains Mono',monospace;">${cnt} fields</strong>
               </div>
             `).join('')}
@@ -1958,7 +1996,7 @@ async function executeSimulation() {
       </div>
     `;
   } catch (err) {
-    pane.innerHTML = `<div class="card" style="color:#b91c1c; background:#fef2f2;">Simulation error: ${err.message}</div>`;
+    pane.innerHTML = `<div class="card" style="color:#991b1b; background:#fef2f2;" role="alert">Simulation error: ${err.message}</div>`;
   }
 }
 
