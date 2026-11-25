@@ -61,7 +61,7 @@ async function runAuditVerification() {
     const data = await res.json();
     state.auditVerified = true;
     showToast(`Audit Ledger Verified: ${data.total_blocks} blocks valid, zero tampering detected.`, 'success');
-    
+
     if (txt) {
       txt.innerHTML = `
         <span style="color:#065f46; font-weight:700;">Verified & Bull; All ${data.total_blocks} Blocks Untampered</span>
@@ -444,6 +444,15 @@ function initPrismInteractivity() {
   });
 }
 
+// Backward-compatible alias to prevent ReferenceError if cached
+function initTwinParallax() {
+  try {
+    initPrismInteractivity();
+  } catch (e) {
+    console.warn('Prism interactivity init:', e);
+  }
+}
+
 function askAiAnalyst(question) {
   const inputEl = document.getElementById('ai-analyst-input');
   const q = (question || inputEl?.value || '').toLowerCase().trim();
@@ -744,15 +753,15 @@ async function renderDashboard(container) {
 
           <div style="height:190px; display:flex; align-items:flex-end; gap:20px; padding:0 8px 10px 8px; border-bottom:1px solid #e2e8f0;" aria-label="Class distribution bar chart">
             ${Object.entries(data.class_counts).map(([k, count]) => {
-              const h = Math.max((count / maxVal) * 140, count > 0 ? 18 : 6);
-              const color = classColors[k] || '#475569';
-              return `
+    const h = Math.max((count / maxVal) * 140, count > 0 ? 18 : 6);
+    const color = classColors[k] || '#475569';
+    return `
                 <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;">
                   <span style="font-size:12px; font-family:'JetBrains Mono',monospace; font-weight:600; color:#1e293b;">${count}</span>
                   <div style="width:100%; max-width:44px; height:${h}px; background:${color}; border-radius:4px 4px 0 0;" title="${classLabels[k]}: ${count}"></div>
                 </div>
               `;
-            }).join('')}
+  }).join('')}
           </div>
           <div style="display:flex; gap:20px; margin-top:10px; padding:0 8px;">
             ${Object.entries(data.class_counts).map(([k]) => `
@@ -774,9 +783,9 @@ async function renderDashboard(container) {
           
           <div style="display:flex; flex-direction:column; gap:14px;">
             ${Object.entries(data.confidence_distribution).map(([k, val]) => {
-              const pct = data.total_candidates > 0 ? Math.round((val / data.total_candidates) * 100) : 0;
-              const barCol = k.includes('Very') ? '#059669' : k.includes('High') ? '#24556d' : '#d97706';
-              return `
+    const pct = data.total_candidates > 0 ? Math.round((val / data.total_candidates) * 100) : 0;
+    const barCol = k.includes('Very') ? '#059669' : k.includes('High') ? '#24556d' : '#d97706';
+    return `
                 <div>
                   <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;">
                     <span style="font-weight:500; color:#334155;">${k}</span>
@@ -787,7 +796,7 @@ async function renderDashboard(container) {
                   </div>
                 </div>
               `;
-            }).join('')}
+  }).join('')}
           </div>
           <div style="margin-top:20px; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; font-size:11px; color:#475569; text-align:center;">
             Multi-signal weights: <strong>40%</strong> Column &bull; <strong>45%</strong> Regex &bull; <strong>15%</strong> Validator
@@ -827,7 +836,7 @@ async function renderDashboard(container) {
                   <td><span class="badge badge-complete">${s.status}</span></td>
                   <td style="font-family:'JetBrains Mono',monospace;">${s.total_columns}</td>
                   <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#24556d;">${s.candidate_count}</td>
-                  <td style="color:#64748b;">${new Date(s.started_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                  <td style="color:#64748b;">${new Date(s.started_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
                 </tr>
               `).join('') : `<tr><td colspan="6" style="text-align:center; padding:24px; color:#94a3b8;">No discovery scans recorded yet. Click 'Run Discovery Scan' above.</td></tr>`}
             </tbody>
@@ -836,7 +845,11 @@ async function renderDashboard(container) {
       </div>
     ` : ''}
   `;
-  initPrismInteractivity();
+  try {
+    initPrismInteractivity();
+  } catch (e) {
+    console.warn('Prism interactivity init:', e);
+  }
 }
 
 
@@ -1251,9 +1264,9 @@ function applyInvChip(chip) {
   const search = (document.getElementById('inv-search')?.value || '').toLowerCase();
   const filtered = state.inventory.filter(r => {
     const matchSearch = r.column_name.toLowerCase().includes(search) ||
-                        r.dataset_name.toLowerCase().includes(search) ||
-                        (r.table_name || '').toLowerCase().includes(search) ||
-                        (r.declared_purpose || '').toLowerCase().includes(search);
+      r.dataset_name.toLowerCase().includes(search) ||
+      (r.table_name || '').toLowerCase().includes(search) ||
+      (r.declared_purpose || '').toLowerCase().includes(search);
     let matchChip = true;
     if (chip === 'missing') {
       matchChip = r.metadata_status && r.metadata_status.includes('Missing');
@@ -1297,9 +1310,9 @@ function filterInventoryTable() {
 
   const filtered = state.inventory.filter(r => {
     const matchSearch = r.column_name.toLowerCase().includes(search) ||
-                        r.dataset_name.toLowerCase().includes(search) ||
-                        (r.table_name || '').toLowerCase().includes(search) ||
-                        (r.declared_purpose || '').toLowerCase().includes(search);
+      r.dataset_name.toLowerCase().includes(search) ||
+      (r.table_name || '').toLowerCase().includes(search) ||
+      (r.declared_purpose || '').toLowerCase().includes(search);
     const matchClass = !cls || r.candidate_class === cls;
     const matchMeta = !meta || r.metadata_status === meta;
     return matchSearch && matchClass && matchMeta;
@@ -1517,13 +1530,13 @@ async function renderEvaluation(container) {
             </thead>
             <tbody>
               ${Object.entries(classMetrics).map(([cls, m]) => {
-                const f1Val = m.f1_score ?? m.f1 ?? 0;
-                const precVal = m.precision ?? 0;
-                const recVal = m.recall ?? 0;
-                const tp = m.true_positives ?? 0;
-                const fp = m.false_positives ?? 0;
-                const support = m.support ?? 0;
-                return `
+    const f1Val = m.f1_score ?? m.f1 ?? 0;
+    const precVal = m.precision ?? 0;
+    const recVal = m.recall ?? 0;
+    const tp = m.true_positives ?? 0;
+    const fp = m.false_positives ?? 0;
+    const support = m.support ?? 0;
+    return `
                   <tr>
                     <td>${renderClassBadge(cls)}</td>
                     <td style="font-family:'JetBrains Mono',monospace;">${support}</td>
@@ -1533,7 +1546,7 @@ async function renderEvaluation(container) {
                     <td><span class="badge badge-complete">${(f1Val * 100).toFixed(1)}%</span></td>
                   </tr>
                 `;
-              }).join('')}
+  }).join('')}
             </tbody>
           </table>
         </div>
@@ -1753,8 +1766,8 @@ function filterReviewTable() {
   const pending = state.inventory.filter(r => r.review_status === 'PENDING');
   const filtered = pending.filter(r => {
     const matchSearch = r.column_name.toLowerCase().includes(search) ||
-                        r.dataset_name.toLowerCase().includes(search) ||
-                        r.candidate_class.toLowerCase().includes(search);
+      r.dataset_name.toLowerCase().includes(search) ||
+      r.candidate_class.toLowerCase().includes(search);
     let matchChip = true;
     if (chip === 'high') matchChip = r.confidence_score >= 0.85;
     else if (chip === 'moderate') matchChip = r.confidence_score >= 0.70 && r.confidence_score < 0.85;
@@ -1778,11 +1791,11 @@ async function quickReview(id, status) {
     });
     if (!res.ok) throw new Error('Review failed');
     showToast(`Field ${status === 'CONFIRMED' ? 'confirmed as PII' : 'rejected / suppressed'}.`, 'success');
-    
+
     // Update local state
     const record = state.inventory.find(r => r.id === id);
     if (record) record.review_status = status;
-    
+
     // Smooth remove row
     const row = document.getElementById(`review-row-${id}`);
     if (row) {
@@ -1803,7 +1816,7 @@ async function quickBatchReview(minConfidence, targetStatus) {
   try {
     const payload = { target_status: targetStatus };
     if (minConfidence !== null) payload.min_confidence = minConfidence;
-    
+
     const res = await fetch('/api/inventory/batch-review', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1889,7 +1902,7 @@ function handleModalKeyDown(e) {
 
 function openEvidenceModal(recordId) {
   const r = (state.inventory.find(i => i.id === recordId)) ||
-            (state.gapsReport?.gap_records.find(i => i.id === recordId));
+    (state.gapsReport?.gap_records.find(i => i.id === recordId));
   if (!r) return;
 
   const modal = document.getElementById('modal-container');
@@ -1937,8 +1950,8 @@ function openEvidenceModal(recordId) {
             <strong style="display:block; margin-bottom:6px; color:#0f172a;">Sanitized Sample Values:</strong>
             <div style="background:#f8fafc; border:1px solid #e2e8f0; color:#0f172a; font-family:'JetBrains Mono',monospace; padding:10px 12px; border-radius:6px; font-size:11px; line-height:1.6;">
               ${r.sample_values_masked && r.sample_values_masked.length > 0
-                ? r.sample_values_masked.map((v, i) => `<div>[${i+1}] ${v}</div>`).join('')
-                : '<div>No samples available</div>'}
+      ? r.sample_values_masked.map((v, i) => `<div>[${i + 1}] ${v}</div>`).join('')
+      : '<div>No samples available</div>'}
             </div>
           </div>
         </div>
@@ -1954,7 +1967,7 @@ function openEvidenceModal(recordId) {
 
 function openReviewModal(recordId) {
   const r = state.inventory.find(i => i.id === recordId) ||
-            (state.gapsReport?.gap_records.find(i => i.id === recordId));
+    (state.gapsReport?.gap_records.find(i => i.id === recordId));
   if (!r) return;
   state.reviewRecord = r;
 
@@ -2180,11 +2193,11 @@ async function renderDPDP(container) {
           </thead>
           <tbody>
             ${data.principles.map(p => {
-              const statusBadge = p.status === 'COMPLIANT'
-                ? '<span class="badge badge-complete">Compliant</span>'
-                : (p.status === 'ACTION_REQUIRED' ? '<span class="badge badge-missing-p">Action Required</span>' : '<span class="badge badge-missing-b">Critical Gap</span>');
-              const barColor = p.score >= 80 ? '#059669' : (p.score >= 50 ? '#24556d' : '#dc2626');
-              return `
+    const statusBadge = p.status === 'COMPLIANT'
+      ? '<span class="badge badge-complete">Compliant</span>'
+      : (p.status === 'ACTION_REQUIRED' ? '<span class="badge badge-missing-p">Action Required</span>' : '<span class="badge badge-missing-b">Critical Gap</span>');
+    const barColor = p.score >= 80 ? '#059669' : (p.score >= 50 ? '#24556d' : '#dc2626');
+    return `
                 <tr>
                   <td style="font-family:'JetBrains Mono',monospace; font-weight:600; color:#1e293b;">${p.statutory_section}</td>
                   <td>
@@ -2202,12 +2215,12 @@ async function renderDPDP(container) {
                   </td>
                   <td style="font-size:12px; color:#334155;">
                     ${p.action_items && p.action_items.length > 0
-                      ? p.action_items.map(a => `<div>&bull; ${a}</div>`).join('')
-                      : '&mdash;'}
+        ? p.action_items.map(a => `<div>&bull; ${a}</div>`).join('')
+        : '&mdash;'}
                   </td>
                 </tr>
               `;
-            }).join('')}
+  }).join('')}
           </tbody>
         </table>
       </div>

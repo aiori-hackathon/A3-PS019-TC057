@@ -1828,8 +1828,16 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @keyframes ledBlink {
-  0% { opacity: 0.3; transform: scale(0.8); }
-  100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 6px #0284c7; }
+  0% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow: 0 0 6px #0284c7;
+  }
 }
 
 .sonar-ring {
@@ -1847,8 +1855,15 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @keyframes sonarWave {
-  0% { transform: scale(0.65); opacity: 0.9; }
-  100% { transform: scale(1.35); opacity: 0; }
+  0% {
+    transform: scale(0.65);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
 }
 
 /* 2. Center: The Privacy Lens (Optical Compliance Prism) */
@@ -1879,13 +1894,23 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @keyframes rotateClockwise {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes rotateCounter {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(-360deg);
+  }
 }
 
 .prism-core {
@@ -1915,8 +1940,14 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @keyframes laserSweep {
-  0% { left: -100%; }
-  50%, 100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+
+  50%,
+  100% {
+    left: 100%;
+  }
 }
 
 /* 3. Statutory Twin Node (Cryptographically Sealed) */
@@ -1957,9 +1988,23 @@ input[type="range"]::-moz-range-thumb {
   text-align: left;
 }
 
-.twin-slot-pill.blue { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-.twin-slot-pill.purple { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
-.twin-slot-pill.green { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.twin-slot-pill.blue {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.twin-slot-pill.purple {
+  background: #f5f3ff;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+
+.twin-slot-pill.green {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
 
 .sha-shield-orbit {
   display: inline-flex;
