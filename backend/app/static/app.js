@@ -453,9 +453,60 @@ function initTwinParallax() {
   }
 }
 
-function askAiAnalyst(question) {
+function formatAgentMarkdown(text) {
+  if (!text) return '';
+  return text
+    .replace(/^### (.*$)/gim, '<h4 style="font-size:14px; font-weight:700; margin:10px 0 6px 0; color:#0f172a;">$1</h4>')
+    .replace(/^#### (.*$)/gim, '<h5 style="font-size:13px; font-weight:700; margin:8px 0 4px 0; color:#1e293b;">$1</h5>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code style="font-family:\'JetBrains Mono\',monospace; font-size:11px; background:#f1f5f9; padding:1px 5px; border-radius:3px; border:1px solid #e2e8f0; color:#0f172a;">$1</code>')
+    .replace(/```text\n([\s\S]*?)```/g, '<pre style="background:#0f172a; color:#f8fafc; padding:10px 12px; border-radius:6px; font-size:11px; font-family:\'JetBrains Mono\',monospace; overflow-x:auto; line-height:1.5; margin:8px 0;">$1</pre>')
+    .replace(/^- (.*$)/gim, '<li style="margin-left:16px; margin-bottom:4px;">$1</li>')
+    .replace(/\n\n/g, '<div style="height:6px;"></div>');
+}
+
+async function executeAgentAction(action, params) {
+  if (action === 'navigate') {
+    navigateTo(params.view, params.filter);
+    return;
+  }
+  if (action === 'download') {
+    window.open(params.url, '_blank');
+    return;
+  }
+  if (action === 'verify_ledger') {
+    await runAuditVerification();
+    return;
+  }
+  if (action === 'run_scan') {
+    await runOneClickDiscovery();
+    return;
+  }
+
+  // Database modifying action
+  try {
+    showToast('Autonomous Agent executing action on database...', 'info');
+    const res = await fetch('/api/agent/action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, params })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message, 'success');
+      await updateSidebarPendingBadge();
+    } else {
+      showToast(`Action failed: ${data.error || 'Unknown error'}`, 'error');
+    }
+  } catch (e) {
+    showToast(`Execution error: ${e.message}`, 'error');
+  }
+}
+
+async function askAiAnalyst(question) {
   const inputEl = document.getElementById('ai-analyst-input');
-  const q = (question || inputEl?.value || '').toLowerCase().trim();
+  const q = (question || inputEl?.value || '').trim();
   if (!q) return;
 
   if (inputEl) inputEl.value = question || inputEl.value;
@@ -464,46 +515,72 @@ function askAiAnalyst(question) {
   if (!respBox) return;
 
   respBox.style.display = 'block';
+  respBox.innerHTML = `
+    <div style="display:flex; align-items:center; gap:8px; color:#2563eb; font-weight:600; font-size:12px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin-icon"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+      <span>Autonomous Compliance Agent executing ReAct reasoning loop & querying live database...</span>
+    </div>
+  `;
 
-  const inventory = state.inventory || [];
-  const govIds = inventory.filter(r => r.candidate_class === 'government_id');
-  const govNoRetention = govIds.filter(r => !r.retention_period || r.retention_period.toLowerCase().includes('missing'));
-  const gaps = inventory.filter(r => r.metadata_status && r.metadata_status.includes('Missing'));
+  try {
+    const res = await fetch('/api/agent/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: q })
+    });
+    if (!res.ok) throw new Error(`Agent request failed: ${res.statusText}`);
+    const data = await res.json();
 
-  if (q.includes('aadhaar') || q.includes('retention')) {
-    if (govNoRetention.length > 0) {
-      const tables = [...new Set(govNoRetention.map(r => r.table_name || r.dataset_name))].join(', ');
-      respBox.innerHTML = `
-        <strong>⚠️ Non-Compliance Alert:</strong> Found <strong>${govNoRetention.length} Government ID field(s)</strong> (Aadhaar / PAN) without a declared statutory retention schedule in <code>${tables}</code>.<br/>
-        <em>Statutory Impact:</em> Violates <strong>DPDP Act 2023 Section 8(7)</strong> (Obligation to erase personal data upon fulfillment of purpose).<br/>
-        <button type="button" class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="navigateTo('evidencegaps')">Review Compliance Gaps &rarr;</button>
-      `;
-    } else {
-      respBox.innerHTML = `<strong>✅ Compliant:</strong> All detected Government ID fields have registered retention schedules under DPDP Act Section 8(7).`;
-    }
-  } else if (q.includes('section 33') || q.includes('penalty') || q.includes('exposure') || q.includes('liability')) {
+    const thoughtsHtml = data.thought_process && data.thought_process.length > 0 ? `
+      <details style="margin-bottom:10px;">
+        <summary class="agent-thought-toggle">
+          ⚙️ ${data.thought_process.length} Tool Execution(s) &bull; ${data.agent_metadata?.mode || 'ReAct Engine'} (Click to expand)
+        </summary>
+        <div class="agent-thought-drawer">
+          ${data.thought_process.map(t => `
+            <div class="agent-step-item">
+              <span class="agent-tool-pill">Tool: ${t.tool}</span>
+              <span>${t.thought}</span>
+            </div>
+          `).join('')}
+        </div>
+      </details>
+    ` : '';
+
+    const citationsHtml = data.statutory_citations && data.statutory_citations.length > 0 ? `
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+        ${data.statutory_citations.map(c => `
+          <span style="font-size:10px; font-weight:700; color:#065f46; background:#ecfdf5; border:1px solid #a7f3d0; padding:2px 6px; border-radius:4px;">
+            § ${c}
+          </span>
+        `).join('')}
+      </div>
+    ` : '';
+
+    const actionsHtml = data.suggested_actions && data.suggested_actions.length > 0 ? `
+      <div class="agent-actions-row">
+        <span style="font-size:11px; font-weight:700; color:#0f172a; align-self:center;">One-Click Agent Actions:</span>
+        ${data.suggested_actions.map(act => `
+          <button type="button" class="agent-action-btn" onclick='executeAgentAction(${JSON.stringify(act.action)}, ${JSON.stringify(act.params)})'>
+            ${act.label} &rarr;
+          </button>
+        `).join('')}
+      </div>
+    ` : '';
+
     respBox.innerHTML = `
-      <strong>💥 Statutory Financial Exposure:</strong> Up to <strong>₹250 Crores</strong> under <strong>DPDP Act 2023 Section 33(1) Schedule 1</strong>.<br/>
-      <em>Assessment:</em> Repository includes national identifiers (Aadhaar / PAN / Bank) linked across operational tables with high exposure velocity.<br/>
-      <button type="button" class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="navigateTo('simulator'); switchStudioTab('blast');">Launch Blast Simulator &rarr;</button>
+      ${thoughtsHtml}
+      <div class="agent-answer-body" style="color:#0f172a; font-size:12.5px; line-height:1.6;">
+        ${formatAgentMarkdown(data.answer_markdown)}
+      </div>
+      ${citationsHtml}
+      ${actionsHtml}
     `;
-  } else if (q.includes('quasi') || q.includes('combination') || q.includes('identity')) {
+  } catch (err) {
     respBox.innerHTML = `
-      <strong>🚨 Quasi-Identifier Threat Vectors Detected:</strong><br/>
-      &bull; <strong>Name + Government ID:</strong> High risk of synthetic identity creation & financial account takeover.<br/>
-      &bull; <strong>Name + Phone Number:</strong> High risk of targeted smishing & social engineering vectors.<br/>
-      <button type="button" class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="navigateTo('simulator'); switchStudioTab('blast');">Inspect Blast Radius &rarr;</button>
-    `;
-  } else if (q.includes('audit') || q.includes('ledger') || q.includes('verify')) {
-    respBox.innerHTML = `
-      <strong>🛡️ Cryptographic Integrity Verified:</strong> SHA-256 Merkle hash chain is active.<br/>
-      Every triage decision is immutably appended with non-repudiation proofs for the Data Protection Board of India (DPBI).<br/>
-      <button type="button" class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="runAuditVerification()">Execute Live Audit Verification &rarr;</button>
-    `;
-  } else {
-    respBox.innerHTML = `
-      <strong>Statutory Overview:</strong> Discovered <strong>${inventory.length} personal data attributes</strong> across repositories. <strong>${gaps.length} compliance gap(s)</strong> require Data Protection Officer (DPO) triage.<br/>
-      <button type="button" class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="navigateTo('inventory')">Open Evidence Catalog &rarr;</button>
+      <div style="color:#991b1b; font-weight:600;">
+        ⚠️ Agent execution error: ${err.message}
+      </div>
     `;
   }
 }

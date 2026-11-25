@@ -1179,3 +1179,108 @@ def verify_audit_chain_endpoint(db: Session = Depends(get_db)):
     """Runs live SHA-256 block-by-block cryptographic verification on the audit chain."""
     from backend.app.core.audit_chain import verify_audit_chain
     return verify_audit_chain(db)
+
+
+# ============================================================================
+# Autonomous Keyless Compliance Agent Endpoints
+# ============================================================================
+@router.post("/agent/chat")
+def agent_chat_endpoint(
+    payload: dict = Body(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Autonomous Keyless DPDP Act Compliance & Governance Agent.
+    Runs multi-step ReAct reasoning over the live evidence inventory with real tool execution.
+    Requires ZERO external API keys.
+    """
+    from backend.app.services.agent_engine import ComplianceAgentEngine
+    message = payload.get("message", "").strip()
+    if not message:
+        raise HTTPException(status_code=400, detail="Message prompt is required.")
+
+    history = payload.get("conversation_history", [])
+    engine = ComplianceAgentEngine(db=db)
+    result = engine.run(prompt=message, conversation_history=history)
+    return result
+
+
+@router.post("/agent/action")
+def agent_execute_action_endpoint(
+    payload: dict = Body(...),
+    db: Session = Depends(get_db)
+):
+    """
+    Executes an action proposed by the autonomous Compliance Agent.
+    """
+    action = payload.get("action")
+    params = payload.get("params", {})
+
+    if action == "apply_notice":
+        col = params.get("column_name", "")
+        dataset = params.get("dataset_name", "enterprise.db")
+        purpose = params.get("purpose", "")
+        retention = params.get("retention", "")
+
+        # Find dataset if not explicit
+        if not dataset:
+            first_res = db.query(ScanResult).filter(ScanResult.column_name == col).first()
+            if first_res:
+                dataset = first_res.dataset_name
+
+        rec = MetadataManager.create_or_update(
+            db=db,
+            dataset_name=dataset,
+            table_name="",
+            column_name=col,
+            declared_purpose=purpose,
+            retention_period=retention,
+            metadata_owner="AI Privacy Governance Agent",
+            notes="Applied via Autonomous Compliance Agent recommendation."
+        )
+        return {
+            "success": True,
+            "message": f"Statutory notice and {retention} retention schedule applied to '{col}'.",
+            "record_id": rec.id
+        }
+
+    elif action == "batch_apply_retention":
+        cols = params.get("columns", [])
+        period = params.get("period", "3 years")
+        updated = 0
+        for col in cols:
+            first_res = db.query(ScanResult).filter(ScanResult.column_name == col).first()
+            dataset = first_res.dataset_name if first_res else "enterprise.db"
+            table = first_res.table_name if first_res else ""
+            MetadataManager.create_or_update(
+                db=db,
+                dataset_name=dataset,
+                table_name=table,
+                column_name=col,
+                retention_period=period,
+                metadata_owner="AI Privacy Governance Agent",
+                notes=f"Batch {period} retention configured via Autonomous Compliance Agent."
+            )
+            updated += 1
+        return {
+            "success": True,
+            "message": f"Successfully configured {period} retention schedules across {updated} column(s)."
+        }
+
+    elif action == "triage_candidate":
+        record_id = params.get("record_id")
+        target_status = params.get("status", "CONFIRMED")
+        res = db.query(ScanResult).filter(ScanResult.id == record_id).first()
+        if not res:
+            raise HTTPException(status_code=404, detail="Scan result record not found")
+        res.review_status = target_status
+        res.reviewed_at = now_utc()
+        res.reviewer_notes = "Triaged via Autonomous Compliance Agent approval."
+        db.commit()
+        return {
+            "success": True,
+            "message": f"Field '{res.column_name}' marked as {target_status}."
+        }
+
+    return {"success": False, "error": f"Unknown action '{action}'"}
+
