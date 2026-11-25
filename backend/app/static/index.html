@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Lens — Personal Data Discovery & Compliance Management</title>
   <link rel="icon" type="image/png" href="/static/logo-icon.png">
-  <link rel="stylesheet" href="/static/app.css?v=2.7.0">
+  <link rel="stylesheet" href="/static/app.css?v=2.8.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -150,7 +150,45 @@
       <!-- Main Content Area -->
       <main id="main-content" class="main-wrapper" role="main" tabindex="-1">
         <div id="view-container" class="page-content">
-          <!-- Injected dynamically by app.js -->
+          <!-- Initial Zero-Latency Loading Skeleton -->
+          <div class="view-loading-container" role="status" aria-label="Initializing PrivacyLens Compliance System">
+            <div class="loading-prism-brand">
+              <div class="loading-aperture">
+                <div class="aperture-core"></div>
+                <div class="aperture-scan-line"></div>
+              </div>
+              <div class="loading-telemetry-meta">
+                <div class="loading-telemetry-title">
+                  <span>PrivacyLens Telemetry</span>
+                  <span class="loading-live-dot" aria-hidden="true"></span>
+                </div>
+                <div class="loading-telemetry-subtitle">Calibrating statutory lens &bull; Initializing Discovery Engine</div>
+              </div>
+            </div>
+
+            <div class="skeleton-grid">
+              <div class="skeleton-card" style="height:130px;">
+                <div class="skeleton-line shimmer-bar" style="width:35%; height:12px; margin-bottom:12px;"></div>
+                <div class="skeleton-line shimmer-bar" style="width:60%; height:26px; margin-bottom:12px;"></div>
+                <div class="skeleton-line shimmer-bar" style="width:45%; height:11px;"></div>
+              </div>
+              <div class="skeleton-card" style="height:130px;">
+                <div class="skeleton-line shimmer-bar" style="width:40%; height:12px; margin-bottom:12px;"></div>
+                <div class="skeleton-line shimmer-bar" style="width:50%; height:26px; margin-bottom:12px;"></div>
+                <div class="skeleton-line shimmer-bar" style="width:65%; height:11px;"></div>
+              </div>
+              <div class="skeleton-card" style="height:130px;">
+                <div class="skeleton-line shimmer-bar" style="width:30%; height:12px; margin-bottom:12px;"></div>
+                <div class="skeleton-line shimmer-bar" style="width:55%; height:26px; margin-bottom:12px;"></div>
+                <div class="skeleton-line shimmer-bar" style="width:40%; height:11px;"></div>
+              </div>
+              <div class="skeleton-card" style="height:130px;">
+                <div class="skeleton-line shimmer-bar" style="width:45%; height:12px; margin-bottom:12px;"></div>
+                <div class="skeleton-line shimmer-bar" style="width:40%; height:26px; margin-bottom:12px;"></div>
+                <div class="skeleton-line shimmer-bar" style="width:50%; height:11px;"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>
@@ -158,6 +196,6 @@
 
   <div id="modal-container" role="region" aria-live="polite"></div>
   <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
-  <script src="/static/app.js?v=2.7.0"></script>
+  <script src="/static/app.js?v=2.8.0"></script>
 </body>
 </html>

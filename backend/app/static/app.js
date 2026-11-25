@@ -164,13 +164,30 @@ async function updateSidebarPendingBadge() {
 async function runOneClickDiscovery() {
   const btns = [
     document.getElementById('btn-1click-discovery'),
-    document.getElementById('btn-sidebar-quickscan')
+    document.getElementById('btn-sidebar-quickscan'),
+    document.getElementById('btn-hero-quickscan'),
+    document.getElementById('btn-header-quickscan')
   ].filter(Boolean);
 
   btns.forEach(b => {
     b.disabled = true;
-    b.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;" aria-hidden="true">&#x25F3;</span> Running Discovery...`;
+    b.innerHTML = `<span style="display:inline-block; animation:spin 1s linear infinite;" aria-hidden="true">&#x25F3;</span> Ingesting...`;
   });
+
+  // Inject High-Tech Ingestion HUD
+  let hud = document.getElementById('discovery-progress-hud');
+  if (!hud) {
+    hud = document.createElement('div');
+    hud.id = 'discovery-progress-hud';
+    hud.className = 'discovery-hud';
+    hud.setAttribute('role', 'status');
+    hud.innerHTML = `
+      <span class="hud-pulse" aria-hidden="true"></span>
+      <span class="hud-text"><strong>DISCOVERY ACTIVE:</strong> Ingesting SQLite schemas & CSV streams with multi-signal detection...</span>
+      <div class="hud-bar"><div class="hud-bar-fill"></div></div>
+    `;
+    document.body.appendChild(hud);
+  }
 
   try {
     const res = await fetch('/api/scans/scan-all', { method: 'POST' });
@@ -182,6 +199,7 @@ async function runOneClickDiscovery() {
   } catch (err) {
     showToast(`Discovery failed: ${err.message}`, 'error');
   } finally {
+    if (hud) hud.remove();
     btns.forEach(b => {
       b.disabled = false;
       b.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><polyline points="8 11 10 13 14 9"/></svg> Run Discovery Scan`;
@@ -268,6 +286,58 @@ function navigateTo(tab) {
   renderActiveView();
 }
 
+// Zero-Latency High-Tech Shimmer Skeleton Generator
+function renderViewSkeleton(viewName) {
+  return `
+    <div class="view-loading-container" role="status" aria-label="Loading ${viewName}">
+      <div class="loading-prism-brand">
+        <div class="loading-aperture">
+          <div class="aperture-core"></div>
+          <div class="aperture-scan-line"></div>
+        </div>
+        <div class="loading-telemetry-meta">
+          <div class="loading-telemetry-title">
+            <span>PrivacyLens Telemetry</span>
+            <span class="loading-live-dot" aria-hidden="true"></span>
+          </div>
+          <div class="loading-telemetry-subtitle">Calibrating statutory lens &bull; ${viewName}</div>
+        </div>
+      </div>
+
+      <div class="skeleton-grid">
+        <div class="skeleton-card" style="height:130px;">
+          <div class="skeleton-line shimmer-bar" style="width:35%; height:12px; margin-bottom:12px;"></div>
+          <div class="skeleton-line shimmer-bar" style="width:60%; height:26px; margin-bottom:12px;"></div>
+          <div class="skeleton-line shimmer-bar" style="width:45%; height:11px;"></div>
+        </div>
+        <div class="skeleton-card" style="height:130px;">
+          <div class="skeleton-line shimmer-bar" style="width:40%; height:12px; margin-bottom:12px;"></div>
+          <div class="skeleton-line shimmer-bar" style="width:50%; height:26px; margin-bottom:12px;"></div>
+          <div class="skeleton-line shimmer-bar" style="width:65%; height:11px;"></div>
+        </div>
+        <div class="skeleton-card" style="height:130px;">
+          <div class="skeleton-line shimmer-bar" style="width:30%; height:12px; margin-bottom:12px;"></div>
+          <div class="skeleton-line shimmer-bar" style="width:55%; height:26px; margin-bottom:12px;"></div>
+          <div class="skeleton-line shimmer-bar" style="width:40%; height:11px;"></div>
+        </div>
+        <div class="skeleton-card" style="height:130px;">
+          <div class="skeleton-line shimmer-bar" style="width:45%; height:12px; margin-bottom:12px;"></div>
+          <div class="skeleton-line shimmer-bar" style="width:40%; height:26px; margin-bottom:12px;"></div>
+          <div class="skeleton-line shimmer-bar" style="width:50%; height:11px;"></div>
+        </div>
+      </div>
+
+      <div class="skeleton-card" style="height:200px; margin-top:14px;">
+        <div class="skeleton-line shimmer-bar" style="width:25%; height:15px; margin-bottom:16px;"></div>
+        <div class="skeleton-line shimmer-bar" style="width:100%; height:11px; margin-bottom:10px;"></div>
+        <div class="skeleton-line shimmer-bar" style="width:92%; height:11px; margin-bottom:10px;"></div>
+        <div class="skeleton-line shimmer-bar" style="width:96%; height:11px; margin-bottom:10px;"></div>
+        <div class="skeleton-line shimmer-bar" style="width:85%; height:11px;"></div>
+      </div>
+    </div>
+  `;
+}
+
 // Main View Dispatcher
 async function renderActiveView() {
   const container = document.getElementById('view-container');
@@ -290,7 +360,7 @@ async function renderActiveView() {
 
   headerTitle.textContent = titles[state.currentTab][0];
   headerSub.textContent = titles[state.currentTab][1];
-  container.innerHTML = `<div style="padding:48px; text-align:center; color:#64748b;" role="status">Loading ${titles[state.currentTab][0]}...</div>`;
+  container.innerHTML = renderViewSkeleton(titles[state.currentTab][0]);
 
   try {
     if (state.currentTab === 'dashboard') await renderDashboard(container);
@@ -1076,7 +1146,16 @@ async function deleteDataset(id, name) {
 
 async function inspectDatasetTables(datasetId) {
   const box = document.getElementById('schema-inspector-box');
-  box.innerHTML = `<div class="card" style="padding:20px; text-align:center; color:#64748b;" role="status">Loading schema tables...</div>`;
+  box.innerHTML = `
+    <div class="skeleton-card" style="margin-top:20px; padding:20px;" role="status" aria-label="Inspecting schema tables">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
+        <span class="loading-aperture" style="width:18px; height:18px;"><span class="aperture-core" style="width:8px; height:8px;"></span></span>
+        <span style="font-size:12px; font-weight:700; color:#0f172a;">Inspecting SQLite & CSV Schemas...</span>
+      </div>
+      <div class="skeleton-line shimmer-bar" style="width:80%; height:12px; margin-bottom:8px;"></div>
+      <div class="skeleton-line shimmer-bar" style="width:55%; height:12px;"></div>
+    </div>
+  `;
 
   const res = await fetch(`/api/datasets/${datasetId}/tables`);
   const tables = await res.json();
@@ -2403,14 +2482,30 @@ function renderSensitivitySliders(pane) {
 
     <!-- Live Simulation Output Box -->
     <div id="sim-output-pane">
-      <div class="card" style="text-align:center; padding:32px; color:#64748b;" role="status">Computing live simulation metrics...</div>
+      <div class="skeleton-card" style="padding:24px;" role="status">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <span class="loading-aperture" style="width:16px; height:16px;"><span class="aperture-core" style="width:7px; height:7px;"></span></span>
+          <span style="font-size:12px; font-weight:700; color:#0f172a;">Computing Sensitivity Simulation Models...</span>
+        </div>
+        <div class="skeleton-line shimmer-bar" style="width:85%; height:12px; margin-bottom:8px;"></div>
+        <div class="skeleton-line shimmer-bar" style="width:60%; height:12px;"></div>
+      </div>
     </div>
   `;
   runSimulation();
 }
 
 async function renderBlastRadiusView(pane) {
-  pane.innerHTML = `<div class="card" style="text-align:center; padding:36px; color:#64748b;">Loading Breach Blast Radius model...</div>`;
+  pane.innerHTML = `
+    <div class="skeleton-card" style="padding:24px;" role="status">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+        <span class="loading-aperture" style="width:16px; height:16px;"><span class="aperture-core" style="width:7px; height:7px;"></span></span>
+        <span style="font-size:12px; font-weight:700; color:#0f172a;">Calibrating Breach Blast Radius Model...</span>
+      </div>
+      <div class="skeleton-line shimmer-bar" style="width:75%; height:12px; margin-bottom:8px;"></div>
+      <div class="skeleton-line shimmer-bar" style="width:50%; height:12px;"></div>
+    </div>
+  `;
   const dsRes = await fetch('/api/datasets');
   const datasets = await dsRes.json();
   const targetId = state.selectedBlastTarget || (datasets[0] ? datasets[0].id : '');
@@ -2559,7 +2654,16 @@ async function renderLineageView(pane) {
 }
 
 async function renderTimeMachineView(pane) {
-  pane.innerHTML = `<div class="card" style="text-align:center; padding:36px; color:#64748b;">Loading snapshot history and schema drift models...</div>`;
+  pane.innerHTML = `
+    <div class="skeleton-card" style="padding:24px;" role="status">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+        <span class="loading-aperture" style="width:16px; height:16px;"><span class="aperture-core" style="width:7px; height:7px;"></span></span>
+        <span style="font-size:12px; font-weight:700; color:#0f172a;">Analyzing Snapshot History & Schema Drift...</span>
+      </div>
+      <div class="skeleton-line shimmer-bar" style="width:80%; height:12px; margin-bottom:8px;"></div>
+      <div class="skeleton-line shimmer-bar" style="width:55%; height:12px;"></div>
+    </div>
+  `;
   const res = await fetch('/api/time-machine/diff');
   const data = await res.json();
 
