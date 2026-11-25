@@ -1,301 +1,405 @@
-WEBSITE FUNCTIONALITY YOUTUBE VIDEO - https://youtu.be/MVfuXm52Rkw
-WEBSITE LINK-https://as-ps019-tc057.onrender.com/
-PRESENTATION VIDEO- https://youtu.be/BWVyN9AuqBE
-
 # PrivacyLens — Personal-Data Discovery & Privacy Evidence Inventory
 
-[![AIORI Hackathon 3](https://img.shields.io/badge/AIORI_Hackathon_3-PS--019-0284c7.svg)](https://aiori.in)
+**AIORI Hackathon 3 — Problem Statement PS-019 (Team TC057)**  
+*An enterprise-grade, evidence-based privacy discovery scanner and regulatory compliance platform aligned with India's Digital Personal Data Protection (DPDP) Act 2023.*
+
+---
+
+### 🌐 Quick Links & Live Demos
+
+* 🚀 **Live Cloud Deployment (Render):** [https://as-ps019-tc057.onrender.com/](https://as-ps019-tc057.onrender.com/)
+* 🎥 **Website Functionality Walkthrough (YouTube):** [https://youtu.be/MVfuXm52Rkw](https://youtu.be/MVfuXm52Rkw)
+* 🎤 **Project Presentation Video (YouTube):** [https://youtu.be/BWVyN9AuqBE](https://youtu.be/BWVyN9AuqBE)
+* 💻 **GitHub Repository:** [https://github.com/aiori-hackathon/A3-PS019-TC057](https://github.com/aiori-hackathon/A3-PS019-TC057)
+
+---
+
+[![AIORI Hackathon 3](https://img.shields.io/badge/AIORI_Hackathon_3-PS--019_TC057-0284c7.svg)](https://aiori.in)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com)
-[![React 18](https://img.shields.io/badge/React-18-61dafb.svg)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178c6.svg)](https://www.typescriptlang.org)
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8.svg)](https://tailwindcss.com)
-[![Tests Passing](https://img.shields.io/badge/pytest-25%20passed-success.svg)](backend/tests)
+[![DPDP Act 2023 Aligned](https://img.shields.io/badge/Compliance-DPDP_Act_2023-emerald.svg)](https://www.meity.gov.in/writereaddata/files/Digital%20Personal%20Data%20Protection%20Act%202023.pdf)
+[![SHA-256 Audit Ledger](https://img.shields.io/badge/Audit_Trail-SHA--256_Merkle_Chain-purple.svg)](#6-cryptographic-sha-256-audit-trail--tamper-verification)
+[![Tests Passing](https://img.shields.io/badge/pytest-35%20passed%20(100%25)-success.svg)](backend/tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **AIORI Hackathon 3 — Problem Statement PS-019:**
-> Personal-Data Discovery and Privacy Evidence Inventory.
-> An enterprise-grade, evidence-based scanner that discovers candidate personal-data fields across CSVs and SQL databases, connects them to declared business purpose and retention metadata, and generates a structured privacy evidence inventory for human-in-the-loop review.
+---
+
+## Table of Contents
+1. [Executive Summary & Problem Statement](#1-executive-summary--problem-statement)
+2. [Key Technical Capabilities & Differentiators](#2-key-technical-capabilities--differentiators)
+3. [System Architecture & Data Flow](#3-system-architecture--data-flow)
+4. [Supported Data Classes & Indian Identifiers](#4-supported-data-classes--indian-identifiers)
+5. [Breach Blast Radius & Statutory Financial Liability](#5-breach-blast-radius--statutory-financial-liability)
+6. [Cryptographic SHA-256 Audit Trail & Tamper Verification](#6-cryptographic-sha-256-audit-trail--tamper-verification)
+7. [Animated SVG Data Lineage & Schema Drift](#7-animated-svg-data-lineage--schema-drift)
+8. [REST API Reference](#8-rest-api-reference)
+9. [Installation & Quickstart Guide](#9-installation--quickstart-guide)
+10. [Docker Deployment](#10-docker-deployment)
+11. [Guided Mentor & Judge Demonstration Script](#11-guided-mentor--judge-demonstration-script)
+12. [Automated Test Suite (35 Tests)](#12-automated-test-suite-35-tests)
+13. [Security & Privacy Safeguards](#13-security--privacy-safeguards)
+14. [Submission Checklist](#14-submission-checklist)
 
 ---
 
-## 1. Project Overview & Problem Statement
+## 1. Executive Summary & Problem Statement
 
-Modern enterprise data repositories accumulate personally identifiable information (PII) across ad-hoc spreadsheets, legacy databases, and operational dumps without maintaining a verifiable inventory of what data exists, why it was collected, or when it should be purged.
+Modern enterprise data architectures accumulate personally identifiable information (PII) across disparate CSV files, operational databases, data lakes, and third-party exports. Organizations face severe data governance risks:
+* **Shadow PII & Sprawl:** Sensitive customer and employee records persist in unmonitored tables without formal cataloging.
+* **Orphaned Personal Data:** Fields exist without declared statutory purposes or defined retention schedules.
+* **Strict Statutory Penalties:** Under India's **Digital Personal Data Protection (DPDP) Act 2023**, failure to implement reasonable security safeguards or maintain auditable data inventories exposes organizations to penalties of up to **₹250 Crores (Section 33)**.
 
-**PrivacyLens** solves this critical data governance gap by providing:
-1. **Evidence-Based Discovery:** Multi-signal candidate detection (column patterns, value regex ratios, and domain format validators) rather than naive keyword matching.
-2. **Metadata Linking:** Automatic compound mapping `(dataset, table, column)` against declared business purposes and statutory retention rules.
-3. **Evidence Gap Identification:** Technical gap detection flagging missing purposes, indefinite retention risks, ambiguous mappings, and unreviewed fields.
-4. **Human-in-the-Loop Review Center:** Review workflow enabling Data Protection Officers (DPOs) and security analysts to confirm or reject detections with audit notes.
-5. **Auditable Reporting:** Downloadable CSV exports and formal printable PDF reports generated via ReportLab.
-6. **Transparent Evaluation:** Scikit-learn standard evaluation calculating true positives, false positives, false negatives, precision, recall, and F1 score against ground-truth benchmarks.
+**PrivacyLens** addresses these challenges by delivering an evidence-based discovery scanner and regulatory evidence inventory:
+1. **Multi-Signal Transparent Classification:** Combines column nomenclature patterns, regex value density ratios, and algorithmic format validators (Verhoeff dihedral checksums for Aadhaar, entity-aware PAN inspection, GSTIN checksums, IFSC verification, and UPI handle detection).
+2. **Compound Metadata Linking:** Maps discovered columns `(dataset, table, column)` against corporate purpose and retention registers to instantly expose governance gaps.
+3. **Statutory DPDP Act 2023 Governance Matrix:** Evaluates discovered data across Sections 5 (Notice), 6 (Consent), 8(7) (Erasure/Retention), 9 (Minor/Children Protection), and 33 (Financial Liability).
+4. **Legally Defensible Cryptographic Audit Ledger:** An immutable, SHA-256 Merkle hash-chained ledger that records every human triage action, providing mathematical proof of non-tampering for Data Protection Board of India (DPBI) audits.
+5. **Interactive Risk Simulation:** Features an animated SVG data lineage graph, a breach blast radius contagion calculator, and schema drift detection across historical scans.
 
-> **Important Legal Disclaimer:** PrivacyLens provides *technical evidence for human review*. It does not automatically determine legal compliance, lawful basis, or provide universal certification under the DPDP Act 2023, GDPR, or other statutory regulations.
+> **Legal Disclaimer:** *PrivacyLens generates verifiable technical evidence and auditable governance dossiers for human-in-the-loop review by Data Protection Officers (DPOs). It provides technical decision support and does not constitute formal legal counsel.*
 
 ---
 
-## 2. Key Competitive Differentiators & Regulatory Advancements
+## 2. Key Technical Capabilities & Differentiators
 
-PrivacyLens stands out with enterprise-grade capabilities built specifically to address real-world governance requirements:
-
-| Differentiator | Architectural Implementation | Regulatory / Technical Impact |
+| Capability | PrivacyLens Implementation (TC057) | Industry Standard / Competitor Comparison |
 | :--- | :--- | :--- |
-| **DPDP Act 2023 Governance Matrix** | Automated engine scoring inventory against Sections 5, 6, 8(7), and 9 | Produces statutory readiness scores (0–100%) and risk tiers (Low/Moderate/High) for Data Protection Board audits. |
-| **Cryptographic SHA-256 Audit Seal** | Deterministic SHA-256 digest computed across records and timestamps | Guarantees non-repudiation and tamper-evident audit trails. Any record tampering breaks the cryptographic hash. |
-| **Official Verhoeff Dihedral ($D_5$) Algorithm** | Full non-commutative dihedral permutation group ($D_5$) check tables | Implements official UIDAI checksum calculation for 12-digit Aadhaar numbers, catching single-digit errors & adjacent transpositions. |
-| **Entity-Aware PAN Tax ID Classification** | 4th-character PAN taxonomy inspection (`P`, `C`, `F`, `G`, `T`) | Identifies individual personal PANs while suppressing corporate/firm tax IDs (`C`, `F`, `G`) from false-positive PII alarms. |
-| **Children's Data Protection (Sec 9)** | Age calculation (< 18) on detected dates of birth | Flags minor data requiring verifiable parental consent and tracking heightened processing safeguards under DPDP Act 2023. |
-| **What-If Sensitivity Simulation Studio** | Live in-browser weight and threshold optimization engine | Interactive sliders to tune precision vs recall against labelled ground truth benchmarks in real time. |
-| **Native ReportLab PDF Dossier** | Formal vector PDF export (`/api/reports/dpdp.pdf`) | Generates executive audit summaries with embedded DPDP matrix scores and cryptographic seal. |
+| **DPDP Act 2023 Statutory Alignment** | Native compliance engine mapping inventory to Sections 5, 6, 8, 9, and 33 with downloadable official PDF Dossiers. | Competitors often lack Indian statutory clause mapping or produce generic PII lists. |
+| **Breach Blast Radius Simulator** | Models direct record compromise, downstream table contagion, quasi-identifier correlation (*Name + Aadhaar*), and computes **Section 33 statutory financial liability (Up to ₹250 Crores)**. | Generic tools only count static column numbers without cross-table cascading risk or statutory liability calculations. |
+| **Animated SVG Data Lineage Graph** | Dynamic SVG network featuring animated pulsing data streams (`@keyframes flowDash`), table nodes, column badges, and interactive dependency isolation. | Static tables or heavy canvas dependencies that fail to convey cross-table identifier flow. |
+| **Time Machine & Schema Drift** | Historical snapshot diff comparator tracking newly introduced personal columns and generating automated **Schema Drift Alerts**. | Single-run scanners with zero temporal diffing or change detection across deployments. |
+| **Cryptographic SHA-256 Audit Trail** | Blockchain-style Merkle hash-chained ledger (`prev_hash` $\rightarrow$ `block_hash`) for every review decision with 1-click live verification. | Mutable database logs or flat CSV logs that can be tampered with after the fact. |
+| **Algorithmic Indian Identifiers** | Full non-commutative **Verhoeff ($D_5$) dihedral** checksum for Aadhaar, **PAN entity taxonomy** (individual vs corporate suppression), **15-char GSTIN** checksum with state codes, **IFSC codes**, and **UPI handles**. | Naive 10/12-digit regex matching resulting in high false-positive rates on random numeric strings. |
+| **Human-in-the-Loop Review Center** | Progressive disclosure triage queue with keyboard shortcuts (`C` Confirm, `R` Reject, `E` Evidence) and 1-click high-confidence batch approval. | Cluttered interfaces requiring repetitive manual mouse clicks for every record. |
 
 ---
 
-## 3. Five Supported Personal Data Classes
+## 3. System Architecture & Data Flow
 
-PrivacyLens includes configurable detection rules for the 5 mandated classes:
+```mermaid
+flowchart TD
+    subgraph DataIngestion ["1. Data Ingestion & Connector Layer"]
+        CSV[CSV Files / Raw Dumps]
+        SQL[SQLite / Operational DBs]
+        SafeSample[Safe Stream Sampler: max 500 rows / mode=ro]
+    end
 
-| Class | Key Detection Signals | Format Validation & Guardrails |
-| :--- | :--- | :--- |
-| **1. Person Name** | Column patterns (`full_name`, `first_name`, `cust_name`, etc.), multi-word alphabetical patterns | Alphabetic density > 75%, length checks (2-60 chars). Explicit negative patterns (`company_name`, `product_name`, `file_name`) penalized. |
-| **2. Email Address** | Column patterns (`email`, `work_email`, `contact_email`), RFC-style regex | Validates single `@`, domain dots, TLD length >= 2, max RFC length. |
-| **3. Phone Number** | Column patterns (`phone`, `mobile`, `contact_no`, `tel_no`), Indian mobile regex (`+91` or 10-digit starting 6-9) | Strips non-digits, checks standard lengths (10-13 digits), rejects repetitive dummy numbers (`1111111111`, `1234567890`). |
-| **4. Government ID** | Column patterns (`aadhaar`, `uidai`, `pan`, `ssn`, `gov_id`), Aadhaar 12-digit & PAN 10-char formats | Aadhaar structural check (12 digits, cannot start with 0 or 1). PAN structure (5 letters, 4 digits, 1 letter). SSN structure (3-2-4). |
-| **5. Date of Birth** | Column patterns (`dob`, `date_of_birth`, `birth_date`), ISO and standard date formats | Age plausibility validation (0 to 125 years old). Rejects future dates and ordinary created/updated timestamps. |
+    subgraph ScannerEngine ["2. Multi-Signal Detection Engine"]
+        ColMatch[Column Pattern Matcher: 30% weight]
+        ValMatch[Regex Value Density Ratio: 50% weight]
+        Validators[Algorithmic Format Validators: 20% bonus]
+        Verhoeff[Verhoeff D5 Checksum - Aadhaar]
+        PANCheck[Entity Filter - Individual 'P' PAN]
+        GSTINCheck[GSTIN State & Checksum Algorithm]
+        UPICheck[UPI Handle & IFSC Validator]
+        Confidence[Confidence Scorer: Threshold >= 0.70]
+    end
 
----
+    subgraph GovernanceEngine ["3. DPDP Governance & Evidence Gap Engine"]
+        MetaReg[Declared Purpose & Retention Register]
+        CompoundLink[Compound Key Match: dataset + table + column]
+        GapFinder[Gap Detection: Missing Purpose / Retention]
+        DPDPScore[DPDP Act Matrix: Sec 5, 6, 8, 9, 33]
+    end
 
-## 3. Technology Stack
+    subgraph SecurityLedger ["4. Cryptographic Audit & Risk Simulation"]
+        AuditBlock[SHA-256 Merkle Chained Ledger]
+        VerifySeal[1-Click Tamper Verification Engine]
+        BlastSim[Breach Blast Radius & Sec 33 Penalty Calculator]
+        LineageGraph[Animated SVG Cross-Table Data Lineage]
+        TimeMachine[Historical Time-Machine Drift Diff]
+    end
 
-- **Frontend:** React 18, TypeScript, Tailwind CSS, Lucide React, Recharts
-- **Build Tool:** Vite 5
-- **Backend:** Python 3.10+ (tested on Python 3.14.7), FastAPI, Uvicorn, Pydantic v2
-- **Data Processing:** Pandas, NumPy
-- **Database:** SQLite with SQLAlchemy ORM (read-only connector mode for source inspection)
-- **Rules Engine:** PyYAML configuration (`backend/config/rules.yaml`)
-- **Evaluation:** Scikit-learn standard metrics (TP, FP, FN, Precision, Recall, F1)
-- **PDF Generation:** ReportLab 5.1
-- **Testing:** Pytest (25 passing automated tests)
+    subgraph UIExport ["5. Presentation & Human Review Layer"]
+        HumanReview[Human-in-the-Loop Review Queue: Keys C / R / E]
+        SensitivityStudio[What-If Sensitivity Simulation Studio]
+        PDFGen[ReportLab Vector PDF: DPDP Dossier & Inventory]
+        REST[FastAPI REST Endpoints]
+    end
 
----
-
-## 4. Project Directory Structure
-
-```text
-AIORI_CODE_FOR_WEBSITE/
-├── frontend/                     # React + TypeScript + Tailwind UI
-│   ├── src/
-│   │   ├── components/           # Sidebar, Header, StatusBadge, Modals
-│   │   ├── pages/                # 9 Primary workflow views
-│   │   ├── services/             # API client (Fetch / JSON)
-│   │   └── types/                # TypeScript interfaces
-│   ├── package.json
-│   ├── tailwind.config.js
-│   ├── tsconfig.json
-│   └── vite.config.ts
-├── backend/                      # FastAPI Backend
-│   ├── app/
-│   │   ├── api/                  # REST API Endpoints (inc. /dpdp/matrix, /scanner/simulate)
-│   │   ├── connectors/           # CSV & SQLite connectors
-│   │   ├── core/                 # Config, Database engine, Seeders
-│   │   ├── evaluation/           # Accuracy evaluator
-│   │   ├── metadata/             # Purpose & Retention manager
-│   │   ├── models/               # SQLAlchemy ORM models
-│   │   ├── reports/              # CSV & ReportLab PDF generators (with SHA-256 seal)
-│   │   ├── scanner/              # Detection engine & Verhoeff dihedral validators
-│   │   ├── schemas/              # Pydantic v2 schemas
-│   │   ├── static/               # Interactive UI shell, CSS, and JS
-│   │   └── main.py               # Application entrypoint
-│   ├── config/
-│   │   └── rules.yaml            # Configurable detection rules
-│   ├── tests/                    # Automated pytest test suite (25 tests)
-│   └── requirements.txt          # Python dependencies
-├── sample_data/                  # Synthetic demonstration assets
-│   ├── synthetic_customers.csv   # Indian names, emails, phones, Aadhaar
-│   ├── synthetic_employees.csv   # Employee names, work emails, PAN
-│   ├── sample_enterprise.db      # Multi-table SQLite database (customers, employees, orders)
-│   ├── labelled_test_set.csv     # 50+ labelled ground truth benchmark samples
-│   ├── purpose_retention.csv     # Pre-seeded purpose & retention register
-│   └── setup_sample_database.py  # SQLite DB generator
-├── docs/                         # Technical documentation
-│   ├── architecture.md           # Architecture, Data flow, Mermaid diagrams
-│   ├── pseudocode.md             # Algorithmic pseudocode & scoring
-│   ├── testing.md                # Test report & Mentor demo checklist
-│   └── limitations.md            # Technical scope, disclaimers, security
-├── reports/                      # Output directory for exported reports
-├── .env.example                  # Environment configuration template
-├── .gitignore                    # Git exclusions
-├── LICENSE                       # MIT License
-└── README.md                     # Master project guide
+    CSV --> SafeSample
+    SQL --> SafeSample
+    SafeSample --> ColMatch & ValMatch & Validators
+    Validators --> Verhoeff & PANCheck & GSTINCheck & UPICheck
+    ColMatch & ValMatch & Validators --> Confidence
+    Confidence --> CompoundLink
+    MetaReg --> CompoundLink
+    CompoundLink --> GapFinder & DPDPScore
+    Confidence --> HumanReview
+    HumanReview --> AuditBlock
+    AuditBlock --> VerifySeal
+    CompoundLink --> BlastSim & LineageGraph & TimeMachine
+    DPDPScore --> PDFGen
+    HumanReview --> REST
+    SensitivityStudio --> REST
 ```
 
 ---
 
-## 5. Prerequisites
+## 4. Supported Data Classes & Indian Identifiers
 
-Before running PrivacyLens, ensure you have:
-1. **Python 3.10 or higher** (`python --version`)
-2. **Node.js v18 or higher** (`node --version`) and **npm** (`npm --version`)
+PrivacyLens implements a multi-signal scoring model:
+$$\text{Score} = (W_{\text{col}} \times S_{\text{col}}) + (W_{\text{val}} \times S_{\text{val}}) + (W_{\text{fmt}} \times S_{\text{fmt}}) - P_{\text{neg}}$$
+
+A candidate is flagged when $\text{Score} \ge \text{Threshold}$ (default $0.70$).
+
+| Personal Data Class | Column Signals | Value Regex & Structural Validation | Algorithmic Checksums & False-Positive Guardrails |
+| :--- | :--- | :--- | :--- |
+| **1. Person Name** | `full_name`, `cust_name`, `employee_name`, `first_name` | Alphabetic multi-word density $> 75\%$ | Penalizes non-personal columns (`company_name`, `file_name`, `product_id`). |
+| **2. Email Address** | `email`, `email_address`, `work_email`, `contact_email` | RFC-5322 pattern `[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}` | Verifies single `@`, domain dots, TLD length $\ge 2$, max length 254 chars. |
+| **3. Phone Number** | `mobile`, `phone`, `contact_no`, `tel_no`, `whatsapp` | Indian cellular regex: `^(\+91[\-\s]?)?[6-9]\d{9}$` | Strips formatting; rejects repetitive dummy numbers (`1111111111`, `1234567890`). |
+| **4. Government ID (Aadhaar, PAN, Passport)** | `aadhaar`, `uidai`, `pan`, `passport`, `voter_id` | 12-digit Aadhaar, 10-char PAN (`[A-Z]{5}[0-9]{4}[A-Z]{1}`) | **Aadhaar:** Validates official **Verhoeff dihedral ($D_5$) checksum**.<br>**PAN:** Inspects 4th character (`P` = Individual, suppresses corporate `C`, `F`, `G`). |
+| **5. Date of Birth & Minor Protection** | `dob`, `date_of_birth`, `birth_date` | Standard date formats (`YYYY-MM-DD`, `DD/MM/YYYY`) | Plausibility range (0–125 years). Rejects future dates and ordinary created/updated timestamps. **Flags minors ($<18$) under DPDP Sec. 9**. |
+| **6. Financial Data (UPI, GSTIN, Bank, IFSC)** | `upi_id`, `vpa`, `gstin`, `ifsc`, `bank_account` | UPI handles (`@okhdfcbank`, `@oksbi`, `@paytm`), 11-char IFSC (`^[A-Z]{4}0[A-Z0-9]{6}$`) | **GSTIN:** Validates 15-char structure with valid Indian state codes (01–38) & official checksum character. |
 
 ---
 
-## 6. Installation & Setup
+## 5. Breach Blast Radius & Statutory Financial Liability
 
-### Step 1: Clone or Navigate to the Repository
+Under **Section 33(1) of the DPDP Act 2023**, the Data Protection Board of India imposes statutory penalties based on the nature, gravity, and duration of personal data breaches:
+
+$$\text{Max Penalty} = \text{₹250 Crores (Schedule Item 1: Failure to implement reasonable security safeguards)}$$
+
+The **PrivacyLens Breach Blast Radius Simulator** provides real-time quantitative risk modeling:
+1. **Direct Compromise:** Calculates the exact record count within the targeted table.
+2. **Cascading Contagion Analysis:** Traverses cross-table foreign identifiers (e.g. `customer_id` present in `customers`, `orders`, and `payments`) to determine downstream exposure.
+3. **Quasi-Identifier Combination Risks:**
+   * $\text{Name} + \text{Government ID (Aadhaar/PAN)} \rightarrow$ **Critical Identity Theft & Synthetic ID Creation**.
+   * $\text{Name} + \text{Phone Number} \rightarrow$ **Targeted Smishing & Social Engineering Vector**.
+   * $\text{Name} + \text{Date of Birth} \rightarrow$ **Knowledge-Based Authentication Bypass**.
+   * $\text{Email} + \text{Phone Number} \rightarrow$ **Account Takeover & SIM Swap Vulnerability**.
+4. **Statutory Tier Assessment:** Automatically flags whether the breach triggers **Critical Exposure (Up to ₹250 Crores)**, **High Exposure (Up to ₹150 Crores)**, or **Moderate Exposure (Up to ₹50 Crores)** under Section 33.
+
+---
+
+## 6. Cryptographic SHA-256 Audit Trail & Tamper Verification
+
+To satisfy legal evidentiary standards under the DPDP Act and the Indian Evidence Act, PrivacyLens implements a blockchain-style, cryptographically chained audit ledger:
+
+```
+[Genesis Block: prev_hash = "0"*64]
+           │
+           ▼
+[Block 1: Hash = SHA-256(1 : timestamp : actor : action : target : payload : prev_hash)]
+           │
+           ▼
+[Block 2: Hash = SHA-256(2 : timestamp : actor : action : target : payload : Block 1 Hash)]
+           │
+           ▼
+[Block N: Hash = SHA-256(N : timestamp : actor : action : target : payload : Block N-1 Hash)]
+```
+
+### Tamper-Evident Verification:
+* Every triage decision (`CONFIRMED`, `REJECTED`, or `BATCH_TRIAGE_APPROVAL`) appends a block.
+* Clicking **"Verify Audit Integrity"** in the Review Queue triggers a full verification cycle via `POST /api/audit/verify`.
+* If any record, actor, or payload is modified or deleted in the underlying database, the recomputed hash fails to match the chain, immediately raising a tamper alert with the exact compromised block index.
+
+---
+
+## 7. Animated SVG Data Lineage & Schema Drift
+
+### Animated Data Lineage Graph:
+* Renders a real-time SVG network diagram connecting datasets that share personal identifiers.
+* Powered by custom SVG animations:
+  ```css
+  @keyframes flowDash {
+    to { stroke-dashoffset: -24; }
+  }
+  .lineage-edge {
+    stroke-dasharray: 6 4;
+    animation: flowDash 1.2s linear infinite;
+  }
+  ```
+* Dashed connector lines pulse continuously between database tables to illustrate live identifier flow. Clicking any table node isolates its dependencies and highlights shared risk vectors.
+
+### Time Machine & Schema Drift Detection:
+* Compares baseline discovery snapshots against subsequent runs via `GET /api/time-machine/diff`.
+* Detects newly added personal fields and removed columns.
+* Automatically raises **Schema Drift Alerts** when developers add uncataloged PII fields to production schemas, preventing compliance debt.
+
+---
+
+## 8. REST API Reference
+
+The backend provides a fully documented RESTful API accessible via interactive Swagger docs at `http://localhost:8000/docs`:
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/health` | Service health status and timestamp. |
+| `GET` | `/api/dashboard` | Aggregated metrics, class distributions, and confidence tiers. |
+| `GET` | `/api/datasets` | List registered datasets with row and column counts. |
+| `POST` | `/api/datasets/upload` | Upload CSV or SQLite database file with sanitization. |
+| `GET` | `/api/datasets/{id}/preview`| Safe preview (top 5 rows) with read-only connection. |
+| `POST` | `/api/scans` | Execute discovery scan on a specific dataset. |
+| `POST` | `/api/scans/scan-all` | Execute 1-click discovery scan across all registered data sources. |
+| `GET` | `/api/inventory` | Retrieve evidence inventory with confidence scores and masked samples. |
+| `PATCH` | `/api/inventory/{id}/review`| Human triage action (confirm/reject) with cryptographic audit logging. |
+| `POST` | `/api/inventory/batch-review`| High-confidence batch approval for fast triage. |
+| `GET` | `/api/gaps` | Retrieve unmapped fields, missing purposes, and indefinite retention risks. |
+| `GET` | `/api/dpdp/matrix` | DPDP Act 2023 compliance scoring and risk tier breakdown. |
+| `GET` | `/api/lineage` | Node and edge network topology for data lineage graph. |
+| `POST` | `/api/simulator/blast` | Breach blast radius calculation & Section 33 financial liability assessment. |
+| `GET` | `/api/time-machine/diff` | Schema diff and automated drift alerts between historical scans. |
+| `GET` | `/api/audit/chain` | Retrieve the SHA-256 cryptographically chained audit blocks. |
+| `POST` | `/api/audit/verify` | Recompute and verify the cryptographic integrity of the audit chain. |
+| `GET` | `/api/evaluation` | Benchmark accuracy metrics (Precision, Recall, F1) against labelled ground truth. |
+| `GET` | `/api/reports/inventory.csv`| Export discovered inventory as structured CSV. |
+| `GET` | `/api/reports/gaps.csv` | Export governance gap analysis as CSV. |
+| `GET` | `/api/reports/inventory.pdf`| Generate ReportLab vector PDF evidence inventory. |
+| `GET` | `/api/reports/dpdp.pdf` | Generate formal DPDP Act 2023 Statutory Audit Dossier (PDF). |
+
+---
+
+## 9. Installation & Quickstart Guide
+
+### Prerequisites
+* **Python 3.10+** (Tested on Python 3.10 through 3.14)
+* **Node.js v18+** & **npm** (for building frontend assets, if desired)
+* **Git**
+
+### Step 1: Clone Repository
 ```bash
 git clone https://github.com/aiori-hackathon/A3-PS019-TC057.git
-cd AIORI_CODE_FOR_WEBSITE
+cd A3-PS019-TC057
 ```
 
-### Step 2: Install Backend Dependencies
+### Step 2: Set Up Virtual Environment & Dependencies
 ```bash
-pip install -r backend/requirements.txt
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# Windows:
+.\venv\Scripts\activate
+# macOS / Linux:
+source venv/bin/activate
+
+# Install Python requirements
+pip install -r requirements.txt
 ```
 
-### Step 3: Install Frontend Dependencies
+### Step 3: Seed Synthetic Databases & Initialize Ledger
 ```bash
-cd frontend
-npm install
-cd ..
-```
-
-### Step 4: Initialize Sample Database & Seeder
-Populate the synthetic enterprise SQLite database and initial purpose/retention register:
-```bash
+# Generate synthetic enterprise database
 python sample_data/setup_sample_database.py
+
+# Initialize database schema, seed registers, and genesis audit block
 python -m backend.app.core.init_db
 ```
 
----
-
-## 7. Running the Application
-
-### Option A: Run Unified Full-Stack Server
+### Step 4: Launch Unified Server
 ```bash
 python run.py
 ```
-- Web Application UI: `http://localhost:8000/` or live at `https://as-ps019-tc057.onrender.com/`
-- Interactive API Docs (Swagger): `http://localhost:8000/docs`
-- Redoc API Docs: `http://localhost:8000/redoc`
 
-### Option B: Run Frontend Development Server (Terminal 2)
+* 🖥️ **Web Application UI:** [http://localhost:8000/](http://localhost:8000/)
+* 📚 **Interactive Swagger API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+* 📖 **Redoc Specifications:** [http://localhost:8000/redoc](http://localhost:8000/redoc)
+
+---
+
+## 10. Docker Deployment
+
+PrivacyLens includes a production-ready, lightweight Docker container:
+
+### Build Container Image
 ```bash
-cd frontend
-npm run dev
+docker build -t privacylens:latest .
 ```
-- Web Application UI: `http://localhost:5173`
+
+### Run Container
+```bash
+docker run -d -p 8000:8000 --name privacylens privacylens:latest
+```
+
+Access the application in your browser at `http://localhost:8000/`.
 
 ---
 
-## 8. Guided Mentor Demonstration Workflow
+## 11. Guided Mentor & Judge Demonstration Script
 
-1. **Dashboard (`/` or `http://localhost:8000`):**
-   - Review live metrics: total datasets, candidate fields detected, distribution across classes, and confidence spectrum.
-   - Notice the DPDP Act 2023 Statutory Governance callout and cryptographic SHA-256 seal status.
-2. **DPDP Act 2023 Statutory Matrix (Tab: "DPDP 2023 Matrix"):**
-   - Inspect overall statutory readiness score (0-100%) and risk tier (Low / Moderate / High).
-   - Review the Data Protection Board of India (DPBI) tamper-evident SHA-256 seal.
-   - Review section-by-section breakdown: Section 5 (Notice), Section 8(7) (Retention Erasure), Section 9 (Children's Data Protection), and Section 16 (Evidentiary Non-Repudiation).
-   - Download the official ReportLab **DPDP Dossier (PDF)**.
-3. **What-If Sensitivity Studio (Tab: "Sensitivity Studio"):**
-   - Adjust interactive sliders: Column Pattern Weight, Sample Value Weight, Format Bonus, and Candidate Threshold.
-   - Click **"Execute Live Benchmark Simulation"** to observe real-time recalculations of Macro F1, Precision, Recall, and False Positives Suppressed.
-4. **Data Sources:**
-   - Inspect pre-loaded `synthetic_customers.csv`, `synthetic_employees.csv`, and `sample_enterprise.db`.
-   - Click **"Inspect Schema"** to see table columns and non-null samples.
-5. **Scan Data:**
-   - Select `sample_enterprise.db` or `synthetic_customers.csv`.
-   - Click **"Execute Scan"**. Multi-signal detection engine processes the dataset with Verhoeff dihedral validation and PAN entity filtering.
-6. **Evidence Inventory:**
-   - Filter by data class (e.g. `government_id` or `email_address`).
-   - Click **"Evidence"** to inspect the multi-signal score breakdown and memory-redacted values (e.g. `XXXX-XXXX-9102`).
-7. **Evidence Gaps:**
-   - Filter by `Missing Purpose` or `Missing Retention`.
-   - Observe how PrivacyLens highlights governance gaps without assuming universal compliance.
-8. **Review Center:**
-   - View pending candidate detections.
-   - Click **"Confirm PII"** or **"Reject"** and enter audit justification notes.
-9. **Evaluation & Accuracy:**
-   - Click **"Execute Live Evaluation"** to run the scanner against `sample_data/labelled_test_set.csv`.
-   - Inspect Macro Precision, Recall, F1 scores, and sample-by-sample confusion comparison.
-10. **Configurable Rules:**
-   - Open the live YAML editor. Adjust detection thresholds or add new regex patterns. Click **"Save & Compile Rules"**.
-11. **Export Reports:**
-   - Download `Inventory CSV`, `Gaps CSV`, `Inventory PDF`, or `DPDP Dossier (PDF)` from the header bar.
+Follow this 5-minute walkthrough to evaluate all core capabilities:
+
+1. **Dashboard Overview (`/`):**
+   * Review high-level statistics: total datasets, candidate fields detected, and confidence distribution.
+   * Note the **DPDP Act 2023 Statutory Governance** card and **SHA-256 Tamper-Evident Seal**.
+2. **1-Click Global Discovery:**
+   * Click **"Run Full Scan (All Datasets)"** in the top action bar.
+   * Watch the scanner evaluate CSV files and multi-table SQLite databases simultaneously.
+3. **Sensitivity Studio (4 Interactive Tabs):**
+   * **Tab 1 (Sensitivity & Weights):** Adjust candidate threshold and rule weights; click **"Execute Live Benchmark Simulation"** to observe real-time Macro F1 recalculation.
+   * **Tab 2 (Breach Blast Radius):** Move the **Leak Percentage Slider** to watch the animated radial gauge fill up. Observe downstream records at risk, quasi-identifier correlation risks, and **DPDP Section 33 ₹250 Crores penalty analysis**.
+   * **Tab 3 (Data Lineage Graph):** View the animated SVG graph with flowing dashed connector lines. Click any node to isolate shared personal data flows.
+   * **Tab 4 (Time Machine & Drift):** Review historical scan snapshots and observe automated **Schema Drift Alerts**.
+4. **Human Review Queue & Cryptographic Audit Verification:**
+   * Navigate to **Review Queue**.
+   * Use keyboard shortcuts: press `C` to confirm or `R` to reject a candidate detection.
+   * Scroll down to the **Cryptographic SHA-256 Audit Trail** card and click **"Verify Audit Integrity"**. Observe the live verification calculation confirming non-tampering.
+5. **DPDP 2023 Matrix & PDF Dossier:**
+   * Open the **DPDP 2023 Matrix** tab to inspect compliance scores across Sections 5, 6, 8(7), 9, and 16.
+   * Click **"Download DPDP Dossier (PDF)"** in the header to download the formal, printable audit report.
 
 ---
 
-## 9. Running Automated Tests
+## 12. Automated Test Suite (35 Tests)
 
-Run the complete test suite with verbose output:
+PrivacyLens includes comprehensive automated test coverage covering scanner logic, connectors, metadata evaluation, and API routes.
+
+Run the test suite with verbose output:
 ```bash
 python -m pytest backend/tests -v
 ```
 
-All 25 automated tests will execute and pass:
-- CSV & SQLite connector validation
-- All 5 personal data class detections
-- Negative control suppression
-- Metadata compound mapping & missing-metadata detection
-- Precision, recall, and F1 calculation
-- End-to-end API routes and PDF report generation
+### Summary of Passing Test Suites:
+```text
+backend\tests\test_api.py ...........                                    [ 31%]
+backend\tests\test_connectors.py .....                                   [ 45%]
+backend\tests\test_metadata_and_eval.py .....                            [ 60%]
+backend\tests\test_scanner.py ..............                             [100%]
 
----
-
-## 10. Security Safeguards
-
-- **Synthetic Data Guarantee:** All demonstration assets are 100% fictional.
-- **Zero-Exposure Masking:** Memory redaction masks PII prior to persistence and report output.
-- **Read-Only Database Connections:** Enforces `mode=ro` URI connections to prevent write tampering.
-- **Path Traversal Protection:** Sanitize upload filenames using strict `Path.name` extraction.
-- **Safe Rule Compilation:** Rules are loaded using `yaml.safe_load` with pre-compilation syntax checks.
-
----
-
-## 11. Pushing to Private GitHub Repository
-
-```bash
-# Initialize git if not already initialized
-git init
-
-# Add remote
-git remote add origin https://github.com/<your-username>/PrivacyLens-AIORI-PS019.git
-
-# Stage all files
-git add .
-
-# Commit
-git commit -m "Initial release: PrivacyLens Personal-Data Discovery & Privacy Evidence Inventory (AIORI PS-019)"
-
-# Push to private repository
-git branch -M main
-git push -u origin main
+======================== 35 passed, 1 warning in 3.68s ========================
 ```
 
----
-
-## 12. AIORI PS-019 Submission Checklist
-
-- [x] Functional frontend (React + TypeScript + Tailwind CSS)
-- [x] Functional backend (FastAPI + SQLAlchemy + Pandas)
-- [x] 5 Configurable Data Classes implemented & tested
-- [x] Multi-signal transparent detection engine (Column, Regex Ratio, Format Validator)
-- [x] CSV & SQLite database connectors with safe sampling
-- [x] Declared purpose and retention metadata register
-- [x] Compound identifier mapping preventing ambiguous matches
-- [x] Evidence gap report (missing purpose, missing retention, ambiguous mappings)
-- [x] Human-in-the-loop review workflow (confirm, reject, notes)
-- [x] Precision, Recall, and F1 evaluation module with ground-truth test set
-- [x] Downloadable CSV and PDF reports
-- [x] Configurable YAML detection rules with live validation
-- [x] 100% synthetic demonstration data included
-- [x] 25 Automated tests passing (`pytest backend/tests`)
-- [x] Complete documentation: Architecture, Pseudocode, Testing, Limitations, README
+* **API Endpoints (`test_api.py`):** Health check, dataset listings, dashboard metrics, scan workflows, human review patching, CSV/PDF report generation, 1-click scan-all, batch review, lineage graph, blast radius simulator, time-machine diff, and SHA-256 audit chain verification.
+* **Connectors (`test_connectors.py`):** CSV stream reading, multi-table SQLite schema discovery, safe row sampling limits, and read-only URI connection enforcement.
+* **Metadata & Evaluator (`test_metadata_and_eval.py`):** Compound identifier resolution, missing purpose/retention gap detection, scikit-learn standard evaluation metrics (TP, FP, FN, Precision, Recall, Macro F1).
+* **Scanner & Validators (`test_scanner.py`):** Detection of all personal data classes, Aadhaar Verhoeff $D_5$ dihedral checksums, PAN entity classification, UPI handles, 15-char GSTIN checksum algorithms, IFSC codes, bank account formats, DOB age constraints, and negative controls suppression.
 
 ---
 
-## 13. Team Contributions
+## 13. Security & Privacy Safeguards
 
-- **Lead Full-Stack & Security Architect:** Platform architecture, FastAPI backend, SQLite/CSV connectors, multi-signal scanner engine, security redaction.
-- **Privacy Engineer & Governance Specialist:** Purpose/retention register, metadata mapping, ambiguity resolution, gap analysis module.
-- **UI/UX Designer & Frontend Engineer:** Slate/navy cybersecurity dashboard, React/TypeScript workflows, Recharts data visualizations.
+* **100% Synthetic Data Guarantee:** All demonstration assets (`synthetic_customers.csv`, `synthetic_employees.csv`, `sample_enterprise.db`) contain entirely fictional data. No real personal data is bundled or transmitted.
+* **In-Memory Masking:** Sensitive values are redacted (`XXXX-XXXX-9102`, `a***@example.com`) immediately in memory prior to database persistence and report generation.
+* **Read-Only Database Connections:** Connectors strictly append `?mode=ro` / `immutable=1` URI parameters to prevent write access or accidental table modification.
+* **Path Traversal Protection:** All file upload endpoints enforce `Path(filename).name` sanitization, preventing directory traversal attacks.
+* **Safe YAML Compilation:** Rule configurations are loaded strictly using `yaml.safe_load` with pre-compilation syntax checks.
+* **Cryptographic Tamper-Evidence:** SHA-256 hash chaining ensures that internal logs cannot be altered after the fact without detection.
+
+---
+
+## 14. Submission Checklist
+
+- [x] **Working Web Application:** Full-stack architecture with React/TypeScript frontend and FastAPI backend.
+- [x] **Live Public Cloud Deployment:** Deployed and operational on Render at [https://as-ps019-tc057.onrender.com/](https://as-ps019-tc057.onrender.com/).
+- [x] **Video Demonstration:** Public walkthrough video on YouTube ([https://youtu.be/MVfuXm52Rkw](https://youtu.be/MVfuXm52Rkw)).
+- [x] **Video Presentation:** Architecture and technical slide presentation on YouTube ([https://youtu.be/BWVyN9AuqBE](https://youtu.be/BWVyN9AuqBE)).
+- [x] **Multi-Signal Detection Engine:** Column regex, value density ratios, and domain format validators.
+- [x] **Extended Indian Identifiers:** Verhoeff Aadhaar checksums, individual PAN taxonomy, GSTIN state & checksum validation, IFSC codes, UPI handles.
+- [x] **Compound Metadata Linking:** Purpose and retention mapping with gap analysis.
+- [x] **DPDP Act 2023 Statutory Engine:** Clause-by-clause evaluation (Sections 5, 6, 8, 9, 33) and PDF dossier generation.
+- [x] **Breach Blast Radius Simulator:** Downstream cross-table contagion analysis and Section 33 ₹250 Crores penalty modeling.
+- [x] **Animated SVG Data Lineage:** Interactive network visualization with pulsing data flow streams.
+- [x] **Time Machine & Schema Drift:** Historical snapshot diffing and automated drift alerts.
+- [x] **Cryptographic SHA-256 Audit Trail:** Merkle-chained immutable audit ledger with 1-click verification.
+- [x] **Human Review Workflow:** Progressive disclosure UI with keyboard shortcuts and batch triage.
+- [x] **Standard Evaluation Module:** Scikit-learn benchmark metrics against ground truth.
+- [x] **35 Passing Pytest Tests:** 100% automated test pass rate across all modules.
+- [x] **Comprehensive Documentation:** Complete README, architecture specs, Dockerfile, and API documentation.
+
+---
+
+### Team TC057 — AIORI Hackathon 3 (Problem Statement PS-019)
+* **Lead Full-Stack & Security Architect**
+* **Privacy Engineer & Governance Specialist**
+* **UI/UX Designer & Frontend Engineer**
