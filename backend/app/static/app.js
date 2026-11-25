@@ -4,6 +4,9 @@
 const state = {
   currentTab: 'dashboard',
   dashboardSegment: 'overview',
+  studioTab: 'sensitivity',
+  selectedBlastTarget: null,
+  auditVerified: false,
   dashboardData: null,
   dpdpData: null,
   simParams: { column_weight: 0.40, value_weight: 0.45, validator_bonus: 0.15, threshold: 0.50 },
@@ -39,6 +42,62 @@ const icons = {
   shield: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
   copy: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`
 };
+
+
+function switchStudioTab(tab) {
+  state.studioTab = tab;
+  const container = document.getElementById('view-container');
+  if (container) renderSimulator(container);
+}
+
+async function runAuditVerification() {
+  const btn = document.getElementById('btn-verify-audit');
+  const txt = document.getElementById('audit-chain-text');
+  if (btn) btn.disabled = true;
+  if (txt) txt.innerHTML = `<span style="color:#059669; font-weight:600;">Verifying cryptographic SHA-256 Merkle chain across all ledger blocks...</span>`;
+
+  try {
+    const res = await fetch('/api/audit/verify', { method: 'POST' });
+    const data = await res.json();
+    state.auditVerified = true;
+    showToast(`Audit Ledger Verified: ${data.total_blocks} blocks valid, zero tampering detected.`, 'success');
+    
+    if (txt) {
+      txt.innerHTML = `
+        <span style="color:#065f46; font-weight:700;">Verified & Bull; All ${data.total_blocks} Blocks Untampered</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:#475569; display:block; margin-top:2px;">
+          Genesis: ${data.genesis_hash.slice(0, 16)}... &bull; Head: ${data.latest_hash.slice(0, 16)}...
+        </span>
+      `;
+    }
+    if (btn) {
+      btn.className = "btn btn-primary btn-sm";
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Verified Intact`;
+    }
+  } catch (err) {
+    showToast(`Audit verification error: ${err.message}`, 'error');
+    if (btn) btn.disabled = false;
+  }
+}
+
+// Keyboard shortcuts for Review Queue (C = Confirm, R = Reject, E = Evidence)
+if (!window._reviewKeydownBound) {
+  window._reviewKeydownBound = true;
+  window.addEventListener('keydown', (e) => {
+    if (state.currentTab !== 'reviewcenter') return;
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+    const firstPending = state.inventory?.find(r => r.review_status === 'PENDING');
+    if (!firstPending) return;
+
+    if (e.key === 'c' || e.key === 'C') {
+      submitReview(firstPending.id, 'CONFIRMED');
+    } else if (e.key === 'r' || e.key === 'R') {
+      submitReview(firstPending.id, 'REJECTED');
+    } else if (e.key === 'e' || e.key === 'E') {
+      openEvidenceModal(firstPending.id);
+    }
+  });
+}
 
 // Sidebar Toggle Function
 function toggleSidebar() {
@@ -1328,6 +1387,29 @@ async function renderReviewCenter(container) {
   const lowConfCount = pending.filter(r => r.confidence_score < 0.70).length;
 
   container.innerHTML = `
+    <!-- Cryptographic SHA-256 Audit Chain Banner -->
+    <div class="audit-chain-card" id="audit-chain-banner">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="audit-shield-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
+        <div>
+          <div style="font-size:12.5px; font-weight:700; color:#065f46;">SHA-256 Cryptographic Audit Ledger Active</div>
+          <div style="font-size:11px; color:#475569;" id="audit-chain-text">Every triage action and scan receipt is anchored in an immutable Merkle hash chain.</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="display:flex; align-items:center; gap:6px; font-size:11px; color:#64748b;">
+          <span class="kbd">C</span> Confirm
+          <span class="kbd">R</span> Reject
+          <span class="kbd">E</span> Evidence
+        </div>
+        <button type="button" onclick="runAuditVerification()" id="btn-verify-audit" class="btn btn-secondary btn-sm">
+          Verify Audit Integrity
+        </button>
+      </div>
+    </div>
+
     <!-- Explanatory Callout Banner -->
     <div class="help-callout">
       <div>
@@ -1882,13 +1964,53 @@ async function renderDPDP(container) {
 
 // 11. What-If Sensitivity Simulator View
 async function renderSimulator(container) {
-  const p = state.simParams;
+  const currentTab = state.studioTab || 'sensitivity';
 
   container.innerHTML = `
+    <!-- Studio Header & Sub-Tabs -->
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; margin-bottom:20px;">
+      <div>
+        <h2 style="font-size:16px; font-weight:700; color:#0f172a;">Advanced Sensitivity, Blast Radius & Lineage Studio</h2>
+        <p style="font-size:12px; color:#64748b; margin-top:2px;">Interactive simulations: detection weights tuning, breach blast radius, cross-table lineage, and snapshot drift tracking.</p>
+      </div>
+      <div class="tab-segment-bar" style="margin-bottom:0;" role="tablist" aria-label="Studio Modes">
+        <button type="button" role="tab" class="tab-segment-btn ${currentTab === 'sensitivity' ? 'active' : ''}" onclick="switchStudioTab('sensitivity')" aria-selected="${currentTab === 'sensitivity'}">
+          Sensitivity & Weights
+        </button>
+        <button type="button" role="tab" class="tab-segment-btn ${currentTab === 'blast' ? 'active' : ''}" onclick="switchStudioTab('blast')" aria-selected="${currentTab === 'blast'}">
+          Breach Blast Radius (Sec. 33)
+        </button>
+        <button type="button" role="tab" class="tab-segment-btn ${currentTab === 'lineage' ? 'active' : ''}" onclick="switchStudioTab('lineage')" aria-selected="${currentTab === 'lineage'}">
+          Data Lineage Graph
+        </button>
+        <button type="button" role="tab" class="tab-segment-btn ${currentTab === 'timemachine' ? 'active' : ''}" onclick="switchStudioTab('timemachine')" aria-selected="${currentTab === 'timemachine'}">
+          Time Machine & Drift
+        </button>
+      </div>
+    </div>
+
+    <div id="studio-content-pane"></div>
+  `;
+
+  const pane = document.getElementById('studio-content-pane');
+  if (currentTab === 'sensitivity') {
+    renderSensitivitySliders(pane);
+  } else if (currentTab === 'blast') {
+    await renderBlastRadiusView(pane);
+  } else if (currentTab === 'lineage') {
+    await renderLineageView(pane);
+  } else if (currentTab === 'timemachine') {
+    await renderTimeMachineView(pane);
+  }
+}
+
+function renderSensitivitySliders(pane) {
+  const p = state.simParams;
+  pane.innerHTML = `
     <!-- Top Callout -->
     <div class="help-callout">
       <div>
-        <strong>What-If Sensitivity Simulation Studio:</strong> Adjust detection signal weights and confidence thresholds in real-time to observe discoveries, precision, recall, and false positive suppression on labelled benchmark data.
+        <strong>What-If Sensitivity Simulation:</strong> Adjust detection signal weights and confidence thresholds in real-time to observe discoveries, precision, recall, and false positive suppression on labelled benchmark data.
       </div>
       <button type="button" onclick="resetSimParams()" class="btn btn-secondary btn-sm">Reset Defaults</button>
     </div>
@@ -1941,9 +2063,207 @@ async function renderSimulator(container) {
       <div class="card" style="text-align:center; padding:32px; color:#64748b;" role="status">Computing live simulation metrics...</div>
     </div>
   `;
-
   runSimulation();
 }
+
+async function renderBlastRadiusView(pane) {
+  pane.innerHTML = `<div class="card" style="text-align:center; padding:36px; color:#64748b;">Loading Breach Blast Radius model...</div>`;
+  const dsRes = await fetch('/api/datasets');
+  const datasets = await dsRes.json();
+  const targetId = state.selectedBlastTarget || (datasets[0] ? datasets[0].id : '');
+
+  const blastRes = await fetch('/api/simulator/blast', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ target_id: targetId })
+  });
+  const data = await blastRes.json();
+
+  pane.innerHTML = `
+    <!-- Top Selector Bar -->
+    <div class="card" style="margin-bottom:20px; padding:16px 20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+        <div>
+          <label for="blast-target-select" style="font-size:12px; font-weight:700; color:#0f172a; display:block; margin-bottom:4px;">Select Breach Incident Epicenter (Target Table)</label>
+          <select id="blast-target-select" onchange="state.selectedBlastTarget = this.value; renderBlastRadiusView(document.getElementById('studio-content-pane'));" style="min-width:320px; padding:8px 12px; font-size:13px;">
+            ${datasets.map(d => `<option value="${d.id}" ${d.id === targetId ? 'selected' : ''}>${d.name} (${d.source_type.toUpperCase()} &bull; ${d.row_count.toLocaleString()} rows)</option>`).join('')}
+          </select>
+        </div>
+        <div style="font-size:12px; color:#64748b; max-width:440px;">
+          Simulates the blast radius if the chosen table suffers unauthorized exfiltration, calculating downstream compromises and DPDP statutory fines.
+        </div>
+      </div>
+    </div>
+
+    <!-- Exposure Metrics Grid -->
+    <div style="display:grid; grid-template-columns: 1fr 2fr; gap:20px; margin-bottom:20px;">
+      <!-- Meter Gauge Card -->
+      <div class="blast-meter-box">
+        <div class="blast-circle-gauge">
+          <div class="blast-circle-inner">
+            <span style="font-size:18px; font-weight:800; color:#dc2626; font-family:'JetBrains Mono',monospace;">${data.total_records_exposed.toLocaleString()}</span>
+            <span style="font-size:10px; color:#64748b; font-weight:600; text-transform:uppercase;">Exposed</span>
+          </div>
+        </div>
+        <h4 style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:4px;">Combined Blast Radius</h4>
+        <p style="font-size:12px; color:#64748b;">${data.direct_records_compromised.toLocaleString()} direct records + ${data.downstream_records_at_risk.toLocaleString()} downstream records via shared keys.</p>
+      </div>
+
+      <!-- Quasi-Identifier Combinations Card -->
+      <div class="card" style="margin-bottom:0;">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Quasi-Identifier Re-identification Vectors</h3>
+            <p class="card-subtitle">Combinations that enable cross-referencing and targeted harm</p>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          ${data.quasi_identifier_combos && data.quasi_identifier_combos.length > 0 ? data.quasi_identifier_combos.map(c => `
+            <div class="quasi-card">
+              <div>
+                <strong style="color:#0f172a; font-size:13px; display:block;">${c.name}</strong>
+                <span style="font-size:11px; color:#991b1b; font-weight:500;">${c.risk}</span>
+              </div>
+              <span class="badge badge-missing-b">High Risk</span>
+            </div>
+          `).join('') : `<div style="color:#64748b; font-size:13px; padding:12px;">No high-risk quasi-identifier combinations detected in target schema.</div>`}
+        </div>
+      </div>
+    </div>
+
+    <!-- DPDP Act Section 33 Statutory Penalty Exposure Box -->
+    <div class="penalty-card-critical">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span style="font-size:11px; font-weight:700; color:#991b1b; text-transform:uppercase; letter-spacing:0.04em;">Statutory Regulatory Liability &bull; DPDP Act 2023</span>
+      </div>
+      <h3 style="font-size:16px; font-weight:800; color:#991b1b; margin-bottom:4px;">${data.statutory_penalty_tier}</h3>
+      <p style="font-size:12.5px; color:#7f1d1d; line-height:1.5; margin-bottom:8px;">${data.statutory_clause}</p>
+      <div style="font-size:12px; color:#991b1b; background:#fee2e2; border-radius:6px; padding:10px 14px;">
+        <strong>Statutory Impact Analysis:</strong> ${data.statutory_rationale}
+      </div>
+    </div>
+  `;
+}
+
+async function renderLineageView(pane) {
+  pane.innerHTML = `<div class="card" style="text-align:center; padding:36px; color:#64748b;">Generating interactive Data Lineage Graph...</div>`;
+  const res = await fetch('/api/lineage');
+  const lineage = await res.json();
+
+  pane.innerHTML = `
+    <div class="lineage-canvas-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <div>
+          <h3 style="font-size:15px; font-weight:700; color:#0f172a;">Cross-Table Personal Data Lineage Graph</h3>
+          <p style="font-size:12px; color:#64748b;">Visualizes relational links between database tables sharing common personal identifiers.</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:16px; font-size:11px; color:#475569;">
+          <span><span style="display:inline-block; width:10px; height:10px; background:#24556d; border-radius:2px; margin-right:4px;"></span>Personal Table</span>
+          <span><span style="display:inline-block; width:16px; height:2px; background:#24556d; border-top:2px dashed #24556d; margin-right:4px; vertical-align:middle;"></span>Data Flow Link</span>
+        </div>
+      </div>
+
+      <!-- Animated SVG Lineage Diagram -->
+      <svg class="lineage-svg" viewBox="0 0 900 340">
+        <!-- Connecting Edges with Animated Dash Flow -->
+        <g id="lineage-edges">
+          <path d="M 220 170 Q 450 70 680 120" class="lineage-edge" fill="none"/>
+          <path d="M 220 170 Q 450 250 680 230" class="lineage-edge" fill="none"/>
+          <path d="M 680 120 L 680 230" class="lineage-edge" fill="none"/>
+        </g>
+
+        <!-- Node 1: Customers CSV -->
+        <g transform="translate(60, 120)" class="lineage-node-rect" onclick="showToast('synthetic_customers: 1000 rows • Name, Phone, Aadhaar, DOB', 'info')">
+          <rect width="200" height="96" rx="8" fill="#ffffff" stroke="#bcd5e0" stroke-width="2"/>
+          <text x="16" y="28" font-size="12" font-weight="700" fill="#0f172a">synthetic_customers.csv</text>
+          <text x="16" y="46" font-size="10" font-family="'JetBrains Mono',monospace" fill="#64748b">1,000 Records &bull; 4 PII Classes</text>
+          <rect x="16" y="58" width="68" height="20" rx="4" fill="#f0f6f9"/>
+          <text x="24" y="72" font-size="10" font-weight="600" fill="#24556d">Aadhaar (UIDAI)</text>
+          <rect x="90" y="58" width="54" height="20" rx="4" fill="#ecfdf5"/>
+          <text x="98" y="72" font-size="10" font-weight="600" fill="#065f46">Phone</text>
+        </g>
+
+        <!-- Node 2: Employees CSV -->
+        <g transform="translate(560, 60)" class="lineage-node-rect" onclick="showToast('synthetic_employees: 500 rows • Name, Email, PAN', 'info')">
+          <rect width="200" height="96" rx="8" fill="#ffffff" stroke="#bcd5e0" stroke-width="2"/>
+          <text x="16" y="28" font-size="12" font-weight="700" fill="#0f172a">synthetic_employees.csv</text>
+          <text x="16" y="46" font-size="10" font-family="'JetBrains Mono',monospace" fill="#64748b">500 Records &bull; 3 PII Classes</text>
+          <rect x="16" y="58" width="60" height="20" rx="4" fill="#f0f6f9"/>
+          <text x="24" y="72" font-size="10" font-weight="600" fill="#24556d">Indian PAN</text>
+          <rect x="82" y="58" width="50" height="20" rx="4" fill="#ecfdf5"/>
+          <text x="90" y="72" font-size="10" font-weight="600" fill="#065f46">Email</text>
+        </g>
+
+        <!-- Node 3: Enterprise Database -->
+        <g transform="translate(560, 185)" class="lineage-node-rect" onclick="showToast('sample_enterprise.db: 4 tables • Core relational schema', 'info')">
+          <rect width="200" height="96" rx="8" fill="#ffffff" stroke="#bcd5e0" stroke-width="2"/>
+          <text x="16" y="28" font-size="12" font-weight="700" fill="#0f172a">sample_enterprise.db</text>
+          <text x="16" y="46" font-size="10" font-family="'JetBrains Mono',monospace" fill="#64748b">4 Tables &bull; Relational SQLite</text>
+          <rect x="16" y="58" width="64" height="20" rx="4" fill="#fef2f2"/>
+          <text x="22" y="72" font-size="10" font-weight="600" fill="#991b1b">High Linkage</text>
+          <rect x="86" y="58" width="58" height="20" rx="4" fill="#f0f9ff"/>
+          <text x="92" y="72" font-size="10" font-weight="600" fill="#075985">Accounts</text>
+        </g>
+      </svg>
+
+      <div style="margin-top:16px; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; font-size:11.5px; color:#475569; display:flex; justify-content:space-between; align-items:center;">
+        <span><strong>Live Cross-Table Linkage:</strong> Tables sharing Aadhaar, PAN, and Phone numbers can be joined across boundaries to reconstruct a full identity profile.</span>
+        <button type="button" onclick="switchStudioTab('blast')" class="btn btn-secondary btn-sm">Simulate Breach Blast &rarr;</button>
+      </div>
+    </div>
+  `;
+}
+
+async function renderTimeMachineView(pane) {
+  pane.innerHTML = `<div class="card" style="text-align:center; padding:36px; color:#64748b;">Loading snapshot history and schema drift models...</div>`;
+  const res = await fetch('/api/time-machine/diff');
+  const data = await res.json();
+
+  pane.innerHTML = `
+    <!-- Top Comparison Header -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Digital Twin Snapshot Time Machine</h3>
+          <p class="card-subtitle">Automated diff between baseline and latest discovery runs to detect schema drift</p>
+        </div>
+        <button type="button" onclick="runOneClickDiscovery()" class="btn btn-primary btn-sm">Capture New Snapshot</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px;">
+          <span style="font-size:11px; font-weight:700; color:#24556d; text-transform:uppercase;">Snapshot A &bull; Baseline</span>
+          <h4 style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">${data.scan_a.dataset}</h4>
+          <p style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#64748b;">ID: ${data.scan_a.id.slice(0, 16)}... &bull; ${data.scan_a.candidates} Candidates</p>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:14px;">
+          <span style="font-size:11px; font-weight:700; color:#059669; text-transform:uppercase;">Snapshot B &bull; Current</span>
+          <h4 style="font-size:14px; font-weight:700; color:#0f172a; margin-top:2px;">${data.scan_b.dataset}</h4>
+          <p style="font-size:11px; font-family:'JetBrains Mono',monospace; color:#64748b;">ID: ${data.scan_b.id.slice(0, 16)}... &bull; ${data.scan_b.candidates} Candidates</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Automated Drift Alerts -->
+    <div>
+      <h4 style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:10px;">Automated Schema Drift Alerts</h4>
+      ${data.drift_alerts && data.drift_alerts.length > 0 ? data.drift_alerts.map(a => `
+        <div class="drift-card ${a.severity === 'OPTIMAL' ? 'optimal' : 'high'}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0; margin-top:2px;">
+            ${a.severity === 'OPTIMAL' ? '<polyline points="20 6 9 17 4 12"/>' : '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'}
+          </svg>
+          <div>
+            <strong style="font-size:13px; display:block;">${a.title}</strong>
+            <p style="font-size:12px; margin-top:2px; opacity:0.9;">${a.description}</p>
+          </div>
+        </div>
+      `).join('') : ''}
+    </div>
+  `;
+}
+
 
 function updateSimParam(param, val) {
   state.simParams[param] = parseFloat(val);

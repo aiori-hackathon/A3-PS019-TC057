@@ -4,7 +4,8 @@ from backend.app.scanner.scanner_engine import ScannerEngine
 from backend.app.scanner.rules_engine import RulesEngine
 from backend.app.scanner.validators import (
     person_name_validator, email_address_validator,
-    phone_number_validator, government_id_validator, dob_validator
+    phone_number_validator, government_id_validator, dob_validator,
+    upi_id_validator, gstin_validator, ifsc_validator, financial_identifier_validator
 )
 
 @pytest.fixture
@@ -82,3 +83,37 @@ def test_dummy_phone_rejected_by_validator():
     is_valid, msg = phone_number_validator("1111111111")
     assert not is_valid
     assert "repetitive" in msg.lower()
+
+def test_upi_id_validator():
+    valid, msg = upi_id_validator("sharma.aarav@okhdfcbank")
+    assert valid
+    assert "UPI" in msg
+
+    invalid, _ = upi_id_validator("plainstring")
+    assert not invalid
+
+def test_gstin_validator():
+    # 27AAPFU0939F1ZV is a syntactically valid Maharashtra GSTIN
+    valid, msg = gstin_validator("27AAPFU0939F1ZV")
+    assert valid
+    assert "GSTIN" in msg
+
+    # Invalid state code 99
+    invalid, msg_inv = gstin_validator("99AAPFU0939F1ZV")
+    assert not invalid
+
+def test_ifsc_validator():
+    valid, msg = ifsc_validator("HDFC0001234")
+    assert valid
+    assert "IFSC" in msg
+
+    invalid, _ = ifsc_validator("HDFC1001234")  # 5th char must be 0
+    assert not invalid
+
+def test_financial_identifier_column_scan(scanner):
+    series = pd.Series(["user1@oksbi", "user2@paytm", "retailer@okhdfcbank"])
+    candidate = scanner.scan_column("upi_handle", series)
+    assert candidate is not None
+    assert candidate.candidate_class == "financial_identifier"
+    assert candidate.confidence_score >= 0.70
+

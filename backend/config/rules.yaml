@@ -79,6 +79,8 @@ classes:
       - '^[A-Z]{5}[0-9]{4}[A-Z]{1}$'
       # US SSN: 3-2-4 digits
       - '^\d{3}[\s\-]\d{2}[\s\-]\d{4}$'
+      # Indian GSTIN: 15-char taxpayer identification
+      - '^[0-3][0-9][A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$'
     validator: "government_id_validator"
     scoring:
       column_weight: 0.35
@@ -100,4 +102,23 @@ classes:
     scoring:
       column_weight: 0.45
       value_weight: 0.35
+      validator_bonus: 0.20
+
+  financial_identifier:
+    display_name: "Financial Data (UPI / Bank / IFSC)"
+    description: "Indian financial identifiers including UPI Virtual Payment Addresses, IFSC bank branch codes, and bank accounts."
+    column_patterns:
+      - '(?i)(?:^|_)(upi|upi_id|vpa|bank_account|account_no|acc_no|bank_acc|ifsc|ifsc_code|bank_name|branch_code)(?:_|$)'
+      - '(?i)^upi$'
+      - '(?i)^ifsc$'
+    negative_column_patterns:
+      - '(?i)(order_id|invoice_id|txn_id|serial_no|customer_id|user_id)'
+    value_patterns:
+      - '^[A-Za-z0-9][A-Za-z0-9.\-_]{1,255}@[A-Za-z]{2,64}$'
+      - '^[A-Z]{4}0[A-Z0-9]{6}$'
+      - '^\d{9,18}$'
+    validator: "financial_identifier_validator"
+    scoring:
+      column_weight: 0.35
+      value_weight: 0.45
       validator_bonus: 0.20

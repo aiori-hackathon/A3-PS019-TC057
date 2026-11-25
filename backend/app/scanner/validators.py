@@ -237,6 +237,10 @@ def government_id_validator(value: str) -> Tuple[bool, str]:
             return False, "Invalid SSN group zeroes"
         return True, "Matches 9-digit national identity format"
 
+    # 4. Indian GSTIN style: 15-character taxpayer identity
+    if len(clean) == 15 and _GSTIN_REGEX.match(clean):
+        return gstin_validator(clean)
+
     return False, "Does not conform to recognized government ID format"
 
 def dob_validator(value: str) -> Tuple[bool, str]:
@@ -289,7 +293,86 @@ def dob_validator(value: str) -> Tuple[bool, str]:
     return True, f"Plausible Date of Birth (~{int(age_years)} yrs old)"
 
 
+
+
+# ==============================================================================
+# Indian Extended Identifiers (UPI, GSTIN, IFSC, Bank Account)
+# ==============================================================================
+
+UPI_HANDLES = {
+    "upi", "ybl", "ibl", "axl", "okaxis", "oksbi", "okhdfcbank", "okicici", "paytm", "apl", "axisbank", "icici",
+    "hdfcbank", "sbi", "kotak", "yesbank", "idfcbank", "federal", "barodampay", "pnb", "unionbank", "jupiteraxis",
+    "freecharge", "waicici", "wahdfcbank", "airtel", "jio", "slice", "fbl", "rbl", "indus", "aubank", "cnrb"
+}
+_UPI_REGEX = re.compile(r"^[A-Za-z0-9][A-Za-z0-9.\-_]{1,255}@([A-Za-z]{2,64})$")
+
+def upi_id_validator(value: str) -> Tuple[bool, str]:
+    s = str(value).strip().lower()
+    m = _UPI_REGEX.match(s)
+    if not m:
+        return False, "Does not match UPI Virtual Payment Address format"
+    handle = m.group(1)
+    if handle in UPI_HANDLES or len(handle) >= 3:
+        return True, f"Valid Indian UPI Payment Address (@{handle})"
+    return False, "Unrecognized UPI PSP handle"
+
+_GSTIN_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+_GSTIN_REGEX = re.compile(r"^[0-3][0-9][A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$")
+
+def gstin_check_char(first14: str) -> str:
+    total, factor = 0, 2
+    for ch in reversed(first14):
+        product = _GSTIN_ALPHABET.index(ch) * factor
+        total += product // 36 + product % 36
+        factor = 1 if factor == 2 else 2
+    return _GSTIN_ALPHABET[(36 - total % 36) % 36]
+
+def gstin_validator(value: str) -> Tuple[bool, str]:
+    v = str(value).strip().upper()
+    if not _GSTIN_REGEX.match(v):
+        return False, "Does not conform to 15-character GSTIN structure"
+    try:
+        state_code = int(v[:2])
+        if not (1 <= state_code <= 38):
+            return False, f"Invalid Indian State Code ({state_code})"
+    except ValueError:
+        return False, "Invalid State Code"
+    expected_check = gstin_check_char(v[:14])
+    if expected_check == v[14]:
+        return True, "Valid Indian GSTIN with verified checksum (Sole proprietorship taxpayer)"
+    return True, "Matches 15-character Indian GSTIN structure"
+
+_IFSC_REGEX = re.compile(r"^[A-Z]{4}0[A-Z0-9]{6}$")
+
+def ifsc_validator(value: str) -> Tuple[bool, str]:
+    v = str(value).strip().upper()
+    if _IFSC_REGEX.match(v):
+        return True, f"Valid Indian Banking IFSC Code (Bank: {v[:4]})"
+    return False, "Does not conform to 11-character RBI IFSC structure"
+
+def financial_identifier_validator(value: str) -> Tuple[bool, str]:
+    """Validates Indian Financial Identifiers: UPI ID, Bank Account Number, or IFSC."""
+    s = str(value).strip()
+    # Check UPI
+    is_upi, upi_msg = upi_id_validator(s)
+    if is_upi:
+        return True, upi_msg
+    # Check IFSC
+    is_ifsc, ifsc_msg = ifsc_validator(s)
+    if is_ifsc:
+        return True, ifsc_msg
+    # Check Bank Account (9-18 digits)
+    digits = re.sub(r"\D", "", s)
+    if 9 <= len(digits) <= 18 and len(set(digits)) > 2:
+        return True, f"Valid Bank Account Number format ({len(digits)} digits)"
+    return False, "Not a recognized financial identifier format"
+
 VALIDATOR_MAP = {
+    "financial_identifier_validator": financial_identifier_validator,
+    "gstin_validator": gstin_validator,
+    "upi_id_validator": upi_id_validator,
+    "ifsc_validator": ifsc_validator,
+
     "person_name_validator": person_name_validator,
     "email_address_validator": email_address_validator,
     "phone_number_validator": phone_number_validator,

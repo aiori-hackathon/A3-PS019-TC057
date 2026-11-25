@@ -1239,3 +1239,179 @@ input[type="range"]::-moz-range-thumb {
 .toast-error .toast-icon { background: var(--danger-bg); color: var(--danger-text); }
 .toast-info { border-left: 3px solid var(--brand-primary); }
 .toast-info .toast-icon { background: var(--brand-light); color: var(--brand-primary); }
+
+
+/* ==========================================================================
+   Advanced Visual Suite: Lineage, Blast Radius, Time Machine & Audit Chain
+   ========================================================================== */
+
+/* Lineage Graph Styles */
+.lineage-canvas-box {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+}
+
+.lineage-svg {
+  width: 100%;
+  height: 380px;
+  background: radial-gradient(circle, #f8fafc 10%, #f1f5f9 90%);
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+@keyframes flowDash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+.lineage-edge {
+  stroke: var(--brand-primary);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 4;
+  animation: flowDash 1.2s linear infinite;
+  opacity: 0.85;
+}
+
+.lineage-node-rect {
+  fill: #ffffff;
+  stroke: var(--brand-border);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.06));
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lineage-node-rect:hover {
+  stroke: var(--brand-primary);
+  stroke-width: 2.5;
+  filter: drop-shadow(0 4px 8px rgba(36, 85, 109, 0.15));
+}
+
+/* Blast Radius Styles */
+.blast-meter-box {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid var(--border-medium);
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.blast-circle-gauge {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: conic-gradient(#dc2626 0% 75%, #e2e8f0 75% 100%);
+  position: relative;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+}
+
+.blast-circle-inner {
+  width: 106px;
+  height: 106px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.penalty-card-critical {
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-left: 5px solid #dc2626;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-top: 20px;
+}
+
+.quasi-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: var(--shadow-xs);
+  transition: transform 0.12s ease;
+}
+
+.quasi-card:hover {
+  transform: translateY(-1px);
+  border-color: var(--brand-border);
+}
+
+/* Audit Chain Ledger Styles */
+.audit-chain-card {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.audit-shield-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #d1fae5;
+  color: #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 10.5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: #475569;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Time Machine Styles */
+.drift-card {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.drift-card.optimal {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.drift-card.high {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}

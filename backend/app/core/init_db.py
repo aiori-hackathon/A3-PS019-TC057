@@ -91,6 +91,15 @@ def seed_demo_data():
             db.commit()
             print("Successfully pre-seeded demo datasets in PrivacyLens storage.")
 
+        # 4. Seed initial cryptographic audit chain if empty
+        from backend.app.core.audit_chain import record_audit_event, AuditBlock
+        if db.query(AuditBlock).count() == 0:
+            record_audit_event(db, "GENESIS_INITIALIZATION", "PrivacyLens Engine", actor="Security Kernel", payload={"version": "2.1.0", "standard": "DPDP Act 2023"})
+            record_audit_event(db, "POLICY_REGISTER_LOAD", "purpose_retention.csv", actor="Compliance Admin", payload={"records": 13, "regulations": ["DPDP Sec. 5", "DPDP Sec. 8"]})
+            record_audit_event(db, "CONNECT_DATA_REPOSITORIES", "synthetic_customers.csv, sample_enterprise.db", actor="Data Engineer", payload={"sources": 3})
+            record_audit_event(db, "MULTI_SIGNAL_DISCOVERY_SCAN", "sample_enterprise.db", actor="PrivacyLens Scanner", payload={"candidates_found": 13, "algorithm": "Multi-Signal + Verhoeff D5"})
+            print("Initialized SHA-256 cryptographic audit chain.")
+
     finally:
         db.close()
 

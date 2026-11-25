@@ -4,7 +4,7 @@ import datetime
 import shutil
 from pathlib import Path
 from typing import Optional, List
-from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, Query, Response
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, Query, Response, Body
 from fastapi.responses import PlainTextResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
@@ -487,6 +487,14 @@ def update_review_status(
     db.commit()
     db.refresh(r)
 
+    from backend.app.core.audit_chain import record_audit_event
+    record_audit_event(
+        db,
+        action="HUMAN_TRIAGE_DECISION",
+        target=f"{r.dataset_name}/{r.table_name or 'root'}/{r.column_name}",
+        payload={"review_status": req.review_status, "candidate_class": r.candidate_class, "notes": req.reviewer_notes}
+    )
+
     meta, m_status = MetadataManager.match_metadata(db, r.dataset_name, r.table_name, r.column_name)
     return InventoryRecordResponse(
         id=r.id,
@@ -534,6 +542,15 @@ def batch_review_inventory(
         r.reviewed_at = t_now
     
     db.commit()
+
+    from backend.app.core.audit_chain import record_audit_event
+    record_audit_event(
+        db,
+        action="BATCH_TRIAGE_APPROVAL",
+        target=f"Batch Approval ({count} items)",
+        payload={"target_status": req.target_status, "count": count, "min_confidence": req.min_confidence}
+    )
+
     return BatchReviewResponse(updated_count=count, target_status=req.target_status)
 
 # --- Metadata Register ---
@@ -942,3 +959,223 @@ def download_dpdp_pdf(db: Session = Depends(get_db)):
         media_type="application/pdf",
         headers={"Content-Disposition": "attachment; filename=privacylens_dpdp_dossier.pdf"}
     )
+
+
+# ==============================================================================
+# Advanced Architecture: Lineage, Blast Radius, Time Machine & Audit Ledger
+# ==============================================================================
+
+@router.get("/lineage")
+def get_data_lineage(db: Session = Depends(get_db)):
+    """Computes cross-table and cross-database data lineage graph based on shared identifiers."""
+    datasets = db.query(Dataset).all()
+    results = db.query(ScanResult).filter(ScanResult.review_status != "REJECTED").all()
+
+    table_map = {}
+    for d in datasets:
+        table_map[d.id] = {
+            "id": d.id,
+            "name": d.name,
+            "source_type": d.source_type,
+            "row_count": d.row_count,
+            "columns": [],
+            "classes": set(),
+            "risk_score": 0
+        }
+
+    for r in results:
+        ds_id = r.dataset_id
+        if ds_id in table_map:
+            table_map[ds_id]["columns"].append(r.column_name)
+            table_map[ds_id]["classes"].add(r.candidate_class)
+            table_map[ds_id]["risk_score"] += (4 if "government" in r.candidate_class else 2 if "email" in r.candidate_class or "phone" in r.candidate_class else 1)
+
+    nodes = []
+    for ds_id, t in table_map.items():
+        nodes.append({
+            "id": t["id"],
+            "name": t["name"],
+            "source_type": t["source_type"],
+            "row_count": t["row_count"],
+            "personal_columns_count": len(t["columns"]),
+            "classes": sorted(list(t["classes"])),
+            "risk_level": "CRITICAL" if t["risk_score"] >= 8 else "HIGH" if t["risk_score"] >= 4 else "MEDIUM"
+        })
+
+    edges = []
+    node_keys = list(table_map.keys())
+    for i in range(len(node_keys)):
+        for j in range(i + 1, len(node_keys)):
+            a = table_map[node_keys[i]]
+            b = table_map[node_keys[j]]
+            shared_classes = list(a["classes"] & b["classes"])
+            shared_cols = [c for c in a["columns"] if any(c.lower() in bc.lower() or bc.lower() in c.lower() for bc in b["columns"])]
+            if shared_classes or shared_cols:
+                edges.append({
+                    "source": a["id"],
+                    "target": b["id"],
+                    "source_name": a["name"],
+                    "target_name": b["name"],
+                    "shared_identifiers": shared_cols[:3] if shared_cols else [sc.replace("_", " ").title() for sc in shared_classes[:2]],
+                    "link_strength": max(len(shared_classes), 1)
+                })
+
+    return {"nodes": nodes, "edges": edges}
+
+
+@router.post("/simulator/blast")
+def compute_blast_radius(payload: dict = Body(...), db: Session = Depends(get_db)):
+    """Computes breach blast radius and DPDP Act 2023 Section 33 statutory financial penalty risk."""
+    target_id = payload.get("target_id")
+    dataset = db.query(Dataset).filter(Dataset.id == target_id).first() if target_id else db.query(Dataset).first()
+    if not dataset:
+        dataset = db.query(Dataset).first()
+
+    results = db.query(ScanResult).filter(ScanResult.dataset_id == dataset.id, ScanResult.review_status != "REJECTED").all() if dataset else []
+    classes = sorted(list({r.candidate_class for r in results}))
+
+    all_datasets = db.query(Dataset).filter(Dataset.id != dataset.id).all() if dataset else []
+    linked_tables = []
+    for od in all_datasets:
+        od_results = db.query(ScanResult).filter(ScanResult.dataset_id == od.id, ScanResult.review_status != "REJECTED").all()
+        shared = [r.candidate_class for r in od_results if r.candidate_class in classes]
+        if shared:
+            linked_tables.append({
+                "id": od.id,
+                "name": od.name,
+                "row_count": od.row_count,
+                "shared_classes": list(set(shared))
+            })
+
+    direct_records = dataset.row_count if dataset else 1000
+    downstream_records = sum(lt["row_count"] for lt in linked_tables)
+    total_exposed_records = direct_records + downstream_records
+
+    combos = []
+    if "person_name" in classes and "phone_number" in classes:
+        combos.append({"name": "Name + Phone Number", "risk": "Targeted Smishing & Social Engineering Vector"})
+    if "person_name" in classes and "government_id" in classes:
+        combos.append({"name": "Name + Government ID (Aadhaar / PAN)", "risk": "Critical Identity Theft & Synthetic Identity Creation"})
+    if "person_name" in classes and "date_of_birth" in classes:
+        combos.append({"name": "Name + Date of Birth", "risk": "Knowledge-Based Authentication Bypass"})
+    if "email_address" in classes and "phone_number" in classes:
+        combos.append({"name": "Email + Phone Number", "risk": "Account Takeover / SIM Swap Cross-Correlation"})
+
+    has_gov_id = "government_id" in classes
+    is_high_volume = total_exposed_records >= 1000
+    if has_gov_id and is_high_volume:
+        penalty_tier = "CRITICAL PENALTY EXPOSURE (UP TO ₹250 CRORES)"
+        penalty_clause = "DPDP Act Section 33(1) - Breach of Section 8(5) obligation to maintain reasonable security safeguards"
+        penalty_rationale = "Breach involves sensitive national identifiers (Aadhaar/PAN) affecting large populations with linked downstream tables."
+    elif has_gov_id or is_high_volume:
+        penalty_tier = "HIGH PENALTY EXPOSURE (UP TO ₹150 CRORES)"
+        penalty_clause = "DPDP Act Section 33(1) Schedule Item 1"
+        penalty_rationale = "High probability of harm to data principals and non-consensual identity linkage."
+    else:
+        penalty_tier = "MODERATE PENALTY EXPOSURE (UP TO ₹50 CRORES)"
+        penalty_clause = "DPDP Act Section 33(2)"
+        penalty_rationale = "Notice & governance default with contained blast radius."
+
+    return {
+        "target_table": dataset.name if dataset else "Unknown",
+        "target_id": dataset.id if dataset else "",
+        "direct_records_compromised": direct_records,
+        "downstream_records_at_risk": downstream_records,
+        "total_records_exposed": total_exposed_records,
+        "classes_compromised": classes,
+        "quasi_identifier_combos": combos,
+        "linked_downstream_tables": linked_tables,
+        "statutory_penalty_tier": penalty_tier,
+        "statutory_clause": penalty_clause,
+        "statutory_rationale": penalty_rationale
+    }
+
+
+@router.get("/time-machine/diff")
+def get_time_machine_diff(scan_a_id: Optional[str] = None, scan_b_id: Optional[str] = None, db: Session = Depends(get_db)):
+    """Computes schema diff and automated drift alerts between any two historical discovery scans."""
+    scans = db.query(ScanJob).filter(ScanJob.status == "COMPLETED").order_by(ScanJob.started_at.desc()).all()
+    if len(scans) < 2:
+        latest_results = db.query(ScanResult).all()
+        return {
+            "has_multiple_scans": False,
+            "message": "Baseline snapshot established. Run another scan to compare historical diffs.",
+            "total_scans": len(scans),
+            "scan_a": {"id": scans[0].id if scans else "baseline", "date": scans[0].started_at.isoformat() if scans else "2026-11-25T00:00:00", "candidates": len(latest_results)},
+            "scan_b": {"id": scans[0].id if scans else "current", "date": scans[0].started_at.isoformat() if scans else "2026-11-25T00:00:00", "candidates": len(latest_results)},
+            "added_fields": [],
+            "removed_fields": [],
+            "drift_alerts": [
+                {
+                    "severity": "OPTIMAL",
+                    "title": "Baseline Snapshot Locked",
+                    "description": "Baseline discovery snapshot established. Subsequent runs will track field additions and drift."
+                }
+            ]
+        }
+
+    scan_a = next((s for s in scans if s.id == scan_a_id), scans[1])
+    scan_b = next((s for s in scans if s.id == scan_b_id), scans[0])
+
+    results_a = db.query(ScanResult).filter(ScanResult.scan_id == scan_a.id).all()
+    results_b = db.query(ScanResult).filter(ScanResult.scan_id == scan_b.id).all()
+
+    cols_a = {f"{r.table_name}:{r.column_name}": r for r in results_a}
+    cols_b = {f"{r.table_name}:{r.column_name}": r for r in results_b}
+
+    added = []
+    for k, r in cols_b.items():
+        if k not in cols_a:
+            added.append({
+                "column": r.column_name,
+                "table": r.table_name or r.dataset_name,
+                "class": r.candidate_class,
+                "confidence": r.confidence_score
+            })
+
+    removed = []
+    for k, r in cols_a.items():
+        if k not in cols_b:
+            removed.append({
+                "column": r.column_name,
+                "table": r.table_name or r.dataset_name,
+                "class": r.candidate_class
+            })
+
+    drift_alerts = []
+    if added:
+        drift_alerts.append({
+            "severity": "HIGH",
+            "title": f"{len(added)} New Personal Data Fields Detected",
+            "description": f"Scan #{scan_b.id[:8]} introduced newly detected personal data fields not present in baseline."
+        })
+    else:
+        drift_alerts.append({
+            "severity": "OPTIMAL",
+            "title": "Zero Schema Drift Detected",
+            "description": "Schema verified clean of unannounced personal data additions between the selected snapshots."
+        })
+
+    return {
+        "has_multiple_scans": True,
+        "total_scans": len(scans),
+        "scan_a": {"id": scan_a.id, "dataset": scan_a.dataset_name, "date": scan_a.started_at.isoformat(), "candidates": len(results_a)},
+        "scan_b": {"id": scan_b.id, "dataset": scan_b.dataset_name, "date": scan_b.started_at.isoformat(), "candidates": len(results_b)},
+        "added_fields": added,
+        "removed_fields": removed,
+        "drift_alerts": drift_alerts
+    }
+
+
+@router.get("/audit/chain")
+def get_audit_chain_summary(db: Session = Depends(get_db)):
+    """Returns the cryptographic SHA-256 audit ledger and verified integrity status."""
+    from backend.app.core.audit_chain import verify_audit_chain
+    return verify_audit_chain(db)
+
+
+@router.post("/audit/verify")
+def verify_audit_chain_endpoint(db: Session = Depends(get_db)):
+    """Runs live SHA-256 block-by-block cryptographic verification on the audit chain."""
+    from backend.app.core.audit_chain import verify_audit_chain
+    return verify_audit_chain(db)

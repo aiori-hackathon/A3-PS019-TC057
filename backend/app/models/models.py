@@ -96,3 +96,17 @@ class EvaluationRun(Base):
     per_class_metrics = Column(JSON, default=dict)
     predictions_breakdown = Column(JSON, default=list)
     executed_at = Column(DateTime, default=now_utc)
+
+
+class AuditBlock(Base):
+    __tablename__ = "audit_blocks"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    block_index = Column(Integer, nullable=False, unique=True, index=True)
+    timestamp = Column(DateTime, default=now_utc)
+    actor = Column(String(255), nullable=False, default="Privacy Officer (DPO)")
+    action = Column(String(100), nullable=False)
+    target = Column(String(512), nullable=False)
+    payload_json = Column(Text, nullable=False, default="{}")
+    prev_hash = Column(String(64), nullable=False)
+    block_hash = Column(String(64), nullable=False, index=True)

@@ -102,3 +102,45 @@ def test_api_demo_reset():
     resp = client.post("/api/demo/reset")
     assert resp.status_code == 200
     assert "successfully" in resp.json()["message"]
+
+def test_api_lineage():
+    resp = client.get("/api/lineage")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "nodes" in data
+    assert "edges" in data
+    assert isinstance(data["nodes"], list)
+
+def test_api_blast_radius():
+    resp = client.post("/api/simulator/blast", json={"target_id": None})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "direct_records_compromised" in data
+    assert "quasi_identifier_combos" in data
+    assert "statutory_penalty_tier" in data
+    assert "statutory_clause" in data
+
+def test_api_time_machine_diff():
+    resp = client.get("/api/time-machine/diff")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "drift_alerts" in data
+    assert "added_fields" in data
+    assert "removed_fields" in data
+
+def test_api_audit_trail_and_verify():
+    # Fetch chain
+    chain_resp = client.get("/api/audit/chain")
+    assert chain_resp.status_code == 200
+    chain_data = chain_resp.json()
+    assert "blocks" in chain_data
+    assert len(chain_data["blocks"]) > 0
+
+    # Verify integrity
+    verify_resp = client.post("/api/audit/verify")
+    assert verify_resp.status_code == 200
+    v_data = verify_resp.json()
+    assert v_data["valid"] is True
+    assert v_data["status"] == "VERIFIED"
+    assert len(v_data["tampered_blocks"]) == 0
+
