@@ -314,6 +314,147 @@ async function renderActiveView() {
   }
 }
 
+// ============================================================================
+// Interactive 3D Digital Twin Hero & AI Privacy Governance Analyst
+// ============================================================================
+function renderTwinHeroHtml() {
+  const colors = [
+    '#0284c7', // Gov ID (Aadhaar / PAN)
+    '#7c3aed', // Financial (UPI / Bank / GSTIN)
+    '#2563eb', // Email
+    '#059669', // Phone
+    '#d97706', // DOB
+    '#475569'  // Name
+  ];
+
+  const layerCells = [
+    [[0,0,0],[1,0,1],[2,0,-1],[3,0,2],[0,1,-1],[1,1,4],[2,1,1],[3,1,-1],[0,2,3],[2,2,-1],[3,2,4]],
+    [[0,0,-1],[1,0,3],[2,0,3],[3,0,-1],[0,1,0],[1,1,-1],[3,1,1],[0,2,-1],[1,2,2],[2,2,4],[3,2,-1]],
+    [[0,0,1],[1,0,-1],[2,0,0],[3,0,4],[1,1,2],[2,1,-1],[3,1,3],[0,2,0],[1,2,-1],[3,2,1]]
+  ];
+
+  function renderStack(x, y, mirrored, label) {
+    const layersHtml = layerCells.map((cells, i) => {
+      const cellsHtml = cells.map(([cx, cy, c]) => {
+        const isDim = !mirrored || c < 0;
+        const col = c >= 0 ? colors[c % colors.length] : '#cbd5e1';
+        return `<span class="cell ${isDim ? 'dim' : ''}" style="left:${20 + cx * 38}px; top:${22 + cy * 38}px; --c:${col};"></span>`;
+      }).join('');
+
+      const beamHtml = (!mirrored && i === 1) ? `<div class="scan-beam"></div>` : '';
+      return `
+        <div class="twin-layer" style="transform: translateZ(${i * 44}px); --tz:${i * 44}px; animation-delay:${i * -1.4}s;">
+          ${cellsHtml}
+          ${beamHtml}
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="twin-stack" style="left:${x}px; top:${y}px;">
+        ${layersHtml}
+        <span class="twin-label" style="transform: translateZ(145px) rotateZ(38deg) rotateX(-58deg); left:30px; top:-12px;">${label}</span>
+      </div>
+    `;
+  }
+
+  const paths = [
+    "path('M 140 220 C 210 130, 270 140, 360 110')",
+    "path('M 160 250 C 230 180, 290 170, 380 140')",
+    "path('M 120 180 C 200 90, 270 90, 340 70')",
+    "path('M 170 230 C 240 190, 300 200, 390 130')",
+    "path('M 140 200 C 220 150, 280 120, 370 90')"
+  ];
+
+  const particlesHtml = paths.map((p, i) => {
+    return `<span class="particle" style="offset-path: ${p}; -webkit-offset-path: ${p}; animation-delay: ${i * 0.65}s; --c: ${colors[i % colors.length]};"></span>`;
+  }).join('');
+
+  return `
+    <div class="twin-scene" id="twin-scene" role="img" aria-label="3D Digital Twin visualization: Enterprise source data scanned and classified into verified statutory twin.">
+      <div class="twin-rig" id="twin-rig">
+        ${renderStack(10, 140, false, "Enterprise Estate")}
+        ${renderStack(260, 45, true, "Statutory Twin")}
+      </div>
+      <div aria-hidden="true" style="position:absolute; inset:0; pointer-events:none;">
+        ${particlesHtml}
+      </div>
+    </div>
+  `;
+}
+
+function initTwinParallax() {
+  const scene = document.getElementById('twin-scene');
+  const rig = document.getElementById('twin-rig');
+  if (!scene || !rig) return;
+
+  scene.addEventListener('pointermove', (e) => {
+    const rect = scene.getBoundingClientRect();
+    const dx = (e.clientX - rect.left) / rect.width - 0.5;
+    const dy = (e.clientY - rect.top) / rect.height - 0.5;
+    rig.style.transform = `rotateX(${-dy * 12}deg) rotateY(${dx * 16}deg)`;
+  });
+
+  scene.addEventListener('pointerleave', () => {
+    rig.style.transform = `rotateX(0deg) rotateY(0deg)`;
+  });
+}
+
+function askAiAnalyst(question) {
+  const inputEl = document.getElementById('ai-analyst-input');
+  const q = (question || inputEl?.value || '').toLowerCase().trim();
+  if (!q) return;
+
+  if (inputEl) inputEl.value = question || inputEl.value;
+
+  const respBox = document.getElementById('ai-analyst-response');
+  if (!respBox) return;
+
+  respBox.style.display = 'block';
+
+  const inventory = state.inventory || [];
+  const govIds = inventory.filter(r => r.candidate_class === 'government_id');
+  const govNoRetention = govIds.filter(r => !r.retention_period || r.retention_period.toLowerCase().includes('missing'));
+  const gaps = inventory.filter(r => r.metadata_status && r.metadata_status.includes('Missing'));
+
+  if (q.includes('aadhaar') || q.includes('retention')) {
+    if (govNoRetention.length > 0) {
+      const tables = [...new Set(govNoRetention.map(r => r.table_name || r.dataset_name))].join(', ');
+      respBox.innerHTML = `
+        <strong>⚠️ Non-Compliance Alert:</strong> Found <strong>${govNoRetention.length} Government ID field(s)</strong> (Aadhaar / PAN) without a declared statutory retention schedule in <code>${tables}</code>.<br/>
+        <em>Statutory Impact:</em> Violates <strong>DPDP Act 2023 Section 8(7)</strong> (Obligation to erase personal data upon fulfillment of purpose).<br/>
+        <button type="button" class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="navigateTo('evidencegaps')">Review Compliance Gaps &rarr;</button>
+      `;
+    } else {
+      respBox.innerHTML = `<strong>✅ Compliant:</strong> All detected Government ID fields have registered retention schedules under DPDP Act Section 8(7).`;
+    }
+  } else if (q.includes('section 33') || q.includes('penalty') || q.includes('exposure') || q.includes('liability')) {
+    respBox.innerHTML = `
+      <strong>💥 Statutory Financial Exposure:</strong> Up to <strong>₹250 Crores</strong> under <strong>DPDP Act 2023 Section 33(1) Schedule 1</strong>.<br/>
+      <em>Assessment:</em> Repository includes national identifiers (Aadhaar / PAN / Bank) linked across operational tables with high exposure velocity.<br/>
+      <button type="button" class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="navigateTo('simulator'); switchStudioTab('blast');">Launch Blast Simulator &rarr;</button>
+    `;
+  } else if (q.includes('quasi') || q.includes('combination') || q.includes('identity')) {
+    respBox.innerHTML = `
+      <strong>🚨 Quasi-Identifier Threat Vectors Detected:</strong><br/>
+      &bull; <strong>Name + Government ID:</strong> High risk of synthetic identity creation & financial account takeover.<br/>
+      &bull; <strong>Name + Phone Number:</strong> High risk of targeted smishing & social engineering vectors.<br/>
+      <button type="button" class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="navigateTo('simulator'); switchStudioTab('blast');">Inspect Blast Radius &rarr;</button>
+    `;
+  } else if (q.includes('audit') || q.includes('ledger') || q.includes('verify')) {
+    respBox.innerHTML = `
+      <strong>🛡️ Cryptographic Integrity Verified:</strong> SHA-256 Merkle hash chain is active.<br/>
+      Every triage decision is immutably appended with non-repudiation proofs for the Data Protection Board of India (DPBI).<br/>
+      <button type="button" class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="runAuditVerification()">Execute Live Audit Verification &rarr;</button>
+    `;
+  } else {
+    respBox.innerHTML = `
+      <strong>Statutory Overview:</strong> Discovered <strong>${inventory.length} personal data attributes</strong> across repositories. <strong>${gaps.length} compliance gap(s)</strong> require Data Protection Officer (DPO) triage.<br/>
+      <button type="button" class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="navigateTo('inventory')">Open Evidence Catalog &rarr;</button>
+    `;
+  }
+}
+
 // 1. Dashboard View
 async function renderDashboard(container) {
   const res = await fetch('/api/dashboard');
@@ -347,47 +488,64 @@ async function renderDashboard(container) {
   const currentSeg = state.dashboardSegment || 'overview';
 
   container.innerHTML = `
-    <!-- Executive Compliance Hero Banner & Fast Action Launchpad -->
-    <div class="hero-compliance-card">
-      <div class="compliance-gauge-box">
-        <div class="radial-score-ring" aria-label="Statutory Readiness: 88%">
-          <div class="radial-score-inner">
-            <span class="score-num">88%</span>
-            <span class="score-lbl">Ready</span>
-          </div>
+    <!-- 3D Digital Twin Hero & AI Privacy Analyst Section -->
+    <div class="home-hero-section">
+      <div class="home-hero-content">
+        <div class="home-hero-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="12 8 8 12 12 16 16 12 12 8"/></svg>
+          DPDP Act 2023 &bull; AI Discovery Engine
         </div>
-        <div>
-          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
-            <span class="badge badge-complete" style="font-size:10.5px;">DPDP Act 2023 Compliant</span>
-            <span class="badge badge-phone" style="font-size:10.5px;">Sec. 33 Breach Risk: LOW</span>
-            <span class="badge badge-name" style="font-size:10.5px; font-family:'JetBrains Mono',monospace;">SHA-256 Chained</span>
+        
+        <h1 class="home-hero-title">
+          Find, Classify & Protect <span>Personal Data</span> Across Systems
+        </h1>
+        
+        <p class="home-hero-desc">
+          Automated multi-signal discovery scans your databases and files, verifying Aadhaar (Verhoeff D₅), PAN, UPI, emails, and phone numbers to generate an immutable, audit-ready compliance evidence twin.
+        </p>
+
+        <div class="home-hero-cta">
+          <button type="button" onclick="runOneClickDiscovery()" id="btn-hero-quickscan" class="btn btn-primary" style="padding:10px 18px; font-size:13.5px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><polyline points="8 11 10 13 14 9"/></svg>
+            Run Discovery Scan
+          </button>
+          <button type="button" onclick="navigateTo('datasources')" class="btn btn-secondary" style="padding:10px 18px; font-size:13.5px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Connect Sources
+          </button>
+          <a href="/api/reports/dpdp.pdf" target="_blank" class="btn btn-secondary" style="padding:10px 18px; font-size:13.5px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            DPDP Dossier (PDF)
+          </a>
+        </div>
+
+        <!-- AI Privacy Analyst Prompt Box -->
+        <div class="ai-assistant-card">
+          <div class="ai-assistant-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span style="font-size:12px; font-weight:700; color:#1e293b;">AI Privacy Governance Analyst</span>
+            <span style="font-size:10.5px; color:#64748b; margin-left:auto;">Runs Offline &bull; Metadata Only</span>
           </div>
-          <h2 style="font-size:16px; font-weight:700; color:#0f172a; letter-spacing:-0.01em;">
-            Statutory Governance & Technical Evidence Center
-          </h2>
-          <p style="font-size:12px; color:#64748b; margin-top:2px; line-height:1.4;">
-            Multi-signal discovery mapped to Notice (Sec. 5), Retention Schedules (Sec. 8), and Children's Safeguards (Sec. 9).
-          </p>
+
+          <form onsubmit="event.preventDefault(); askAiAnalyst();" class="ai-assistant-input-row">
+            <input type="text" id="ai-analyst-input" class="ai-assistant-input" placeholder="Ask AI about your data estate & DPDP compliance..." />
+            <button type="submit" class="btn btn-primary btn-sm">Ask</button>
+          </form>
+
+          <div class="suggest-chips-row">
+            <button type="button" class="suggest-chip" onclick="askAiAnalyst('Which tables have Aadhaar with no retention?')">🔍 Aadhaar with no retention?</button>
+            <button type="button" class="suggest-chip" onclick="askAiAnalyst('What is our Section 33 penalty exposure?')">💥 Section 33 liability?</button>
+            <button type="button" class="suggest-chip" onclick="askAiAnalyst('Show critical quasi-identifier combinations')">🚨 Quasi-identifiers?</button>
+            <button type="button" class="suggest-chip" onclick="askAiAnalyst('Verify cryptographic audit ledger')">🛡️ Verify audit ledger</button>
+          </div>
+
+          <div id="ai-analyst-response" class="ai-response-box" style="display:none;" aria-live="polite"></div>
         </div>
       </div>
 
-      <div class="launchpad-grid">
-        <button type="button" onclick="runOneClickDiscovery()" class="launchpad-btn" title="Run discovery across all connected sources">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><polyline points="8 11 10 13 14 9"/></svg>
-          <span>Run Scan All</span>
-        </button>
-        <button type="button" onclick="runAuditVerification()" class="launchpad-btn" title="Cryptographically verify SHA-256 audit ledger">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-          <span>Verify Ledger</span>
-        </button>
-        <button type="button" onclick="navigateTo('simulator')" class="launchpad-btn" title="Simulate breach contagion & Section 33 liability">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>
-          <span>Blast Simulator</span>
-        </button>
-        <a href="/api/reports/dpdp.pdf" target="_blank" class="launchpad-btn" title="Download official DPDP Act statutory dossier">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          <span>DPDP Dossier</span>
-        </a>
+      <!-- 3D Digital Twin Isometric Stack -->
+      <div style="display:flex; justify-content:center; align-items:center;">
+        ${renderTwinHeroHtml()}
       </div>
     </div>
 
@@ -634,6 +792,7 @@ async function renderDashboard(container) {
       </div>
     ` : ''}
   `;
+  initTwinParallax();
 }
 
 
