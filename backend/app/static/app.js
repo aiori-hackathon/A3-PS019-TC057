@@ -315,88 +315,132 @@ async function renderActiveView() {
 }
 
 // ============================================================================
-// Interactive 3D Digital Twin Hero & AI Privacy Governance Analyst
+// PrivacyLens Dual-Core Compliance Prism & AI Privacy Governance Analyst
 // ============================================================================
-function renderTwinHeroHtml() {
-  const colors = [
-    '#0284c7', // Gov ID (Aadhaar / PAN)
-    '#7c3aed', // Financial (UPI / Bank / GSTIN)
-    '#2563eb', // Email
-    '#059669', // Phone
-    '#d97706', // DOB
-    '#475569'  // Name
-  ];
-
-  const layerCells = [
-    [[0,0,0],[1,0,1],[2,0,-1],[3,0,2],[0,1,-1],[1,1,4],[2,1,1],[3,1,-1],[0,2,3],[2,2,-1],[3,2,4]],
-    [[0,0,-1],[1,0,3],[2,0,3],[3,0,-1],[0,1,0],[1,1,-1],[3,1,1],[0,2,-1],[1,2,2],[2,2,4],[3,2,-1]],
-    [[0,0,1],[1,0,-1],[2,0,0],[3,0,4],[1,1,2],[2,1,-1],[3,1,3],[0,2,0],[1,2,-1],[3,2,1]]
-  ];
-
-  function renderStack(x, y, mirrored, label) {
-    const layersHtml = layerCells.map((cells, i) => {
-      const cellsHtml = cells.map(([cx, cy, c]) => {
-        const isDim = !mirrored || c < 0;
-        const col = c >= 0 ? colors[c % colors.length] : '#cbd5e1';
-        return `<span class="cell ${isDim ? 'dim' : ''}" style="left:${20 + cx * 38}px; top:${22 + cy * 38}px; --c:${col};"></span>`;
-      }).join('');
-
-      const beamHtml = (!mirrored && i === 1) ? `<div class="scan-beam"></div>` : '';
-      return `
-        <div class="twin-layer" style="transform: translateZ(${i * 44}px); --tz:${i * 44}px; animation-delay:${i * -1.4}s;">
-          ${cellsHtml}
-          ${beamHtml}
-        </div>
-      `;
-    }).join('');
-
-    return `
-      <div class="twin-stack" style="left:${x}px; top:${y}px;">
-        ${layersHtml}
-        <span class="twin-label" style="transform: translateZ(145px) rotateZ(38deg) rotateX(-58deg); left:30px; top:-12px;">${label}</span>
-      </div>
-    `;
-  }
-
-  const paths = [
-    "path('M 140 220 C 210 130, 270 140, 360 110')",
-    "path('M 160 250 C 230 180, 290 170, 380 140')",
-    "path('M 120 180 C 200 90, 270 90, 340 70')",
-    "path('M 170 230 C 240 190, 300 200, 390 130')",
-    "path('M 140 200 C 220 150, 280 120, 370 90')"
-  ];
-
-  const particlesHtml = paths.map((p, i) => {
-    return `<span class="particle" style="offset-path: ${p}; -webkit-offset-path: ${p}; animation-delay: ${i * 0.65}s; --c: ${colors[i % colors.length]};"></span>`;
-  }).join('');
-
+function renderPrismHeroHtml() {
   return `
-    <div class="twin-scene" id="twin-scene" role="img" aria-label="3D Digital Twin visualization: Enterprise source data scanned and classified into verified statutory twin.">
-      <div class="twin-rig" id="twin-rig">
-        ${renderStack(10, 140, false, "Enterprise Estate")}
-        ${renderStack(260, 45, true, "Statutory Twin")}
+    <div class="prism-scene" id="prism-scene" role="img" aria-label="PrivacyLens Compliance Prism: Enterprise estate streamed through statutory optical lens into verified digital twin.">
+      <!-- Animated SVG Conduits connecting Estate -> Lens -> Twin -->
+      <svg class="prism-svg-overlay" viewBox="0 0 540 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="beamGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#0284c7" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="#2563eb" stop-opacity="0.95"/>
+          </linearGradient>
+          <linearGradient id="beamGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#2563eb" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="#059669" stop-opacity="0.85"/>
+          </linearGradient>
+        </defs>
+        <!-- Conduit 1: Estate -> Lens -->
+        <path d="M 145 160 C 190 160, 210 160, 235 160" stroke="url(#beamGrad1)" stroke-width="2.5" class="conduit-line" />
+        <path d="M 145 135 C 185 140, 210 150, 235 155" stroke="#93c5fd" stroke-width="1.5" class="conduit-line" stroke-dasharray="4 4" />
+        <path d="M 145 185 C 185 180, 210 170, 235 165" stroke="#93c5fd" stroke-width="1.5" class="conduit-line" stroke-dasharray="4 4" />
+
+        <!-- Conduit 2: Lens -> Statutory Twin -->
+        <path d="M 305 160 C 335 160, 360 160, 395 160" stroke="url(#beamGrad2)" stroke-width="2.5" class="conduit-line" />
+        <path d="M 305 155 C 335 150, 360 140, 395 135" stroke="#86efac" stroke-width="1.5" class="conduit-line" stroke-dasharray="4 4" />
+        <path d="M 305 165 C 335 170, 360 180, 395 185" stroke="#86efac" stroke-width="1.5" class="conduit-line" stroke-dasharray="4 4" />
+      </svg>
+
+      <!-- 1. Left Node: Enterprise Estate -->
+      <div class="prism-col">
+        <div class="estate-node-box" id="estate-node">
+          <div class="sonar-ring"></div>
+          <span style="font-size:10px; font-weight:700; text-transform:uppercase; color:#64748b; letter-spacing:0.06em;">Raw Sources</span>
+          <div style="font-size:12px; font-weight:700; color:#0f172a; margin-top:1px;">Enterprise Estate</div>
+
+          <div class="estate-server-stack">
+            <div class="estate-server-tier">
+              <span>customers.csv</span>
+              <span class="tier-led"></span>
+            </div>
+            <div class="estate-server-tier">
+              <span>enterprise.db</span>
+              <span class="tier-led" style="animation-delay:0.4s;"></span>
+            </div>
+            <div class="estate-server-tier">
+              <span>employees.csv</span>
+              <span class="tier-led" style="animation-delay:0.8s;"></span>
+            </div>
+          </div>
+
+          <span style="font-size:9.5px; font-weight:600; color:#0284c7; background:#f0f9ff; padding:2px 6px; border-radius:4px; border:1px solid #bae6fd;">
+            Stream Active
+          </span>
+        </div>
       </div>
-      <div aria-hidden="true" style="position:absolute; inset:0; pointer-events:none;">
-        ${particlesHtml}
+
+      <!-- 2. Center: The Privacy Lens -->
+      <div class="prism-col">
+        <div class="prism-center-box" id="prism-lens" title="PrivacyLens multi-signal validation prism">
+          <div class="prism-outer-ring"></div>
+          <div class="prism-inner-ring"></div>
+          <div class="prism-core">
+            <div class="prism-laser-sweep"></div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>
+            <span style="font-size:8px; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; margin-top:2px;">Lens</span>
+          </div>
+        </div>
+        <span style="font-size:10px; font-weight:700; color:#1f4e64; margin-top:8px; text-transform:uppercase; letter-spacing:0.05em;">
+          DPDP Act Prism
+        </span>
+        <span style="font-size:9px; color:#64748b; font-family:'JetBrains Mono',monospace;">
+          D₅ &bull; PAN &bull; UPI
+        </span>
+      </div>
+
+      <!-- 3. Right Node: Statutory Digital Twin -->
+      <div class="prism-col">
+        <div class="twin-vault-box" id="twin-vault">
+          <span style="font-size:10px; font-weight:700; text-transform:uppercase; color:#059669; letter-spacing:0.06em;">Classified Vault</span>
+          <div style="font-size:12px; font-weight:700; color:#0f172a; margin-top:1px;">Statutory Twin</div>
+
+          <div class="twin-slot-list">
+            <div class="twin-slot-pill blue">
+              <span>Gov ID (Aadhaar)</span>
+              <span>D₅ OK</span>
+            </div>
+            <div class="twin-slot-pill purple">
+              <span>Financial (UPI)</span>
+              <span>Sec. 15</span>
+            </div>
+            <div class="twin-slot-pill green">
+              <span>Contact (Email/Ph)</span>
+              <span>Notice</span>
+            </div>
+          </div>
+
+          <div class="sha-shield-orbit">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            <span>SHA-256 Sealed</span>
+          </div>
+        </div>
       </div>
     </div>
   `;
 }
 
-function initTwinParallax() {
-  const scene = document.getElementById('twin-scene');
-  const rig = document.getElementById('twin-rig');
-  if (!scene || !rig) return;
+function initPrismInteractivity() {
+  const scene = document.getElementById('prism-scene');
+  const estate = document.getElementById('estate-node');
+  const lens = document.getElementById('prism-lens');
+  const vault = document.getElementById('twin-vault');
+  if (!scene || !estate || !lens || !vault) return;
 
   scene.addEventListener('pointermove', (e) => {
     const rect = scene.getBoundingClientRect();
     const dx = (e.clientX - rect.left) / rect.width - 0.5;
     const dy = (e.clientY - rect.top) / rect.height - 0.5;
-    rig.style.transform = `rotateX(${-dy * 12}deg) rotateY(${dx * 16}deg)`;
+    estate.style.transform = `translateY(${dy * 6}px) translateX(${dx * 4}px)`;
+    lens.style.transform = `translateY(${-dy * 4}px) scale(1.03)`;
+    vault.style.transform = `translateY(${-dy * 6}px) translateX(${-dx * 4}px)`;
   });
 
   scene.addEventListener('pointerleave', () => {
-    rig.style.transform = `rotateX(0deg) rotateY(0deg)`;
+    estate.style.transform = 'translateY(0) translateX(0)';
+    lens.style.transform = 'translateY(0) scale(1)';
+    vault.style.transform = 'translateY(0) translateX(0)';
   });
 }
 
@@ -543,9 +587,9 @@ async function renderDashboard(container) {
         </div>
       </div>
 
-      <!-- 3D Digital Twin Isometric Stack -->
+      <!-- PrivacyLens Dual-Core Compliance Prism Scene -->
       <div style="display:flex; justify-content:center; align-items:center;">
-        ${renderTwinHeroHtml()}
+        ${renderPrismHeroHtml()}
       </div>
     </div>
 
@@ -792,7 +836,7 @@ async function renderDashboard(container) {
       </div>
     ` : ''}
   `;
-  initTwinParallax();
+  initPrismInteractivity();
 }
 
 
