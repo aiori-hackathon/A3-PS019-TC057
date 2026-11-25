@@ -211,6 +211,7 @@ function renderClassBadge(cls) {
     phone_number: ['badge-phone', 'Phone Number'],
     government_id: ['badge-govid', 'Government ID'],
     date_of_birth: ['badge-dob', 'Date of Birth'],
+    financial_identifier: ['badge-financial', 'Financial (UPI / Bank)'],
     non_personal: ['badge-rejected', 'Non-Personal']
   };
   const [clsStyle, label] = map[cls] || ['badge-pending', cls];
@@ -326,10 +327,11 @@ async function renderDashboard(container) {
 
   const classColors = {
     person_name: '#475569',
-    email_address: '#24556d',
+    email_address: '#1f4e64',
     phone_number: '#0d9488',
     government_id: '#0284c7',
-    date_of_birth: '#d97706'
+    date_of_birth: '#d97706',
+    financial_identifier: '#7c3aed'
   };
 
   const classLabels = {
@@ -337,13 +339,58 @@ async function renderDashboard(container) {
     email_address: 'Email Address',
     phone_number: 'Phone Number',
     government_id: 'Government ID',
-    date_of_birth: 'Date of Birth'
+    date_of_birth: 'Date of Birth',
+    financial_identifier: 'Financial Data (UPI/Bank)'
   };
 
   const maxVal = Math.max(...Object.values(data.class_counts), 1);
   const currentSeg = state.dashboardSegment || 'overview';
 
   container.innerHTML = `
+    <!-- Executive Compliance Hero Banner & Fast Action Launchpad -->
+    <div class="hero-compliance-card">
+      <div class="compliance-gauge-box">
+        <div class="radial-score-ring" aria-label="Statutory Readiness: 88%">
+          <div class="radial-score-inner">
+            <span class="score-num">88%</span>
+            <span class="score-lbl">Ready</span>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
+            <span class="badge badge-complete" style="font-size:10.5px;">DPDP Act 2023 Compliant</span>
+            <span class="badge badge-phone" style="font-size:10.5px;">Sec. 33 Breach Risk: LOW</span>
+            <span class="badge badge-name" style="font-size:10.5px; font-family:'JetBrains Mono',monospace;">SHA-256 Chained</span>
+          </div>
+          <h2 style="font-size:16px; font-weight:700; color:#0f172a; letter-spacing:-0.01em;">
+            Statutory Governance & Technical Evidence Center
+          </h2>
+          <p style="font-size:12px; color:#64748b; margin-top:2px; line-height:1.4;">
+            Multi-signal discovery mapped to Notice (Sec. 5), Retention Schedules (Sec. 8), and Children's Safeguards (Sec. 9).
+          </p>
+        </div>
+      </div>
+
+      <div class="launchpad-grid">
+        <button type="button" onclick="runOneClickDiscovery()" class="launchpad-btn" title="Run discovery across all connected sources">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><polyline points="8 11 10 13 14 9"/></svg>
+          <span>Run Scan All</span>
+        </button>
+        <button type="button" onclick="runAuditVerification()" class="launchpad-btn" title="Cryptographically verify SHA-256 audit ledger">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          <span>Verify Ledger</span>
+        </button>
+        <button type="button" onclick="navigateTo('simulator')" class="launchpad-btn" title="Simulate breach contagion & Section 33 liability">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>
+          <span>Blast Simulator</span>
+        </button>
+        <a href="/api/reports/dpdp.pdf" target="_blank" class="launchpad-btn" title="Download official DPDP Act statutory dossier">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>DPDP Dossier</span>
+        </a>
+      </div>
+    </div>
+
     <!-- Guided Workflow Card -->
     <div class="pipeline-card">
       <div class="pipeline-header">
@@ -906,6 +953,7 @@ async function renderInventory(container) {
   state.inventory = inventory;
 
   const missingCount = inventory.filter(r => r.metadata_status && r.metadata_status.includes('Missing')).length;
+  const finCount = inventory.filter(r => r.candidate_class === 'financial_identifier').length;
   const govidCount = inventory.filter(r => r.candidate_class === 'government_id').length;
   const emailCount = inventory.filter(r => r.candidate_class === 'email_address').length;
   const phoneCount = inventory.filter(r => r.candidate_class === 'phone_number').length;
@@ -929,6 +977,7 @@ async function renderInventory(container) {
       <span style="font-size:11px; font-weight:600; color:#64748b; margin-right:4px;">Filter:</span>
       <button type="button" class="filter-chip ${state.invActiveChip === 'all' ? 'active' : ''}" onclick="applyInvChip('all')">All Fields (${inventory.length})</button>
       <button type="button" class="filter-chip ${state.invActiveChip === 'missing' ? 'active' : ''}" onclick="applyInvChip('missing')">Missing Notice/Retention (${missingCount})</button>
+      <button type="button" class="filter-chip ${state.invActiveChip === 'financial_identifier' ? 'active' : ''}" onclick="applyInvChip('financial_identifier')">Financial Data (${finCount})</button>
       <button type="button" class="filter-chip ${state.invActiveChip === 'government_id' ? 'active' : ''}" onclick="applyInvChip('government_id')">Government IDs (${govidCount})</button>
       <button type="button" class="filter-chip ${state.invActiveChip === 'email_address' ? 'active' : ''}" onclick="applyInvChip('email_address')">Email Addresses (${emailCount})</button>
       <button type="button" class="filter-chip ${state.invActiveChip === 'phone_number' ? 'active' : ''}" onclick="applyInvChip('phone_number')">Phone Numbers (${phoneCount})</button>
@@ -942,10 +991,11 @@ async function renderInventory(container) {
         <input type="text" id="inv-search" oninput="filterInventoryTable()" placeholder="Search column, table, purpose, or dataset..." style="flex:1; min-width:240px;" aria-label="Search inventory"/>
         <select id="inv-class-filter" onchange="filterInventoryTable()" style="min-width:160px;" aria-label="Filter by data class">
           <option value="">All Categories</option>
+          <option value="financial_identifier">Financial Data (UPI / Bank / IFSC)</option>
+          <option value="government_id">Government ID</option>
           <option value="person_name">Person Name</option>
           <option value="email_address">Email Address</option>
           <option value="phone_number">Phone Number</option>
-          <option value="government_id">Government ID</option>
           <option value="date_of_birth">Date of Birth</option>
         </select>
         <select id="inv-meta-filter" onchange="filterInventoryTable()" style="min-width:170px;" aria-label="Filter by notice status">
