@@ -8,6 +8,8 @@
 ### 🌐 Quick Links & Live Demos
 
 * 🚀 **Live Cloud Deployment (Render):** [https://as-ps019-tc057.onrender.com/](https://as-ps019-tc057.onrender.com/)
+* 📄 **Platform Guide & Innovation Matrix (PDF):** [PrivacyLens_Platform_Guide.pdf](PrivacyLens_Platform_Guide.pdf)
+* 📖 **Features & Competitive Innovations (Markdown):** [FEATURES_AND_INNOVATIONS.md](FEATURES_AND_INNOVATIONS.md)
 * 🎥 **Website Functionality Walkthrough (YouTube):** [https://youtu.be/MVfuXm52Rkw](https://youtu.be/MVfuXm52Rkw)
 * 🎤 **Project Presentation Video (YouTube):** [https://youtu.be/BWVyN9AuqBE](https://youtu.be/BWVyN9AuqBE)
 * 💻 **GitHub Repository:** [https://github.com/aiori-hackathon/A3-PS019-TC057](https://github.com/aiori-hackathon/A3-PS019-TC057)
