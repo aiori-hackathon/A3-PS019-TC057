@@ -2110,6 +2110,24 @@ function openEvidenceModal(recordId) {
       : '<div>No samples available</div>'}
             </div>
           </div>
+
+          ${r.reviewer_notes || r.review_status !== 'PENDING' ? `
+          <div style="background:${r.review_status === 'CONFIRMED' ? '#ecfdf5' : (r.review_status === 'REJECTED' ? '#fef2f2' : '#f8fafc')}; border:1px solid ${r.review_status === 'CONFIRMED' ? '#a7f3d0' : (r.review_status === 'REJECTED' ? '#fecaca' : '#e2e8f0')}; border-radius:8px; padding:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <strong style="color:${r.review_status === 'CONFIRMED' ? '#065f46' : (r.review_status === 'REJECTED' ? '#991b1b' : '#334155')}; font-size:12px; display:flex; align-items:center; gap:6px;">
+                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:${r.review_status === 'CONFIRMED' ? '#10b981' : '#ef4444'};"></span>
+                Human Adjudication Decision: ${r.review_status}
+              </strong>
+              <span style="font-size:10px; font-family:'JetBrains Mono',monospace; color:#64748b;">${r.reviewed_at ? new Date(r.reviewed_at).toLocaleString() : 'Just Now'}</span>
+            </div>
+            <div style="font-size:12px; color:#334155; margin-top:4px; line-height:1.4;">
+              <strong>Reviewer Notes / Justification:</strong>
+              <div style="background:#ffffff; border:1px solid rgba(0,0,0,0.06); padding:8px 10px; border-radius:6px; margin-top:4px; font-style:${r.reviewer_notes ? 'normal' : 'italic'}; color:${r.reviewer_notes ? '#0f172a' : '#64748b'};">
+                ${r.reviewer_notes || 'No custom notes attached during triage.'}
+              </div>
+            </div>
+          </div>
+          ` : ''}
         </div>
 
         <div class="modal-footer">
