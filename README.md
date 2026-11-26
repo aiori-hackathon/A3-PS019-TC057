@@ -7,7 +7,7 @@
 
 ### 🌐 Quick Links & Live Demos
 
-* 🚀 **Live Cloud Deployment (Render):** [https://as-ps019-tc057.onrender.com/](https://as-ps019-tc057.onrender.com/)
+* 🚀 **Live Cloud Deployment (Render):** [https://a3-ps019-tc057.onrender.com/](https://a3-ps019-tc057.onrender.com/)
 * 📊 **Pitch Presentation Deck (PowerPoint PPTX):** [PrivacyLens_Presentation_TC057.pptx](PrivacyLens_Presentation_TC057.pptx)
 * 📄 **Platform Guide & Innovation Matrix (PDF):** [PrivacyLens_Platform_Guide.pdf](PrivacyLens_Platform_Guide.pdf)
 * 📖 **Features & Competitive Innovations (Markdown):** [FEATURES_AND_INNOVATIONS.md](FEATURES_AND_INNOVATIONS.md)
